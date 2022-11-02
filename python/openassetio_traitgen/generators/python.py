@@ -23,7 +23,7 @@ import logging
 import os
 import re
 
-from typing import List, NamedTuple
+from typing import List
 
 import jinja2
 
@@ -57,6 +57,7 @@ def generate(
         A convenience to render a named template into its corresponding
         file and call the creationCallback.
         """
+        # pylint: disable=line-too-long
         # NB: Jinja assumes '/' on all plaftorms:
         #  https://github.com/pallets/jinja/blob/7fb13bf94443f067c74204a1aee368fdf0591764/src/jinja2/loaders.py#L29
         template = env.get_template(f"python/{name}.py.in")

@@ -25,6 +25,10 @@ import pytest
 
 import openassetio_traitgen
 
+# pylint: disable=redefined-outer-name, invalid-name
+# pylint: disable=missing-class-docstring, missing-function-docstring
+# pylint: disable=too-many-arguments
+
 
 class Test_generate:
     def test_when_description_path_valid_then_generate_called_with_declaration(

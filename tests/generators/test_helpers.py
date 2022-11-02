@@ -34,9 +34,9 @@ class Test_to_upper_camel_alnum:
         assert helpers.to_upper_camel_alnum(expected) == expected
 
     def test_when_illegal_then_output_only_contains_alnum(self):
-        input = "#This! is a  ## complex-string  WithSome ExistingCamel and_snake 4 u!!"
+        input_ = "#This! is a  ## complex-string  WithSome ExistingCamel and_snake 4 u!!"
         expected = "ThisIsAComplexStringWithSomeExistingCamelAndSnake4U"
-        assert helpers.to_upper_camel_alnum(input) == expected
+        assert helpers.to_upper_camel_alnum(input_) == expected
 
 
 class Test_to_lower_camel_alnum:
@@ -45,9 +45,9 @@ class Test_to_lower_camel_alnum:
         assert helpers.to_lower_camel_alnum(expected) == expected
 
     def test_when_illegal_then_output_only_contains_alnum(self):
-        input = "!!This! is a  ## complex-string  WithSome ExistingCamel and_snake 4 u!!"
+        input_ = "!!This! is a  ## complex-string  WithSome ExistingCamel and_snake 4 u!!"
         expected = "thisIsAComplexStringWithSomeExistingCamelAndSnake4U"
-        assert helpers.to_lower_camel_alnum(input) == expected
+        assert helpers.to_lower_camel_alnum(input_) == expected
 
 
 class Test_default_template_globals:
@@ -67,6 +67,8 @@ class Test_default_template_globals:
 
 class Test_packaged_dependencies:
     def test_when_traits_then_list_is_empty(self, some_trait_declarations):
+        # Use comparison to ensure we check the type too
+        # pylint: disable=use-implicit-booleaness-not-comparison
         assert helpers.package_dependencies(some_trait_declarations) == []
 
     def test_when_specifications_then_list_is_sorted_unique_packages(

@@ -25,7 +25,7 @@ import os
 import pytest
 import jsonschema
 
-from openassetio_traitgen import datamodel, parser
+from openassetio_traitgen import parser
 
 
 class Test_Parser_loadYAML:

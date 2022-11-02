@@ -18,10 +18,12 @@ Test for the openassetio-codgen CLI tool
 """
 
 import datetime
-import logging
 import os
 import subprocess
-import sys
+
+# pylint: disable=redefined-outer-name, invalid-name
+# pylint: disable=missing-class-docstring, missing-function-docstring
+# pylint: disable=too-many-arguments, unused-argument, too-few-public-methods
 
 
 class Test_CLI_exit_code:

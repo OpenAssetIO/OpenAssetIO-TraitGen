@@ -70,11 +70,10 @@ useful reference.
 
 import logging
 
-from . import parser
-from . import generators
-
 from typing import List
 
+from . import parser
+from . import generators
 
 #
 # Code Generation

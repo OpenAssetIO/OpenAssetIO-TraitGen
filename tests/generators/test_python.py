@@ -26,12 +26,12 @@ import logging
 import os
 import sys
 
-import pytest
-
 from typing import Any, NamedTuple
 
+import pytest
+
 from openassetio import SpecificationBase, TraitBase, TraitsData
-from openassetio_traitgen import datamodel, generate
+from openassetio_traitgen import generate
 from openassetio_traitgen.generators import python as python_generator
 
 
@@ -52,6 +52,7 @@ class Test_python_package_all:
         # pylint: disable=unused-import,import-error,unused-argument,import-outside-toplevel
         import openassetio_traitgen_test_all
 
+        # pylint: disable=pointless-statement
         del sys.modules["openassetio_traitgen_test_all"]
 
     def test_package_docstring(self, module_all):
@@ -226,6 +227,7 @@ class Test_python_package_all_specifications_test_TwoLocalTraitsSpecification:
             module_all.specifications.test.TwoLocalTraitsSpecification.aNamespaceNoPropertiesTrait
         )
         assert (
+            # pylint: disable=line-too-long
             module_all.specifications.test.TwoLocalTraitsSpecification.aNamespaceNoPropertiesTrait.__doc__
             == f"""
         Returns the view for the '{trait_one.kId}' trait wrapped around
@@ -234,9 +236,11 @@ class Test_python_package_all_specifications_test_TwoLocalTraitsSpecification:
         )
 
         assert inspect.isfunction(
+            # pylint: disable=line-too-long
             module_all.specifications.test.TwoLocalTraitsSpecification.anotherNamespaceNoPropertiesTrait
         )
         assert (
+            # pylint: disable=line-too-long
             module_all.specifications.test.TwoLocalTraitsSpecification.anotherNamespaceNoPropertiesTrait.__doc__
             == f"""
         Returns the view for the '{trait_two.kId}' trait wrapped around
@@ -299,9 +303,11 @@ class Test_python_package_all_specifications_test_LocalAndExternalTraitSpecifica
         trait_two = module_traits_only.traits.aNamespace.NoPropertiesTrait
 
         assert inspect.isfunction(
+            # pylint: disable=line-too-long
             module_all.specifications.test.LocalAndExternalTraitSpecification.openassetioTraitgenTestAllANamespaceNoPropertiesTrait
         )
         assert (
+            # pylint: disable=line-too-long
             module_all.specifications.test.LocalAndExternalTraitSpecification.openassetioTraitgenTestAllANamespaceNoPropertiesTrait.__doc__
             == f"""
         Returns the view for the '{trait_one.kId}' trait wrapped around
@@ -310,9 +316,11 @@ class Test_python_package_all_specifications_test_LocalAndExternalTraitSpecifica
         )
 
         assert inspect.isfunction(
+            # pylint: disable=line-too-long
             module_all.specifications.test.LocalAndExternalTraitSpecification.openassetioTraitgenTestTraitsOnlyANamespaceNoPropertiesTrait
         )
         assert (
+            # pylint: disable=line-too-long
             module_all.specifications.test.LocalAndExternalTraitSpecification.openassetioTraitgenTestTraitsOnlyANamespaceNoPropertiesTrait.__doc__
             == f"""
         Returns the view for the '{trait_two.kId}' trait wrapped around
@@ -330,7 +338,7 @@ class Test_python_package_traits_only:
 
     def test_no_specifications_module(self, module_traits_only):
         with pytest.raises(AttributeError):
-            module_traits_only.specifications
+            module_traits_only.specifications  # pylint: disable=pointless-statement
 
     def test_traits_are_suffixed_with_Trait(self, module_traits_only):
         assert inspect.isclass(module_traits_only.traits.test.AnotherTrait)
@@ -346,7 +354,7 @@ class Test_python_package_specifications_only:
 
     def test_no_traits_module(self, module_specifications_only):
         with pytest.raises(AttributeError):
-            module_traits_only.traits
+            module_specifications_only.traits  # pylint: disable=pointless-statement
 
     def test_specifications_are_suffixed_with_Specification(self, module_specifications_only):
         assert inspect.isclass(module_specifications_only.specifications.test.SomeSpecification)
@@ -386,101 +394,104 @@ kAllPropertiesTrait_property_test_values = (
 )
 
 
-@pytest.mark.parametrize("property", kAllPropertiesTrait_property_test_values)
+@pytest.mark.parametrize("property_", kAllPropertiesTrait_property_test_values)
 class Test_AllPropertiesTrait_getter:
     def test_when_property_is_set_then_returns_expected_value(
-        self, all_properties_trait, an_all_properties_traitsData, property
+        self, all_properties_trait, an_all_properties_traitsData, property_
     ):
         an_all_properties_traitsData.setTraitProperty(
-            all_properties_trait.kId, property.name, property.valid_value
+            all_properties_trait.kId, property_.name, property_.valid_value
         )
         a_trait = all_properties_trait(an_all_properties_traitsData)
-        getter = getattr(a_trait, f"get{property.name[0].upper()}{property.name[1:]}")
+        getter = getattr(a_trait, f"get{property_.name[0].upper()}{property_.name[1:]}")
 
-        assert getter() == property.valid_value
+        assert getter() == property_.valid_value
 
     def test_when_property_not_set_then_returns_None(
-        self, all_properties_trait, an_all_properties_traitsData, property
+        self, all_properties_trait, an_all_properties_traitsData, property_
     ):
         a_trait = all_properties_trait(an_all_properties_traitsData)
-        getter = getattr(a_trait, f"get{property.name[0].upper()}{property.name[1:]}")
+        getter = getattr(a_trait, f"get{property_.name[0].upper()}{property_.name[1:]}")
 
         assert getter() is None
 
     def test_when_property_not_set_and_default_given_then_returns_default(
-        self, all_properties_trait, an_all_properties_traitsData, property
+        self, all_properties_trait, an_all_properties_traitsData, property_
     ):
         a_trait = all_properties_trait(an_all_properties_traitsData)
-        getter = getattr(a_trait, f"get{property.name[0].upper()}{property.name[1:]}")
+        getter = getattr(a_trait, f"get{property_.name[0].upper()}{property_.name[1:]}")
 
-        assert getter(defaultValue=property.valid_value) == property.valid_value
+        assert getter(defaultValue=property_.valid_value) == property_.valid_value
 
     def test_when_property_has_wrong_type_then_raises_TypeError(
-        self, all_properties_trait, an_all_properties_traitsData, property
+        self, all_properties_trait, an_all_properties_traitsData, property_
     ):
         an_all_properties_traitsData.setTraitProperty(
-            all_properties_trait.kId, property.name, property.invalid_value
+            all_properties_trait.kId, property_.name, property_.invalid_value
         )
         a_trait = all_properties_trait(an_all_properties_traitsData)
-        getter = getattr(a_trait, f"get{property.name[0].upper()}{property.name[1:]}")
+        getter = getattr(a_trait, f"get{property_.name[0].upper()}{property_.name[1:]}")
 
         with pytest.raises(TypeError) as err:
             assert getter()
 
         assert (
             str(err.value)
-            == f"Invalid stored value type: '{type(property.invalid_value).__name__}' should be '{type(property.valid_value).__name__}'."
+            == f"Invalid stored value type: '{type(property_.invalid_value).__name__}' should be "
+            f"'{type(property_.valid_value).__name__}'."
         )
 
     def test_when_property_has_wrong_type_and_default_given_then_returns_default(
-        self, all_properties_trait, an_all_properties_traitsData, property
+        self, all_properties_trait, an_all_properties_traitsData, property_
     ):
         an_all_properties_traitsData.setTraitProperty(
-            all_properties_trait.kId, property.name, property.invalid_value
+            all_properties_trait.kId, property_.name, property_.invalid_value
         )
         a_trait = all_properties_trait(an_all_properties_traitsData)
-        getter = getattr(a_trait, f"get{property.name[0].upper()}{property.name[1:]}")
+        getter = getattr(a_trait, f"get{property_.name[0].upper()}{property_.name[1:]}")
 
-        assert getter(defaultValue=property.valid_value) == property.valid_value
+        assert getter(defaultValue=property_.valid_value) == property_.valid_value
 
 
-@pytest.mark.parametrize("property", kAllPropertiesTrait_property_test_values)
+@pytest.mark.parametrize("property_", kAllPropertiesTrait_property_test_values)
 class Test_AllPropertiesTrait_set:
     def test_when_set_then_trait_data_contains_value(
-        self, all_properties_trait, an_all_properties_traitsData, property
+        self, all_properties_trait, an_all_properties_traitsData, property_
     ):
         a_trait = all_properties_trait(an_all_properties_traitsData)
-        setter = getattr(a_trait, f"set{property.name[0].upper()}{property.name[1:]}")
+        setter = getattr(a_trait, f"set{property_.name[0].upper()}{property_.name[1:]}")
 
-        setter(property.valid_value)
+        setter(property_.valid_value)
 
         actual = an_all_properties_traitsData.getTraitProperty(
-            all_properties_trait.kId, property.name
+            all_properties_trait.kId, property_.name
         )
-        assert actual == property.valid_value
+        assert actual == property_.valid_value
 
     def test_when_traitsData_does_not_have_trait_then_set_also_imbues(
-        self, all_properties_trait, an_empty_traitsData, property
+        self, all_properties_trait, an_empty_traitsData, property_
     ):
         a_trait = all_properties_trait(an_empty_traitsData)
-        setter = getattr(a_trait, f"set{property.name[0].upper()}{property.name[1:]}")
+        setter = getattr(a_trait, f"set{property_.name[0].upper()}{property_.name[1:]}")
 
-        setter(property.valid_value)
+        setter(property_.valid_value)
 
-        actual = an_empty_traitsData.getTraitProperty(all_properties_trait.kId, property.name)
-        assert actual == property.valid_value
+        actual = an_empty_traitsData.getTraitProperty(all_properties_trait.kId, property_.name)
+        assert actual == property_.valid_value
 
     def test_when_type_is_wrong_then_TypeError_is_raised(
-        self, all_properties_trait, an_all_properties_traitsData, property
+        self, all_properties_trait, an_all_properties_traitsData, property_
     ):
         a_trait = all_properties_trait(an_all_properties_traitsData)
-        setter = getattr(a_trait, f"set{property.name[0].upper()}{property.name[1:]}")
+        setter = getattr(a_trait, f"set{property_.name[0].upper()}{property_.name[1:]}")
 
         with pytest.raises(TypeError) as err:
-            setter(property.invalid_value)
+            setter(property_.invalid_value)
 
         assert (
-            str(err.value) == f"{property.name} must be a '{type(property.valid_value).__name__}'."
+            # pylint: disable=line-too-long
+            str(err.value)
+            == f"{property_.name} must be a '{type(property_.valid_value).__name__}'."
         )
 
 

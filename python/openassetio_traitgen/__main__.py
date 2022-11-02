@@ -89,7 +89,8 @@ def _create_argparser():
     cmdline.add_argument(
         "--copyright-owner",
         type=str,
-        help="The owner of the generated code, if set, a copyright and SPDX License Identifier will be added.",
+        help="The owner of the generated code, if set, a copyright and SPDX License Identifier "
+        "will be added.",
     )
 
     cmdline.add_argument(
@@ -101,7 +102,8 @@ def _create_argparser():
     cmdline.add_argument(
         "--spdx-license-identifier",
         type=str,
-        help="The SPDX license identifier the generated code is released under (https://spdx.org/licenses).",
+        help="The SPDX license identifier the generated code is released under "
+        "(https://spdx.org/licenses).",
     )
 
     cmdline.add_argument(

@@ -21,11 +21,11 @@ YAML declarations.
 import json
 import operator
 import os
-import yaml
-
-import jsonschema
 
 from typing import List, Dict
+
+import yaml
+import jsonschema
 
 from . import datamodel
 
