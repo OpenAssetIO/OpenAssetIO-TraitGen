@@ -456,9 +456,8 @@ def a_capturing_logger():
             super().__init__()
             self.messages = []
 
-        def handle(self, record: logging.LogRecord) -> bool:
+        def emit(self, record: logging.LogRecord):
             self.messages.append((record.levelno, record.getMessage()))
-            return True
 
     handler = CapturingHandler()
     logger.addHandler(handler)
