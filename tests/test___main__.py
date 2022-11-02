@@ -215,7 +215,7 @@ class Test_CLI_default_languages:
 def execute_cli(*args):
     # Str wrapping prevents issues with Path objects in Windows
     # Python 3.7
-    all_args = [sys.executable, "-m", "openassetio_traitgen"]
+    all_args = ["openassetio-traitgen"]
     str_args = [str(a) for a in args]
     all_args.extend(str_args)
     # We explicitly don't want an exception to be raised.
