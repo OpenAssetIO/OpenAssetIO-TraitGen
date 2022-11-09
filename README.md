@@ -15,6 +15,14 @@ corresponding python package that can be used for custom generation.
 
 ## Installation
 
+The package is available on PyPI, so to get the latest stable release
+```bash
+python -m pip install openassetio-traitgen
+```
+
+For the bleeding edge, the package can also be installed after cloning
+this repository using
+
 ```bash
 python -m pip install .
 ```
