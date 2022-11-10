@@ -5,8 +5,9 @@ Specification classes from a simple YAML description. This avoids
 the laborious and error-prone task of creating these by hand.
 
 This package is entirely self-contained and can be used without an
-`openassetio` installation. It provides code generation CLI, along with
-a corresponding python package that can be used for custom generation.
+[OpenAssetIO](https://github.com/OpenAssetIO/OpenAssetIO)
+installation. It provides code generation CLI, along with a
+corresponding python package that can be used for custom generation.
 
 ## Supported languages
 
