@@ -5,14 +5,23 @@ Specification classes from a simple YAML description. This avoids
 the laborious and error-prone task of creating these by hand.
 
 This package is entirely self-contained and can be used without an
-`openassetio` installation. It provides code generation CLI, along with
-a corresponding python package that can be used for custom generation.
+[OpenAssetIO](https://github.com/OpenAssetIO/OpenAssetIO)
+installation. It provides code generation CLI, along with a
+corresponding python package that can be used for custom generation.
 
 ## Supported languages
 
 - Python 3.7+
 
 ## Installation
+
+The package is available on PyPI, so to get the latest stable release
+```bash
+python -m pip install openassetio-traitgen
+```
+
+For the bleeding edge, the package can also be installed after cloning
+this repository using
 
 ```bash
 python -m pip install .
@@ -26,7 +35,8 @@ openassetio-traitgen -h
 
 ## Development notes
 
-This package follows the main [OpenAssetIO contribution process](../../contributing/PROCESS.md).
+This package follows the main
+[OpenAssetIO contribution process](https://github.com/OpenAssetIO/OpenAssetIO/blob/main/contributing/PROCESS.md).
 
 However, as a pure Python project, it adheres to strict PEP-8 naming
 conventions.
