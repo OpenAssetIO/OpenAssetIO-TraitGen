@@ -436,14 +436,14 @@ def creations_minimal_python():
     from python generation of minimal.yaml.
     """
     return [
-        os.path.join("python", "p_p"),
-        os.path.join("python", "p_p", "traits"),
-        os.path.join("python", "p_p", "traits", "tn.py"),
-        os.path.join("python", "p_p", "traits", "__init__.py"),
-        os.path.join("python", "p_p", "specifications"),
-        os.path.join("python", "p_p", "specifications", "sn.py"),
-        os.path.join("python", "p_p", "specifications", "__init__.py"),
-        os.path.join("python", "p_p", "__init__.py"),
+        os.path.join("p_p"),
+        os.path.join("p_p", "traits"),
+        os.path.join("p_p", "traits", "tn.py"),
+        os.path.join("p_p", "traits", "__init__.py"),
+        os.path.join("p_p", "specifications"),
+        os.path.join("p_p", "specifications", "sn.py"),
+        os.path.join("p_p", "specifications", "__init__.py"),
+        os.path.join("p_p", "__init__.py"),
     ]
 
 

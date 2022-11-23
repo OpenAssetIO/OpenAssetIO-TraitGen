@@ -45,9 +45,6 @@ from openassetio_traitgen.generators import python as python_generator
 
 
 class Test_python_package_all:
-    def test_package_is_grouped_under_python_subdirectory(self, generated_path):
-        assert os.path.isdir(os.path.join(generated_path, "python"))
-
     def test_package_is_importable(self, extended_python_path):
         # pylint: disable=unused-import,import-error,unused-argument,import-outside-toplevel
         import openassetio_traitgen_test_all
@@ -593,9 +590,7 @@ def generated_path(
         generate(
             description_path=description,
             output_directory=output_dir,
-            languages=[
-                "python",
-            ],
+            generator="python",
             creation_callback=creation_callback,
             logger=logging.Logger(name="Capturing logger"),
         )
@@ -608,8 +603,7 @@ def extended_python_path(generated_path, monkeypatch):
     """
     Temporarily extends sys.path to include the generated code directory.
     """
-    packages_path = os.path.join(generated_path, "python")
-    monkeypatch.syspath_prepend(packages_path)
+    monkeypatch.syspath_prepend(generated_path)
 
 
 @pytest.fixture
@@ -674,14 +668,14 @@ def local_and_external_trait_specification(module_all):
 @pytest.fixture
 def creations_exotic_values():
     return [
-        os.path.join("python", "p_p"),
-        os.path.join("python", "p_p", "traits"),
-        os.path.join("python", "p_p", "traits", "t_n.py"),
-        os.path.join("python", "p_p", "traits", "__init__.py"),
-        os.path.join("python", "p_p", "specifications"),
-        os.path.join("python", "p_p", "specifications", "s_n.py"),
-        os.path.join("python", "p_p", "specifications", "__init__.py"),
-        os.path.join("python", "p_p", "__init__.py"),
+        os.path.join("p_p"),
+        os.path.join("p_p", "traits"),
+        os.path.join("p_p", "traits", "t_n.py"),
+        os.path.join("p_p", "traits", "__init__.py"),
+        os.path.join("p_p", "specifications"),
+        os.path.join("p_p", "specifications", "s_n.py"),
+        os.path.join("p_p", "specifications", "__init__.py"),
+        os.path.join("p_p", "__init__.py"),
     ]
 
 

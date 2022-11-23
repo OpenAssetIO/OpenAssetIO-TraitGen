@@ -1,6 +1,21 @@
 Release Notes
 =============
 
+v1.0.0-alpha.x
+
+### Breaking Changes
+
+- Changed `generate` interface from `languages` to `generator` when
+  specifying generation targets. Removed ability for more than one
+  `generator` to be run simultaneously.
+
+- Removed `--python` option from command line interface, replaced with
+  `--generator={generator}` option.
+
+- Python generator no longer places module underneath `python`
+  subdirectory, opting now to place module folder directly in
+  `output_directory`
+
 v1.0.0-alpha.3
 --------------
 
