@@ -34,7 +34,7 @@ The `helpers` module provides utilities to convert names to common
 restricted character set scenarios, based on the project style guide.
 
 Each generator should expose itself as an attribute in this module whose
-name matches the string passed to the `languages` argument of
+name matches the string passed to the `generator` argument of
 `openassetio_traitgen.generate`.
 
 Each generator has a single entry point as shown below:

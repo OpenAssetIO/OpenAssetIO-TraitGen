@@ -62,9 +62,6 @@ def _create_argparser():
             supplied file, containing the simplified declaration of one or more
             traits or specifications using the OpenAssetIO traits and
             specification declaration schema.
-
-            By default, code is generated for all supported unless one or more
-            language flags are specified.
             """
         ),
     )
@@ -84,6 +81,15 @@ def _create_argparser():
         required=True,
         help="Generate code under the supplied directory, the utility will attempt to create this"
         " directory if it does not exist",
+    )
+
+    cmdline.add_argument(
+        "-g",
+        "--generator",
+        required=True,
+        type=str,
+        choices=generators.ALL,
+        help="Specifies which generator to use.",
     )
 
     cmdline.add_argument(
@@ -120,14 +126,6 @@ def _create_argparser():
         choices=("ERROR", "WARNING", "INFO", "DEBUG"),
         default=DEFAULT_LOG_LEVEL,
         help="Sets the logging level for diagnostic messages printed to stderr.",
-    )
-
-    cmdline.add_argument(
-        "--python",
-        dest="languages",
-        action="append_const",
-        const="python",
-        help="Generate Python classes",
     )
 
     return cmdline
@@ -181,7 +179,7 @@ def main():
     generate(
         args.input,
         args.output_dir,
-        args.languages or generators.ALL,
+        args.generator,
         creation_callback,
         logger,
         args.dry_run,

@@ -37,18 +37,18 @@ class Test_generate:
         declaration_all,
         some_output_dir,
         some_creation_callback,
-        mock_language_a,
+        mock_generator_a,
         a_capturing_logger,
     ):
         openassetio_traitgen.generate(
             description_path=yaml_path_all,
             output_directory=some_output_dir,
-            languages=["a"],
+            generator="a",
             creation_callback=some_creation_callback,
             logger=a_capturing_logger,
         )
 
-        call_args = mock_language_a.generate.call_args[0]
+        call_args = mock_generator_a.generate.call_args[0]
         assert call_args[0] == declaration_all
 
     def test_when_description_path_invalid_then_FileNotFoundError_raised(
@@ -61,146 +61,108 @@ class Test_generate:
             openassetio_traitgen.generate(
                 description_path="invalid",
                 output_directory=some_output_dir,
-                languages=["a"],
+                generator="a",
                 creation_callback=some_creation_callback,
                 logger=a_capturing_logger,
             )
 
-    def test_when_language_set_then_generate_called_with_supplied_generation_arguments(
+    def test_when_generator_set_then_generate_called_with_supplied_generation_arguments(
         self,
         yaml_path_all,
         some_output_dir,
         some_creation_callback,
-        mock_language_a,
+        mock_generator_a,
         a_capturing_logger,
     ):
         openassetio_traitgen.generate(
             description_path=yaml_path_all,
             output_directory=some_output_dir,
-            languages=["a"],
+            generator="a",
             creation_callback=some_creation_callback,
             logger=a_capturing_logger,
         )
 
-        call_args = mock_language_a.generate.call_args[0]
+        call_args = mock_generator_a.generate.call_args[0]
         assert call_args[2] == some_output_dir
         assert call_args[3] is some_creation_callback
 
-    def test_when_multiple_languages_set_then_generate_called_for_all(
+    def test_when_generator_not_set_then_generate_not_called(
         self,
         yaml_path_all,
         some_output_dir,
         some_creation_callback,
-        mock_language_a,
-        mock_language_b,
+        mock_generator_a,
         a_capturing_logger,
     ):
-        openassetio_traitgen.generate(
-            description_path=yaml_path_all,
-            output_directory=some_output_dir,
-            languages=["a", "b"],
-            creation_callback=some_creation_callback,
-            logger=a_capturing_logger,
-        )
+        with pytest.raises(ValueError):
+            openassetio_traitgen.generate(
+                description_path=yaml_path_all,
+                output_directory=some_output_dir,
+                generator="",
+                creation_callback=some_creation_callback,
+                logger=a_capturing_logger,
+            )
 
-        mock_language_a.generate.assert_called()
-        mock_language_b.generate.assert_called()
-
-    def test_when_language_not_set_then_generate_not_called(
-        self,
-        yaml_path_all,
-        some_output_dir,
-        some_creation_callback,
-        mock_language_a,
-        a_capturing_logger,
-    ):
-        openassetio_traitgen.generate(
-            description_path=yaml_path_all,
-            output_directory=some_output_dir,
-            languages=[],
-            creation_callback=some_creation_callback,
-            logger=a_capturing_logger,
-        )
-
-        mock_language_a.generate.assert_not_called()
-
-    def test_when_logger_supplied_then_called_with_child_logger_with_language_suffix(
-        self,
-        yaml_path_all,
-        some_output_dir,
-        some_creation_callback,
-        mock_language_a,
-        a_capturing_logger,
-    ):
-        openassetio_traitgen.generate(
-            description_path=yaml_path_all,
-            output_directory=some_output_dir,
-            languages=["a"],
-            creation_callback=some_creation_callback,
-            logger=a_capturing_logger,
-        )
-
-        call_args = mock_language_a.generate.call_args[0]
-        assert call_args[4].name == f"{a_capturing_logger.name}.a"
+        mock_generator_a.generate.assert_not_called()
 
     def test_when_dry_run_set_true_then_generate_not_called(
         self,
         yaml_path_all,
         some_output_dir,
         some_creation_callback,
-        mock_language_a,
+        mock_generator_a,
         a_capturing_logger,
     ):
         openassetio_traitgen.generate(
             description_path=yaml_path_all,
             output_directory=some_output_dir,
-            languages=["a"],
+            generator="a",
             creation_callback=some_creation_callback,
             logger=a_capturing_logger,
             dry_run=True,
         )
 
-        mock_language_a.generate.assert_not_called()
+        mock_generator_a.generate.assert_not_called()
 
     def test_when_dry_run_set_false_then_generate_called(
         self,
         yaml_path_all,
         some_output_dir,
         some_creation_callback,
-        mock_language_a,
+        mock_generator_a,
         a_capturing_logger,
     ):
         openassetio_traitgen.generate(
             description_path=yaml_path_all,
             output_directory=some_output_dir,
-            languages=["a"],
+            generator="a",
             creation_callback=some_creation_callback,
             logger=a_capturing_logger,
             dry_run=False,
         )
 
-        mock_language_a.generate.assert_called()
+        mock_generator_a.generate.assert_called()
 
     def test_when_no_globals_then_generator_called_with_default_globals(
         self,
         yaml_path_all,
         some_output_dir,
         some_creation_callback,
-        mock_language_a,
+        mock_generator_a,
         a_capturing_logger,
     ):
         openassetio_traitgen.generate(
             description_path=yaml_path_all,
             output_directory=some_output_dir,
-            languages=["a"],
+            generator="a",
             creation_callback=some_creation_callback,
             logger=a_capturing_logger,
         )
 
         expected_globals = openassetio_traitgen.generators.helpers.default_template_globals()
-        expected_globals["language"] = "a"
+        expected_globals["generator"] = "a"
 
-        call_args = mock_language_a.generate.call_args[0]
+        call_args = mock_generator_a.generate.call_args[0]
         assert call_args[1] == expected_globals
 
     def test_when_globals_supplied_then_generator_called_with_updated_globals(
@@ -208,7 +170,7 @@ class Test_generate:
         yaml_path_all,
         some_output_dir,
         some_creation_callback,
-        mock_language_a,
+        mock_generator_a,
         a_capturing_logger,
     ):
         extra_globals = {"a": 1, "b": "🤠", "copyrightOwner": "Me"}
@@ -216,7 +178,7 @@ class Test_generate:
         openassetio_traitgen.generate(
             description_path=yaml_path_all,
             output_directory=some_output_dir,
-            languages=["a"],
+            generator="a",
             creation_callback=some_creation_callback,
             logger=a_capturing_logger,
             template_globals=extra_globals,
@@ -224,34 +186,34 @@ class Test_generate:
 
         expected_globals = openassetio_traitgen.generators.helpers.default_template_globals()
         expected_globals.update(extra_globals)
-        expected_globals["language"] = "a"
+        expected_globals["generator"] = "a"
 
-        call_args = mock_language_a.generate.call_args[0]
+        call_args = mock_generator_a.generate.call_args[0]
         assert call_args[1] == expected_globals
 
-    def test_when_globals_supplied_include_language_then_generator_global_not_overridden(
+    def test_when_globals_supplied_include_generator_then_generator_global_not_overridden(
         self,
         yaml_path_all,
         some_output_dir,
         some_creation_callback,
-        mock_language_a,
+        mock_generator_a,
         a_capturing_logger,
     ):
-        extra_globals = {"language": "b"}
+        extra_globals = {"generator": "b"}
 
         openassetio_traitgen.generate(
             description_path=yaml_path_all,
             output_directory=some_output_dir,
-            languages=["a"],
+            generator="a",
             creation_callback=some_creation_callback,
             logger=a_capturing_logger,
             template_globals=extra_globals,
         )
 
         expected_globals = openassetio_traitgen.generators.helpers.default_template_globals()
-        expected_globals["language"] = "a"
+        expected_globals["generator"] = "a"
 
-        call_args = mock_language_a.generate.call_args[0]
+        call_args = mock_generator_a.generate.call_args[0]
         assert call_args[1] == expected_globals
 
     def test_when_valid_then_structure_is_logged_as_info(
@@ -265,12 +227,13 @@ class Test_generate:
         openassetio_traitgen.generate(
             description_path=yaml_path_all,
             output_directory=some_output_dir,
-            languages=[],
+            generator="python",
             creation_callback=some_creation_callback,
             logger=a_capturing_logger,
         )
-
-        assert a_capturing_logger.handlers[0].messages == structure_all_log_messages
+        structureMsg = a_capturing_logger.handlers[0].messages
+        structureMsg.remove((logging.INFO, "Generating with generator python..."))
+        assert structureMsg == structure_all_log_messages
 
     def test_when_dry_run_set_true_then_structure_is_still_logged_as_info(
         self,
@@ -283,28 +246,40 @@ class Test_generate:
         openassetio_traitgen.generate(
             description_path=yaml_path_all,
             output_directory=some_output_dir,
-            languages=[],
+            generator="python",
             creation_callback=some_creation_callback,
             logger=a_capturing_logger,
             dry_run=True,
         )
 
+        # Dry run does not make it to the generation code path, so no
+        # "Generating with" message is logged.
         assert a_capturing_logger.handlers[0].messages == structure_all_log_messages
+
+    def test_when_invalid_generator_error_raised(
+        self,
+        yaml_path_all,
+        some_output_dir,
+        some_creation_callback,
+        a_capturing_logger,
+    ):
+        with pytest.raises(ValueError) as exc:
+            openassetio_traitgen.generate(
+                description_path=yaml_path_all,
+                output_directory=some_output_dir,
+                generator="Algol",
+                creation_callback=some_creation_callback,
+                logger=a_capturing_logger,
+            )
+
+        assert exc.value.args[0] == "Could not find generator Algol"
 
 
 @pytest.fixture
-def mock_language_a(monkeypatch):
+def mock_generator_a(monkeypatch):
     mock_generator = mock.Mock()
     mock_generator.generate = mock.Mock()
     monkeypatch.setattr(openassetio_traitgen.generators, "a", mock_generator, raising=False)
-    return mock_generator
-
-
-@pytest.fixture
-def mock_language_b(monkeypatch):
-    mock_generator = mock.Mock()
-    mock_generator.generate = mock.Mock()
-    monkeypatch.setattr(openassetio_traitgen.generators, "b", mock_generator, raising=False)
     return mock_generator
 
 

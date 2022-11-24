@@ -78,7 +78,7 @@ def generate(
 
     # Top level package directory, under a "python" subdirectory
     package_name = env.filters["to_py_module_name"](package_declaration.id)
-    package_dir_path = create_dir_with_path_components(output_directory, "python", package_name)
+    package_dir_path = create_dir_with_path_components(output_directory, package_name)
 
     # Collect which sub-packages we should import at the top level, so
     # they're available without a 'from x import y' statement.
