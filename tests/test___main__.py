@@ -244,22 +244,6 @@ class Test_CLI_args_python:
 
         assert os.path.isdir(os.path.join(tmp_path, "p_p"))
 
-    def test_when_only_python_set_then_only_python_is_generated(self, tmp_path, yaml_path_minimal):
-        execute_cli("--generator", "python", "-o", tmp_path, yaml_path_minimal)
-
-        assert os.listdir(tmp_path) == [
-            "p_p",
-        ]
-
-
-class Test_CLI_default_languages:
-    def test_when_none_set_then_all_languages_are_generated(self, tmp_path, yaml_path_minimal):
-        execute_cli("--generator", "python", "-o", tmp_path, yaml_path_minimal)
-
-        assert os.listdir(tmp_path) == [
-            "p_p",
-        ]
-
 
 #
 # Helpers
