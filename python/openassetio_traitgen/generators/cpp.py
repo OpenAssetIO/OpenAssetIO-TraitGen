@@ -97,7 +97,7 @@ def generate(
         namespaces = getattr(package_declaration, kind, None)
         if namespaces:
 
-            package_init_imports.append(kind)
+            package_init_imports.append(f"{kind}/{kind}.hpp")
 
             # Create the directory for the sub-package
             subpackage_dir_path = create_dir_with_path_components(package_dir_path, kind)
@@ -109,7 +109,7 @@ def generate(
             # Generate a single-file module for each namespace
             for namespace in namespaces:
                 safe_namespace = env.filters["to_cpp_module_name"](namespace.id)
-                subpackage_init_imports.append(safe_namespace)
+                subpackage_init_imports.append(f"{safe_namespace}.hpp")
                 render_template(
                     kind,
                     os.path.join(subpackage_dir_path, f"{safe_namespace}.hpp"),
@@ -120,23 +120,22 @@ def generate(
                     },
                 )
 
-            # TODO(DF): equivalent for C++
-            # # Generate the sub-package __init__.py that pre-imports all
-            # # of the sub-modules.
-            # subpackage_init_imports.sort()
-            # docstring = f"{kind.capitalize()} defined in the '{package_declaration.id}' package."
-            # render_template(
-            #     "__init__",
-            #     os.path.join(subpackage_dir_path, "__init__.py"),
-            #     {"docstring": docstring, "relImports": subpackage_init_imports},
-            # )
+            # Generate the sub-package headers that pre-imports all the
+            # submodules.
+            subpackage_init_imports.sort()
+            docstring = f"{kind.capitalize()} defined in the '{package_declaration.id}' package."
+            render_template(
+                "package",
+                os.path.join(subpackage_dir_path, kind + ".hpp"),
+                {"docstring": docstring, "relImports": subpackage_init_imports},
+            )
 
-    # TODO(DF): equivalent for C++
-    # render_template(
-    #     "__init__",
-    #     os.path.join(package_dir_path, "__init__.py"),
-    #     {"docstring": package_declaration.description, "relImports": package_init_imports},
-    # )
+    # Top-level package header that includes everything.
+    render_template(
+        "package",
+        os.path.join(package_dir_path, package_name + ".hpp"),
+        {"docstring": package_declaration.description, "relImports": package_init_imports},
+    )
 
 
 #
