@@ -248,6 +248,8 @@ def _install_custom_filters(environment, logger):
         """
         Returns the python value type for a property declaration (PropertyType).
         """
+        if declaration_type == PropertyType.DICT:
+            raise TypeError("Dictionary types are not yet supported as trait properties")
         return type_map[declaration_type]
 
     environment.filters["to_upper_camel_alnum"] = helpers.to_upper_camel_alnum

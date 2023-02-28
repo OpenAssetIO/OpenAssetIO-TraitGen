@@ -33,9 +33,7 @@ traits:
                     boolProperty:
                         type: boolean
                         description: A bool-typed property.
-                    dictProperty:
-                        type: dictionary
-                        description: A dict-typed property.
+                    # TODO(DF): Add dictProperty once supported.
 
     anotherNamespace:
         description: Another Namespace

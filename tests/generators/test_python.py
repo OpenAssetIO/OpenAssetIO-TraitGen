@@ -143,7 +143,7 @@ class Test_python_package_all_traits_aNamespace_AllPropertiesTrait:
             == "openassetio-traitgen-test-all:aNamespace.AllProperties"
         )
 
-    @pytest.mark.parametrize("property_type", ["string", "int", "float", "bool", "dict"])
+    @pytest.mark.parametrize("property_type", ["string", "int", "float", "bool"])
     def test_has_prefixed_property_getters_with_expected_docstring(
         self, module_all, property_type
     ):
@@ -161,7 +161,7 @@ class Test_python_package_all_traits_aNamespace_AllPropertiesTrait:
         """
         )
 
-    @pytest.mark.parametrize("property_type", ["string", "int", "float", "bool", "dict"])
+    @pytest.mark.parametrize("property_type", ["string", "int", "float", "bool"])
     def test_has_prefixed_property_setters_with_expected_docstring(
         self, module_all, property_type
     ):

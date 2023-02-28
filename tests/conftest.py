@@ -159,11 +159,6 @@ def declaration_all():
                                 description="A bool-typed property.",
                             ),
                             datamodel.PropertyDeclaration(
-                                id="dictProperty",
-                                type=datamodel.PropertyType.DICT,
-                                description="A dict-typed property.",
-                            ),
-                            datamodel.PropertyDeclaration(
                                 id="floatProperty",
                                 type=datamodel.PropertyType.FLOAT,
                                 description="A float-typed property.",
@@ -178,6 +173,7 @@ def declaration_all():
                                 type=datamodel.PropertyType.STRING,
                                 description="A string-typed property.",
                             ),
+                            # TODO(DF): Add DICT property, once supported.
                         ],
                     ),
                     datamodel.TraitDeclaration(
