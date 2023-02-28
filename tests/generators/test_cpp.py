@@ -23,6 +23,7 @@ Tests for the C++ code generator.
 
 import logging
 import os
+import subprocess
 
 import pytest
 from tree_sitter_languages import get_parser
@@ -328,6 +329,51 @@ class Test_generate:
         assert a_capturing_logger.handlers[0].messages == warnings_exotic_values
 
 
+def test_cpp_project(generated_path, tmp_path_factory, cpp_project_dir):
+    build_dir = tmp_path_factory.mktemp("test_cpp_project")
+
+    # Install third-party C++ library dependencies.
+    subprocess.check_call(
+        [
+            "conan",
+            "install",
+            "--install-folder",
+            f"{build_dir}/.conan",
+            "-g",
+            "CMakeDeps",
+            "-s",
+            "build_type=RelWithDebInfo",
+            cpp_project_dir,
+        ]
+    )
+
+    include_paths = ";".join(
+        (
+            f"{generated_path}/openassetio_traitgen_test_all/include",
+            f"{generated_path}/openassetio_traitgen_test_specifications_only/include",
+            f"{generated_path}/openassetio_traitgen_test_traits_only/include",
+        )
+    )
+
+    # Configure CMake project
+    subprocess.check_call(
+        [
+            "cmake",
+            "-S",
+            cpp_project_dir,
+            "-B",
+            build_dir,
+            "--preset",
+            "test",
+            f"-DCMAKE_PREFIX_PATH={build_dir}/.conan",
+            f"-DOPENASSETIO_TRAITGENTEST_ADDITIONAL_INCLUDE_DIRS={include_paths}",
+        ]
+    )
+    subprocess.check_call(["cmake", "--build", build_dir])
+    # Run tests in CMake project.
+    subprocess.check_call(["ctest", "-VV", "--test-dir", build_dir])
+
+
 #
 # Fixtures
 #
@@ -344,6 +390,11 @@ def docstring_for(cpp_parser, generated_path):
 @pytest.fixture(scope="module")
 def cpp_parser():
     return get_parser("cpp")
+
+
+@pytest.fixture(scope="module")
+def cpp_project_dir():
+    return os.path.join(os.path.dirname(__file__), "cpp")
 
 
 @pytest.fixture(scope="module")

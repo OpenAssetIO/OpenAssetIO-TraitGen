@@ -89,6 +89,12 @@ add_subdirectory(src)
 # Print a status dump
 # cmake-lint: disable=C0301
 
+message(STATUS "Additional include dirs         = ${OPENASSETIO_TRAITGENTEST_ADDITIONAL_INCLUDE_DIRS}")
+foreach(dir ${OPENASSETIO_TRAITGENTEST_ADDITIONAL_INCLUDE_DIRS})
+    if (NOT EXISTS ${dir})
+        message(WARNING "TraitGen include dir '${dir}' does not exist. Tests are likely to fail.")
+    endif ()
+endforeach()
 message(STATUS "CMake package search path       = ${CMAKE_PREFIX_PATH}")
 message(STATUS "Warnings as errors              = ${OPENASSETIO_TRAITGENTEST_WARNINGS_AS_ERRORS}")
 message(STATUS "Linter: clang-tidy              = ${OPENASSETIO_TRAITGENTEST_ENABLE_CLANG_TIDY} [${OPENASSETIO_TRAITGENTEST_CLANGTIDY_EXE}]")

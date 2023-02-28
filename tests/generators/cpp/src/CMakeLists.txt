@@ -22,6 +22,11 @@ target_link_libraries(
     OpenAssetIO::openassetio-core
     Catch2::Catch2
 )
+target_include_directories(
+    openassetio-traitgentest
+    PRIVATE
+    ${OPENASSETIO_TRAITGENTEST_ADDITIONAL_INCLUDE_DIRS}
+)
 
 
 #-----------------------------------------------------------------------
