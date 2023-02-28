@@ -15,7 +15,7 @@ openassetio_traitgentest_set_default_target_properties(openassetio-traitgentest)
 #-----------------------------------------------------------------------
 # Target dependencies
 
-target_sources(openassetio-traitgentest PRIVATE main.cpp)
+target_sources(openassetio-traitgentest PRIVATE main.cpp test.cpp)
 target_link_libraries(
     openassetio-traitgentest
     PRIVATE
