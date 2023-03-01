@@ -29,12 +29,16 @@ traits::{{trait.namespace | to_cpp_module_name }}::{{trait.name | to_cpp_class_n
 {%- endif -%}
 {%- endmacro %}
 
+{%- macro namespace_str() -%}
+{{ package.id | to_cpp_module_name }}::specifications::{{ namespace.id | to_cpp_module_name }}
+{%- endmacro %}
+
 /**
  * Specification definitions in the '{{ namespace.id }}' namespace.
  *
  * {{ namespace.description | wordwrap(69, wrapstring="\n* ") | indent(1) }}
  */
-namespace {{ package.id | to_cpp_module_name }}::specifications::{{ namespace.id | to_cpp_module_name }} {
+namespace {{ namespace_str() }} {
 {% for specification in namespace.members -%}
 /**
  * {{ specification.description | wordwrap(69, wrapstring="\n* ") | indent(1) }}
@@ -58,7 +62,7 @@ struct {{ specification.id | to_cpp_class_name }}Specification {
    * Returns the view for the '{{ trait.id }}'
    * trait wrapped around the data held in this instance.
    */
-  {{ trait_type(trait) }} {{ trait.unique_name_parts | to_cpp_trait_accessor_name }}Trait() {
+  [[nodiscard]] {{ trait_type(trait) }} {{ trait.unique_name_parts | to_cpp_trait_accessor_name }}Trait() const {
     return {{ trait_type(trait) }}{traitsData_};
   }
 {% endfor %}
@@ -66,4 +70,4 @@ struct {{ specification.id | to_cpp_class_name }}Specification {
 };
 
 {% endfor %}
-}
+}  // namespace {{ namespace_str() }}

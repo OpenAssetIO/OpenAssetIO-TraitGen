@@ -251,6 +251,14 @@ def _install_custom_filters(environment, logger):
         PropertyType.DICT: "openassetio::InfoDictionary",
     }
 
+    is_moveable_map = {
+        PropertyType.STRING: True,
+        PropertyType.INTEGER: False,
+        PropertyType.FLOAT: False,
+        PropertyType.BOOL: False,
+        PropertyType.DICT: True,
+    }
+
     def to_cpp_type(declaration_type):
         """
         Returns the C++ value type for a property declaration (PropertyType).
@@ -259,6 +267,13 @@ def _install_custom_filters(environment, logger):
             raise TypeError("Dictionary types are not yet supported as trait properties")
         return type_map[declaration_type]
 
+    def is_moveable_type(declaration_type):
+        """
+        Returns whether std::move can be applied to the value type for
+        a property.
+        """
+        return is_moveable_map[declaration_type]
+
     environment.filters["to_upper_camel_alnum"] = helpers.to_upper_camel_alnum
     environment.filters["to_cpp_module_name"] = to_cpp_module_name
     environment.filters["to_cpp_class_name"] = to_cpp_class_name
@@ -266,3 +281,4 @@ def _install_custom_filters(environment, logger):
     environment.filters["to_cpp_var_accessor_name"] = to_cpp_var_accessor_name
     environment.filters["to_cpp_var_name"] = to_cpp_var_name
     environment.filters["to_cpp_type"] = to_cpp_type
+    environment.filters["is_moveable_type"] = is_moveable_type
