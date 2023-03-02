@@ -16,6 +16,7 @@
 """
 Tests for the C++ code generator.
 """
+import functools
 
 # pylint: disable=invalid-name,redefined-outer-name
 # pylint: disable=too-few-public-methods
@@ -23,10 +24,11 @@ Tests for the C++ code generator.
 
 import logging
 import os
+import pathlib
 import subprocess
 
 import pytest
-from tree_sitter_languages import get_parser
+from tree_sitter_languages import get_parser, get_language
 
 from openassetio_traitgen import generate
 from openassetio_traitgen.generators import cpp as cpp_generator
@@ -45,9 +47,12 @@ class Test_cpp_package_all:
     def test_package_docstring(self, docstring_for):
         assert (
             docstring_for("openassetio_traitgen_test_all")
-            == """*
- * Test classes to validate the integrity of the openassetio-traitgen tool.
- """
+            == """
+/**
+ * Test classes to validate the integrity of the openassetio-traitgen
+ * tool.
+ */
+ """.strip()
         )
 
 
@@ -57,11 +62,13 @@ class Test_cpp_package_all_traits:
             docstring_for(
                 "openassetio_traitgen_test_all", is_specification=False, namespace="aNamespace"
             )
-            == """*
+            == """
+/**
  * Trait definitions in the 'aNamespace' namespace.
  *
  * A Namespace
- """
+ */
+ """.strip()
         )
 
     def test_anotherNamespace_docstring_contains_declaration_description(self, docstring_for):
@@ -71,11 +78,13 @@ class Test_cpp_package_all_traits:
                 is_specification=False,
                 namespace="anotherNamespace",
             )
-            == """*
+            == """
+/**
  * Trait definitions in the 'anotherNamespace' namespace.
  *
  * Another Namespace
- """
+ */
+ """.strip()
         )
 
 
@@ -88,9 +97,11 @@ class Test_cpp_package_all_traits_aNamespace_NoPropertiesTrait:
                 namespace="aNamespace",
                 cls="NoPropertiesTrait",
             )
-            == """*
-     * Another trait, this time with no properties.
-     """
+            == """
+/**
+ * Another trait, this time with no properties.
+ */
+ """.strip()
         )
 
 
@@ -103,10 +114,12 @@ class Test_cpp_package_all_traits_aNamespace_NoPropertiesMultipleUsageTrait:
                 namespace="aNamespace",
                 cls="NoPropertiesMultipleUsageTrait",
             )
-            == """*
-     * Another trait, this time with multiple usage.
-     * Usage: entity, relationship
-     """
+            == """
+/**
+ * Another trait, this time with multiple usage.
+ * Usage: entity, relationship
+ */
+ """.strip()
         )
 
 
@@ -119,9 +132,11 @@ class Test_cpp_package_all_traits_aNamespace_AllPropertiesTrait:
                 namespace="aNamespace",
                 cls="AllPropertiesTrait",
             )
-            == """*
-     * A trait with properties of all types.
-     """
+            == """
+/**
+ * A trait with properties of all types.
+ */
+ """.strip()
         )
 
     @pytest.mark.parametrize("property_type", ["string", "int", "float", "bool"])
@@ -138,11 +153,14 @@ class Test_cpp_package_all_traits_aNamespace_AllPropertiesTrait:
                 cls="AllPropertiesTrait",
                 func=function_name,
             )
-            == f"""*
-         * Gets the value of the {property_name} property or the supplied default.
-         *
-         * A {property_type}-typed property.
-         """
+            == f"""
+  /**
+   * Gets the value of the {property_name} property or the supplied
+   * default.
+   *
+   * A {property_type}-typed property.
+   */
+ """.strip()
         )
 
     @pytest.mark.parametrize("property_type", ["string", "int", "float", "bool"])
@@ -160,11 +178,13 @@ class Test_cpp_package_all_traits_aNamespace_AllPropertiesTrait:
                 cls="AllPropertiesTrait",
                 func=function_name,
             )
-            == f"""*
-         * Sets the {property_name} property.
-         *
-         * A {property_type}-typed property.
-         """
+            == f"""
+  /**
+   * Sets the {property_name} property.
+   *
+   * A {property_type}-typed property.
+   */
+""".strip()
         )
 
 
@@ -183,9 +203,11 @@ class Test_cpp_package_all_specifications_test_TwoLocalTraitsSpecification:
                 namespace="test",
                 cls="TwoLocalTraitsSpecification",
             )
-            == """*
-     * A specification with two traits.
-     """
+            == """
+/**
+ * A specification with two traits.
+ */
+""".strip()
         )
 
     def test_has_trait_getters_with_expected_docstring(self, docstring_for):
@@ -197,10 +219,12 @@ class Test_cpp_package_all_specifications_test_TwoLocalTraitsSpecification:
                 cls="TwoLocalTraitsSpecification",
                 func="aNamespaceNoPropertiesTrait",
             )
-            == """*
-         * Returns the view for the 'openassetio-traitgen-test-all:aNamespace.NoProperties' trait wrapped around
-         * the data held in this instance.
-         """
+            == """
+  /**
+   * Returns the view for the 'openassetio-traitgen-test-all:aNamespace.NoProperties'
+   * trait wrapped around the data held in this instance.
+   */
+""".strip()
         )
 
         assert (
@@ -211,10 +235,12 @@ class Test_cpp_package_all_specifications_test_TwoLocalTraitsSpecification:
                 cls="TwoLocalTraitsSpecification",
                 func="anotherNamespaceNoPropertiesTrait",
             )
-            == """*
-         * Returns the view for the 'openassetio-traitgen-test-all:anotherNamespace.NoProperties' trait wrapped around
-         * the data held in this instance.
-         """
+            == """
+  /**
+   * Returns the view for the 'openassetio-traitgen-test-all:anotherNamespace.NoProperties'
+   * trait wrapped around the data held in this instance.
+   */
+""".strip()
         )
 
 
@@ -227,9 +253,11 @@ class Test_cpp_package_all_specifications_test_OneExternalTraitSpecification:
                 namespace="test",
                 cls="OneExternalTraitSpecification",
             )
-            == """*
-     * A specification referencing traits in another package.
-     """
+            == """
+/**
+ * A specification referencing traits in another package.
+ */
+""".strip()
         )
 
     def test_has_trait_getters_with_expected_docstring(self, docstring_for):
@@ -241,10 +269,12 @@ class Test_cpp_package_all_specifications_test_OneExternalTraitSpecification:
                 cls="OneExternalTraitSpecification",
                 func="anotherTrait",
             )
-            == """*
-         * Returns the view for the 'openassetio-traitgen-test-traits-only:test.Another' trait wrapped around
-         * the data held in this instance.
-         """
+            == """
+  /**
+   * Returns the view for the 'openassetio-traitgen-test-traits-only:test.Another'
+   * trait wrapped around the data held in this instance.
+   */
+""".strip()
         )
 
 
@@ -257,10 +287,12 @@ class Test_cpp_package_all_specifications_test_LocalAndExternalTraitSpecificatio
                 namespace="test",
                 cls="LocalAndExternalTraitSpecification",
             )
-            == """*
-     * A specification referencing traits in this and another package.
-     * Usage: entity, managementPolicy
-     """
+            == """
+/**
+ * A specification referencing traits in this and another package.
+ * Usage: entity, managementPolicy
+ */
+""".strip()
         )
 
     def test_has_trait_getters_with_expected_docstring(self, docstring_for):
@@ -272,11 +304,14 @@ class Test_cpp_package_all_specifications_test_LocalAndExternalTraitSpecificatio
                 cls="LocalAndExternalTraitSpecification",
                 func="openassetioTraitgenTestAllANamespaceNoPropertiesTrait",
             )
-            == """*
-         * Returns the view for the 'openassetio-traitgen-test-all:aNamespace.NoProperties' trait wrapped around
-         * the data held in this instance.
-         """
+            == """
+  /**
+   * Returns the view for the 'openassetio-traitgen-test-all:aNamespace.NoProperties'
+   * trait wrapped around the data held in this instance.
+   */
+""".strip()
         )
+
         assert (
             docstring_for(
                 "openassetio_traitgen_test_all",
@@ -285,10 +320,12 @@ class Test_cpp_package_all_specifications_test_LocalAndExternalTraitSpecificatio
                 cls="LocalAndExternalTraitSpecification",
                 func="openassetioTraitgenTestTraitsOnlyANamespaceNoPropertiesTrait",
             )
-            == """*
-         * Returns the view for the 'openassetio-traitgen-test-traits-only:aNamespace.NoProperties' trait wrapped around
-         * the data held in this instance.
-         """
+            == """
+  /**
+   * Returns the view for the 'openassetio-traitgen-test-traits-only:aNamespace.NoProperties'
+   * trait wrapped around the data held in this instance.
+   */
+""".strip()
         )
 
 
@@ -380,9 +417,64 @@ def test_cpp_project(generated_path, tmp_path_factory, cpp_project_dir):
 
 
 @pytest.fixture
-def docstring_for(cpp_parser, generated_path):
+def docstring_for(rootnode_for, cpp_language):
     def fn(package_name, is_specification=None, namespace=None, cls=None, func=None):
-        return ""
+
+        root_node = rootnode_for(package_name, is_specification, namespace)
+
+        if is_specification is None:
+            query = cpp_language.query("""(translation_unit . (comment) @docstring)""")
+            return query.captures(root_node)[0][0].text.decode()
+
+        if namespace is None:
+            query = cpp_language.query("""(translation_unit . (comment) @docstring)""")
+            return query.captures(root_node)[0][0].text.decode()
+
+        if cls is None:
+            query = cpp_language.query("""((comment) . (namespace_definition)) @docstring""")
+            return query.captures(root_node)[0][0].text.decode()
+
+        query = cpp_language.query(
+            f"""(
+            (comment) @docstring . (struct_specifier name: (type_identifier) @struct_name) @struct
+            (#eq? @struct_name "{cls}")
+        )"""
+        )
+
+        if func is None:
+            return query.captures(root_node)[0][0].text.decode()
+
+        struct_node = query.captures(root_node)[1][0]
+        query = cpp_language.query(
+            f"""(
+            (comment) @docstring
+            .
+            (function_definition declarator: (
+                function_declarator declarator: (field_identifier) @func_name))
+            (eq? @func_name "{func}")
+        )"""
+        )
+        return query.captures(struct_node)[0][0].text.decode()
+
+    return fn
+
+
+@pytest.fixture(scope="module")
+def rootnode_for(cpp_parser, generated_path):
+    @functools.lru_cache(maxsize=None)
+    def fn(package_name, is_specification, namespace):
+        file_path = pathlib.Path(generated_path) / package_name / "include" / package_name
+        if is_specification is not None:
+            file_path /= "specifications" if is_specification else "traits"
+            if namespace is not None:
+                file_path /= namespace
+        else:
+            file_path /= package_name
+
+        file_path = file_path.with_suffix(".hpp")
+
+        with open(file_path, "rb") as f:
+            return cpp_parser.parse(f.read()).root_node
 
     return fn
 
@@ -390,6 +482,11 @@ def docstring_for(cpp_parser, generated_path):
 @pytest.fixture(scope="module")
 def cpp_parser():
     return get_parser("cpp")
+
+
+@pytest.fixture(scope="module")
+def cpp_language():
+    return get_language("cpp")
 
 
 @pytest.fixture(scope="module")
