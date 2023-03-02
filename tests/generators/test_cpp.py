@@ -423,14 +423,14 @@ def generated_path(
 @pytest.fixture
 def creations_exotic_values():
     return [
-        os.path.join("p_p"),
-        os.path.join("p_p", "traits"),
-        os.path.join("p_p", "traits", "t_n.py"),
-        os.path.join("p_p", "traits", "__init__.py"),
-        os.path.join("p_p", "specifications"),
-        os.path.join("p_p", "specifications", "s_n.py"),
-        os.path.join("p_p", "specifications", "__init__.py"),
-        os.path.join("p_p", "__init__.py"),
+        os.path.join("p_p", "include", "p_p"),
+        os.path.join("p_p", "include", "p_p", "traits"),
+        os.path.join("p_p", "include", "p_p", "traits", "t_n.hpp"),
+        os.path.join("p_p", "include", "p_p", "traits", "traits.hpp"),
+        os.path.join("p_p", "include", "p_p", "specifications"),
+        os.path.join("p_p", "include", "p_p", "specifications", "s_n.hpp"),
+        os.path.join("p_p", "include", "p_p", "specifications", "specifications.hpp"),
+        os.path.join("p_p", "include", "p_p", "p_p.hpp"),
     ]
 
 
