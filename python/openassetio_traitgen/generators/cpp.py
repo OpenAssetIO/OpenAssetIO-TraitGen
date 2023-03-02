@@ -169,6 +169,9 @@ def _install_custom_filters(environment, logger):
     the input during this process. An error will be raised if this
     resulted in an empty string.
     """
+    # pylint: disable=too-many-statements
+
+    logged_warnings = set()
 
     def validate_identifier(string: str, original: str):
         """
@@ -189,7 +192,10 @@ def _install_custom_filters(environment, logger):
         no_hypens = string.replace("-", "_")
         module_name = re.sub(r"[^a-zA-Z0-9_]", "_", no_hypens)
         if module_name != no_hypens:
-            logger.warning(f"Conforming '{string}' to '{module_name}' for module name")
+            msg = f"Conforming '{string}' to '{module_name}' for module name"
+            if msg not in logged_warnings:
+                logged_warnings.add(msg)
+                logger.warning(msg)
         return module_name
 
     def to_cpp_class_name(string: str):
@@ -198,7 +204,10 @@ def _install_custom_filters(environment, logger):
         """
         class_name = helpers.to_upper_camel_alnum(string)
         if class_name != string:
-            logger.warning(f"Conforming '{string}' to '{class_name}' for class name")
+            msg = f"Conforming '{string}' to '{class_name}' for class name"
+            if msg not in logged_warnings:
+                logged_warnings.add(msg)
+                logger.warning(msg)
         validate_identifier(class_name, string)
         return class_name
 
@@ -212,9 +221,10 @@ def _install_custom_filters(environment, logger):
         accessor_name = helpers.to_lower_camel_alnum(unique_name)
         # We expect the first letter to change to lowercase
         if accessor_name != f"{unique_name[0].lower()}{unique_name[1:]}":
-            logger.warning(
-                f"Conforming '{unique_name}' to '{accessor_name}' for trait getter name"
-            )
+            msg = f"Conforming '{unique_name}' to '{accessor_name}' for trait getter name"
+            if msg not in logged_warnings:
+                logged_warnings.add(msg)
+                logger.warning(msg)
         validate_identifier(accessor_name, unique_name)
         return accessor_name
 
@@ -226,9 +236,10 @@ def _install_custom_filters(environment, logger):
         """
         accessor_name = helpers.to_upper_camel_alnum(string)
         if accessor_name != f"{string[0].upper()}{string[1:]}":
-            logger.warning(
-                f"Conforming '{string}' to '{accessor_name}' for property accessor name"
-            )
+            msg = f"Conforming '{string}' to '{accessor_name}' for property accessor name"
+            if msg not in logged_warnings:
+                logged_warnings.add(msg)
+                logger.warning(msg)
         validate_identifier(accessor_name, string)
         return accessor_name
 
@@ -239,7 +250,10 @@ def _install_custom_filters(environment, logger):
         """
         var_name = helpers.to_lower_camel_alnum(string)
         if var_name != string:
-            logger.warning(f"Conforming '{string}' to '{var_name}' for variable name")
+            msg = f"Conforming '{string}' to '{var_name}' for variable name"
+            if msg not in logged_warnings:
+                logged_warnings.add(msg)
+                logger.warning(msg)
         validate_identifier(var_name, string)
         return var_name
 
