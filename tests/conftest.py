@@ -480,21 +480,33 @@ def declaration_invalid_identifiers():
 # Note: This is here as the CLI tests use python generation to check
 # functionality/console output.
 @pytest.fixture
-def creations_minimal_python():
+def creations_minimal_by_generator():
     """
     The expected list of creations (relative to the output dir)
     from python generation of minimal.yaml.
     """
-    return [
-        os.path.join("p_p"),
-        os.path.join("p_p", "traits"),
-        os.path.join("p_p", "traits", "tn.py"),
-        os.path.join("p_p", "traits", "__init__.py"),
-        os.path.join("p_p", "specifications"),
-        os.path.join("p_p", "specifications", "sn.py"),
-        os.path.join("p_p", "specifications", "__init__.py"),
-        os.path.join("p_p", "__init__.py"),
-    ]
+    return {
+        "python": [
+            os.path.join("p_p"),
+            os.path.join("p_p", "traits"),
+            os.path.join("p_p", "traits", "tn.py"),
+            os.path.join("p_p", "traits", "__init__.py"),
+            os.path.join("p_p", "specifications"),
+            os.path.join("p_p", "specifications", "sn.py"),
+            os.path.join("p_p", "specifications", "__init__.py"),
+            os.path.join("p_p", "__init__.py"),
+        ],
+        "cpp": [
+            os.path.join("p_p", "include", "p_p"),
+            os.path.join("p_p", "include", "p_p", "traits"),
+            os.path.join("p_p", "include", "p_p", "traits", "tn.hpp"),
+            os.path.join("p_p", "include", "p_p", "traits", "traits.hpp"),
+            os.path.join("p_p", "include", "p_p", "specifications"),
+            os.path.join("p_p", "include", "p_p", "specifications", "sn.hpp"),
+            os.path.join("p_p", "include", "p_p", "specifications", "specifications.hpp"),
+            os.path.join("p_p", "include", "p_p", "p_p.hpp"),
+        ],
+    }
 
 
 @pytest.fixture
