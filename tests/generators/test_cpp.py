@@ -21,6 +21,7 @@ import functools
 # pylint: disable=invalid-name,redefined-outer-name
 # pylint: disable=too-few-public-methods,too-many-arguments
 # pylint: disable=missing-class-docstring,missing-function-docstring
+# pylint: disable=too-many-return-statements
 
 import logging
 import os
@@ -140,7 +141,7 @@ class Test_cpp_package_all_traits_aNamespace_AllPropertiesTrait:
         )
 
     @pytest.mark.parametrize("property_type", ["string", "int", "float", "bool"])
-    def test_has_prefixed_property_getters_with_expected_docstring(
+    def test_has_prefixed_property_getters_with_default_with_expected_docstring(
         self, docstring_for, property_type
     ):
         property_name = f"{property_type}Property"
@@ -152,6 +153,32 @@ class Test_cpp_package_all_traits_aNamespace_AllPropertiesTrait:
                 namespace="aNamespace",
                 cls="AllPropertiesTrait",
                 func=function_name,
+                has_default=False,
+            )
+            == f"""
+  /**
+   * Gets the value of the {property_name} property or throws if
+   * not found or is of an unexpected type.
+   *
+   * A {property_type}-typed property.
+   */
+""".strip()
+        )
+
+    @pytest.mark.parametrize("property_type", ["string", "int", "float", "bool"])
+    def test_has_prefixed_property_getters_without_default_with_expected_docstring(
+        self, docstring_for, property_type
+    ):
+        property_name = f"{property_type}Property"
+        function_name = f"get{property_type.capitalize()}Property"
+        assert (
+            docstring_for(
+                "openassetio_traitgen_test_all",
+                is_specification=False,
+                namespace="aNamespace",
+                cls="AllPropertiesTrait",
+                func=function_name,
+                has_default=True,
             )
             == f"""
   /**
@@ -160,7 +187,7 @@ class Test_cpp_package_all_traits_aNamespace_AllPropertiesTrait:
    *
    * A {property_type}-typed property.
    */
- """.strip()
+""".strip()
         )
 
     @pytest.mark.parametrize("property_type", ["string", "int", "float", "bool"])
@@ -453,19 +480,29 @@ def test_cpp_project(generated_path, tmp_path_factory, cpp_project_dir):
 
 @pytest.fixture
 def docstring_for(rootnode_for, cpp_language):
-    def fn(package_name, is_specification=None, namespace=None, cls=None, func=None):
+    def fn(
+        package_name,
+        is_specification=None,
+        namespace=None,
+        cls=None,
+        func=None,
+        has_default=None,
+    ):
 
         root_node = rootnode_for(package_name, is_specification, namespace)
 
         if is_specification is None:
+            # Top-level package docstring
             query = cpp_language.query("""(translation_unit . (comment) @docstring)""")
             return query.captures(root_node)[0][0].text.decode()
 
         if namespace is None:
+            # Trait/specification hoisted file docstring
             query = cpp_language.query("""(translation_unit . (comment) @docstring)""")
             return query.captures(root_node)[0][0].text.decode()
 
         if cls is None:
+            # Namespace docstring.
             query = cpp_language.query("""((comment) . (namespace_definition)) @docstring""")
             return query.captures(root_node)[0][0].text.decode()
 
@@ -477,6 +514,7 @@ def docstring_for(rootnode_for, cpp_language):
         )
 
         if func is None:
+            # Class docstring.
             return query.captures(root_node)[0][0].text.decode()
 
         struct_node = query.captures(root_node)[1][0]
@@ -484,12 +522,47 @@ def docstring_for(rootnode_for, cpp_language):
             f"""(
             (comment) @docstring
             .
-            (function_definition declarator: (
-                function_declarator declarator: (field_identifier) @func_name))
-            (eq? @func_name "{func}")
-        )"""
+            (function_definition
+                declarator: (
+                    function_declarator
+                    declarator: (field_identifier) @func_name (eq? @func_name "{func}")
+                ) @func_decl
+            )
+            )"""
         )
-        return query.captures(struct_node)[0][0].text.decode()
+
+        if has_default is None:
+            # Setter function docstring.
+            return query.captures(struct_node)[0][0].text.decode()
+
+        # Getter function docstring.
+
+        # Frustratingly, no way to test non-existence of a child node
+        # (i.e. check a function has no params) so we have to iterate
+        # over the results.
+        (
+            first_doc,
+            first_decl,
+            _,
+            second_doc,
+            second_decl,
+            _,
+        ) = (node for node, key in query.captures(struct_node))
+
+        query = cpp_language.query(
+            """(parameter_list (
+                   parameter_declaration declarator: (
+                       reference_declarator (identifier) @var_name
+                       (eq? @var_name "defaultValue") )))"""
+        )
+
+        first_has_default = bool(query.captures(first_decl))
+        second_has_default = bool(query.captures(second_decl))
+        assert first_has_default ^ second_has_default
+
+        if has_default == first_has_default:
+            return first_doc.text.decode()
+        return second_doc.text.decode()
 
     return fn
 
