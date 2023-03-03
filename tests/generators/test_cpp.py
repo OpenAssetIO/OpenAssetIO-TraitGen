@@ -19,7 +19,7 @@ Tests for the C++ code generator.
 import functools
 
 # pylint: disable=invalid-name,redefined-outer-name
-# pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods,too-many-arguments
 # pylint: disable=missing-class-docstring,missing-function-docstring
 
 import logging
@@ -31,7 +31,7 @@ import pytest
 from tree_sitter_languages import get_parser, get_language
 
 from openassetio_traitgen import generate
-from openassetio_traitgen.generators import cpp as cpp_generator
+from openassetio_traitgen.generators import cpp as cpp_generator, cpp_keywords
 
 
 #
@@ -364,6 +364,41 @@ class Test_generate:
         )
 
         assert a_capturing_logger.handlers[0].messages == warnings_exotic_values
+
+    @pytest.mark.parametrize(
+        "id_type",
+        ("package_name", "specification_namespace", "trait_namespace"),
+    )
+    @pytest.mark.parametrize(
+        "reserved_word",
+        (
+            # Check a representative keyword.
+            next(iter(cpp_keywords.keywords)),
+            "__dunder_implicitly_reserved",
+            "traits",
+            "specifications",
+        ),
+    )
+    def test_when_identifiers_reserved_keywords_then_exception_raised(
+        self,
+        tmp_path_factory,
+        a_capturing_logger,
+        declaration_invalid_identifiers,
+        id_type,
+        reserved_word,
+    ):
+        output_dir = tmp_path_factory.mktemp("test_cpp_invalid_identifiers")
+        with pytest.raises(ValueError) as err:
+            cpp_generator.generate(
+                declaration_invalid_identifiers(**{id_type: reserved_word}),
+                {},
+                output_dir,
+                lambda _: _,
+                a_capturing_logger,
+            )
+        assert (
+            str(err.value) == f"'{reserved_word}' (from '{reserved_word}') is a reserved keyword."
+        )
 
 
 def test_cpp_project(generated_path, tmp_path_factory, cpp_project_dir):

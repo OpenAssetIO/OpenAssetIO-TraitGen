@@ -21,7 +21,6 @@ openassetio_traitgen PackageDefinition model.
 #  suppression.
 # pylint: disable=duplicate-code
 
-import keyword
 import logging
 import os
 import re
@@ -30,7 +29,7 @@ from typing import List
 
 import jinja2
 
-from . import helpers
+from . import helpers, cpp_keywords
 from ..datamodel import PackageDeclaration, PropertyType
 
 
@@ -177,11 +176,14 @@ def _install_custom_filters(environment, logger):
         """
         Validates some string is a legal C++ variable name.
         """
-        # TODO(DF): equivalent for C++
-        # if not string.isidentifier():
-        #     raise ValueError(f"{string}' (from '{original}' is not a valid C++ identifier.")
-        # if keyword.iskeyword(string):
-        #     raise ValueError(f"{string}' (from '{original}' is a reserved C++ keyword.")
+        if not string.isidentifier():
+            raise ValueError(f"'{string}' (from '{original}') is not a valid C++ identifier.")
+        if (
+            string in cpp_keywords.keywords
+            or string.startswith("__")
+            or string in ("traits", "specifications")
+        ):
+            raise ValueError(f"'{string}' (from '{original}') is a reserved keyword.")
 
     def to_cpp_module_name(string: str):
         """
@@ -196,6 +198,7 @@ def _install_custom_filters(environment, logger):
             if msg not in logged_warnings:
                 logged_warnings.add(msg)
                 logger.warning(msg)
+        validate_identifier(module_name, string)
         return module_name
 
     def to_cpp_class_name(string: str):

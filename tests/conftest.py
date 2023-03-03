@@ -423,6 +423,60 @@ def declaration_exotic_values():
     )
 
 
+@pytest.fixture(scope="session")
+def declaration_invalid_identifiers():
+    """
+    A declaration that contains given identifiers (or a valid identifier
+    if not given) that should be used to ensure generators properly
+    throw an error when encountered.
+    """
+
+    def fn(package_name=None, specification_namespace=None, trait_namespace=None):
+        return datamodel.PackageDeclaration(
+            id=(package_name or "valid_package"),
+            description="",
+            traits=[
+                datamodel.NamespaceDeclaration(
+                    id=(trait_namespace or "valid_namespace"),
+                    description="",
+                    members=[
+                        datamodel.TraitDeclaration(
+                            id="some_trait",
+                            name="some_trait",
+                            description="",
+                            usage=[],
+                            properties=[],
+                        ),
+                    ],
+                ),
+            ],
+            specifications=[
+                datamodel.NamespaceDeclaration(
+                    id=(specification_namespace or "valid_namespace"),
+                    description="",
+                    members=[
+                        datamodel.SpecificationDeclaration(
+                            id="some_specification",
+                            description="",
+                            usage=[],
+                            trait_set=[
+                                datamodel.TraitReference(
+                                    id="some_trait",
+                                    name="some_trait",
+                                    namespace="some_namespace",
+                                    package="some_package",
+                                    unique_name_parts=("some_trait",),
+                                )
+                            ],
+                        )
+                    ],
+                )
+            ],
+        )
+
+    return fn
+
+
 # Note: This is here as the CLI tests use python generation to check
 # functionality/console output.
 @pytest.fixture
