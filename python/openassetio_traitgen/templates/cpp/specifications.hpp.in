@@ -10,6 +10,8 @@
 #include <openassetio/trait/collection.hpp>
 #include <openassetio/trait/property.hpp>
 
+namespace openassetio_abi = openassetio::{{ openassetio_abi_version }};
+
 {% if imports -%}
 {%- for import in imports -%}
 {%- if import != package.id -%}
@@ -47,7 +49,7 @@ namespace {{ namespace_str() }} {
 {%- endif %}
  */
 struct {{ specification.id | to_cpp_class_name }}Specification {
-  inline static const openassetio::trait::TraitSet kTraitSet{
+  inline static const openassetio_abi::trait::TraitSet kTraitSet{
     {%- for trait in specification.trait_set %}
     // '{{ trait.id }}'
       {%- if trait.package == package.id %}
@@ -66,7 +68,7 @@ struct {{ specification.id | to_cpp_class_name }}Specification {
     return {{ trait_type(trait) }}{traitsData_};
   }
 {% endfor %}
-  openassetio::TraitsDataPtr traitsData_;
+  openassetio_abi::TraitsDataPtr traitsData_;
 };
 
 {% endfor %}

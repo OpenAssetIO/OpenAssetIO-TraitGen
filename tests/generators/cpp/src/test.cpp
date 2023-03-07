@@ -21,11 +21,13 @@
 #error "An #include style must be chosen"
 #endif
 
+namespace openassetio_abi = openassetio::v1;
+
 TEST_CASE("openassetio_traitgen_test_all - all expected traits are defined") {
   using openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait;
   STATIC_REQUIRE(std::is_class_v<NoPropertiesTrait>);
   STATIC_REQUIRE(
-      std::is_base_of_v<openassetio::trait::TraitBase<NoPropertiesTrait>, NoPropertiesTrait>);
+      std::is_base_of_v<openassetio_abi::trait::TraitBase<NoPropertiesTrait>, NoPropertiesTrait>);
   STATIC_REQUIRE(
       std::is_class_v<
           openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesMultipleUsageTrait>);
@@ -49,17 +51,17 @@ TEST_CASE("openassetio_traitgen_test_all - all expected specifications are defin
 TEST_CASE("openassetio_traitgen_test_all - specifications have expected trait sets") {
   CHECK(openassetio_traitgen_test_all::specifications::test::LocalAndExternalTraitSpecification::
             kTraitSet ==
-        openassetio::trait::TraitSet{
+        openassetio_abi::trait::TraitSet{
             openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait::kId,
             openassetio_traitgen_test_traits_only::traits::aNamespace::NoPropertiesTrait::kId});
   CHECK(openassetio_traitgen_test_all::specifications::test::TwoLocalTraitsSpecification::
             kTraitSet ==
-        openassetio::trait::TraitSet{
+        openassetio_abi::trait::TraitSet{
             openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait::kId,
             openassetio_traitgen_test_all::traits::anotherNamespace::NoPropertiesTrait::kId});
   CHECK(openassetio_traitgen_test_all::specifications::test::OneExternalTraitSpecification::
             kTraitSet ==
-        openassetio::trait::TraitSet{
+        openassetio_abi::trait::TraitSet{
             openassetio_traitgen_test_traits_only::traits::test::AnotherTrait::kId});
 }
 
@@ -105,16 +107,16 @@ template <typename PropertyType>
 struct PropertyFixture;
 
 template <>
-struct PropertyFixture<openassetio::Bool> {
+struct PropertyFixture<openassetio_abi::Bool> {
   using AllPropertiesTrait = openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait;
 
   AllPropertiesTrait trait;
 
-  static inline const openassetio::trait::property::Key kPropertyKey = "boolProperty";
+  static inline const openassetio_abi::trait::property::Key kPropertyKey = "boolProperty";
   static constexpr std::string_view kPropertyType = "openassetio::Bool";
-  static constexpr openassetio::Bool kDefaultValue = false;
-  static constexpr openassetio::Bool kExpectedValue = true;
-  static constexpr openassetio::Int kMismatchedTypeValue = 123;
+  static constexpr openassetio_abi::Bool kDefaultValue = false;
+  static constexpr openassetio_abi::Bool kExpectedValue = true;
+  static constexpr openassetio_abi::Int kMismatchedTypeValue = 123;
 
   template <typename... Args>
   [[nodiscard]] auto getProperty(Args&&... args) const {
@@ -128,16 +130,16 @@ struct PropertyFixture<openassetio::Bool> {
 };
 
 template <>
-struct PropertyFixture<openassetio::Int> {
+struct PropertyFixture<openassetio_abi::Int> {
   using AllPropertiesTrait = openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait;
 
   AllPropertiesTrait trait;
 
-  static inline const openassetio::trait::property::Key kPropertyKey = "intProperty";
+  static inline const openassetio_abi::trait::property::Key kPropertyKey = "intProperty";
   static constexpr std::string_view kPropertyType = "openassetio::Int";
-  static constexpr openassetio::Int kDefaultValue = 456;
-  static constexpr openassetio::Int kExpectedValue = 123;
-  static constexpr openassetio::Bool kMismatchedTypeValue = true;
+  static constexpr openassetio_abi::Int kDefaultValue = 456;
+  static constexpr openassetio_abi::Int kExpectedValue = 123;
+  static constexpr openassetio_abi::Bool kMismatchedTypeValue = true;
 
   template <typename... Args>
   [[nodiscard]] auto getProperty(Args&&... args) const {
@@ -151,16 +153,16 @@ struct PropertyFixture<openassetio::Int> {
 };
 
 template <>
-struct PropertyFixture<openassetio::Float> {
+struct PropertyFixture<openassetio_abi::Float> {
   using AllPropertiesTrait = openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait;
 
   AllPropertiesTrait trait;
 
-  static inline const openassetio::trait::property::Key kPropertyKey = "floatProperty";
+  static inline const openassetio_abi::trait::property::Key kPropertyKey = "floatProperty";
   static constexpr std::string_view kPropertyType = "openassetio::Float";
-  static constexpr openassetio::Float kDefaultValue = 12.3;
-  static constexpr openassetio::Float kExpectedValue = 45.6;
-  static constexpr openassetio::Int kMismatchedTypeValue = 123;
+  static constexpr openassetio_abi::Float kDefaultValue = 12.3;
+  static constexpr openassetio_abi::Float kExpectedValue = 45.6;
+  static constexpr openassetio_abi::Int kMismatchedTypeValue = 123;
 
   template <typename... Args>
   [[nodiscard]] auto getProperty(Args&&... args) const {
@@ -174,16 +176,16 @@ struct PropertyFixture<openassetio::Float> {
 };
 
 template <>
-struct PropertyFixture<openassetio::Str> {
+struct PropertyFixture<openassetio_abi::Str> {
   using AllPropertiesTrait = openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait;
 
   AllPropertiesTrait trait;
 
-  static inline const openassetio::trait::property::Key kPropertyKey = "stringProperty";
+  static inline const openassetio_abi::trait::property::Key kPropertyKey = "stringProperty";
   static constexpr std::string_view kPropertyType = "openassetio::Str";
-  static inline const openassetio::Str kDefaultValue = "⛅ outside today";
-  static inline const openassetio::Str kExpectedValue = "🐁";
-  static constexpr openassetio::Int kMismatchedTypeValue = 123;
+  static inline const openassetio_abi::Str kDefaultValue = "⛅ outside today";
+  static inline const openassetio_abi::Str kExpectedValue = "🐁";
+  static constexpr openassetio_abi::Int kMismatchedTypeValue = 123;
 
   template <typename... Args>
   [[nodiscard]] auto getProperty(Args&&... args) const {
@@ -197,16 +199,16 @@ struct PropertyFixture<openassetio::Str> {
 };
 }  // namespace
 
-TEMPLATE_TEST_CASE("Property getters", "", openassetio::Bool, openassetio::Int, openassetio::Float,
-                   openassetio::Str) {
+TEMPLATE_TEST_CASE("Property getters", "", openassetio_abi::Bool, openassetio_abi::Int,
+                   openassetio_abi::Float, openassetio_abi::Str) {
   using openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait;
 
   using PropertyType = TestType;  // Catch2-injected template param.
   using Fixture = PropertyFixture<PropertyType>;
 
   GIVEN("an AllPropertiesTrait view of a fully populated TraitsData") {
-    const openassetio::TraitsDataPtr traitsData =
-        openassetio::TraitsData::make({AllPropertiesTrait::kId});
+    const openassetio_abi::TraitsDataPtr traitsData =
+        openassetio_abi::TraitsData::make({AllPropertiesTrait::kId});
 
     traitsData->setTraitProperty(AllPropertiesTrait::kId, Fixture::kPropertyKey,
                                  Fixture::kExpectedValue);
@@ -227,8 +229,8 @@ TEMPLATE_TEST_CASE("Property getters", "", openassetio::Bool, openassetio::Int, 
   }
 
   GIVEN("an AllPropertiesTrait view of an imbued TraitsData with no properties set") {
-    const openassetio::TraitsDataPtr traitsData =
-        openassetio::TraitsData::make({AllPropertiesTrait::kId});
+    const openassetio_abi::TraitsDataPtr traitsData =
+        openassetio_abi::TraitsData::make({AllPropertiesTrait::kId});
 
     const Fixture fixture{AllPropertiesTrait{traitsData}};
 
@@ -249,7 +251,7 @@ TEMPLATE_TEST_CASE("Property getters", "", openassetio::Bool, openassetio::Int, 
   GIVEN("an AllPropertiesTrait view of a blank TraitsData") {
     using openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait;
 
-    const openassetio::TraitsDataPtr traitsData = openassetio::TraitsData::make();
+    const openassetio_abi::TraitsDataPtr traitsData = openassetio_abi::TraitsData::make();
 
     const Fixture fixture{AllPropertiesTrait{traitsData}};
 
@@ -271,8 +273,8 @@ TEMPLATE_TEST_CASE("Property getters", "", openassetio::Bool, openassetio::Int, 
   GIVEN("an AllPropertiesTrait view of a TraitsData populated with unexpected types") {
     using openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait;
 
-    const openassetio::TraitsDataPtr traitsData =
-        openassetio::TraitsData::make({AllPropertiesTrait::kId});
+    const openassetio_abi::TraitsDataPtr traitsData =
+        openassetio_abi::TraitsData::make({AllPropertiesTrait::kId});
 
     traitsData->setTraitProperty(AllPropertiesTrait::kId, Fixture::kPropertyKey,
                                  Fixture::kMismatchedTypeValue);
@@ -298,22 +300,22 @@ TEMPLATE_TEST_CASE("Property getters", "", openassetio::Bool, openassetio::Int, 
   }
 }
 
-TEMPLATE_TEST_CASE("Property setters", "", openassetio::Bool, openassetio::Int, openassetio::Float,
-                   openassetio::Str) {
+TEMPLATE_TEST_CASE("Property setters", "", openassetio_abi::Bool, openassetio_abi::Int,
+                   openassetio_abi::Float, openassetio_abi::Str) {
   using openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait;
 
   using PropertyType = TestType;  // Catch2-injected template param.
   using Fixture = PropertyFixture<PropertyType>;
 
   GIVEN("an AllPropertiesTrait view of a blank TraitsData") {
-    const openassetio::TraitsDataPtr traitsData = openassetio::TraitsData::make();
+    const openassetio_abi::TraitsDataPtr traitsData = openassetio_abi::TraitsData::make();
     Fixture fixture{AllPropertiesTrait{traitsData}};
 
     WHEN("property is set") {
       fixture.setProperty(Fixture::kExpectedValue);
 
       THEN("TraitsData contains expected value") {
-        openassetio::trait::property::Value value;
+        openassetio_abi::trait::property::Value value;
         [[maybe_unused]] const bool hasProp =
             traitsData->getTraitProperty(&value, AllPropertiesTrait::kId, Fixture::kPropertyKey);
 
@@ -331,7 +333,7 @@ SCENARIO("Moveable property setters") {
   using openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait;
 
   GIVEN("an AllPropertiesTrait view of a blank TraitsData") {
-    const openassetio::TraitsDataPtr traitsData = openassetio::TraitsData::make();
+    const openassetio_abi::TraitsDataPtr traitsData = openassetio_abi::TraitsData::make();
     AllPropertiesTrait trait{traitsData};
 
     WHEN("string property is set with a moveable string") {
@@ -348,7 +350,7 @@ SCENARIO("Moveable property setters") {
 
 SCENARIO("LocalAndExternalTraitSpecification") {
   GIVEN("a LocalAndExternalTraitSpecification") {
-    const auto traitsData = openassetio::TraitsData::make();
+    const auto traitsData = openassetio_abi::TraitsData::make();
 
     const openassetio_traitgen_test_all::specifications::test::LocalAndExternalTraitSpecification
         specification{traitsData};

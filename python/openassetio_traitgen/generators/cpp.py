@@ -39,6 +39,8 @@ __all__ = ["generate"]
 ## Code Generation
 #
 
+OPENASSETIO_ABI_VERSION = "v1"
+
 
 # pylint: disable=too-many-locals
 def generate(
@@ -116,6 +118,7 @@ def generate(
                         "package": package_declaration,
                         "namespace": namespace,
                         "imports": helpers.package_dependencies(namespace.members),
+                        "openassetio_abi_version": OPENASSETIO_ABI_VERSION,
                     },
                 )
 
