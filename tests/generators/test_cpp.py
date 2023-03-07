@@ -480,6 +480,27 @@ def test_cpp_project(generated_path, tmp_path_factory, cpp_project_dir):
 
 @pytest.fixture
 def docstring_for(rootnode_for, cpp_language):
+    """
+    Provides a function that extracts docstring comments from either
+    * a package (top-level hoisting header file docstring)
+    * sub-package (trait/specification hoisting header file docstring)
+    * namespace (C++ `namespace` docstring within a specific
+      trait/specification header file)
+    * class (trait/specification type)
+    * function (trait property accessor or specification trait view
+      factory function).
+
+    This relies on the particular known file system layout of generated
+    files, and the known layout of their contents.
+
+    The first omitted argument (i.e. None) delimits the scope to extract
+    the docstrings from. E.g. to extract the docstring for the
+    "my_namespace" trait namespace of a package called "my_package"
+
+      docstring_for(
+        "my_package", is_specification=False, namespace="my_namespace")
+    """
+
     def fn(
         package_name,
         is_specification=None,
@@ -488,7 +509,21 @@ def docstring_for(rootnode_for, cpp_language):
         func=None,
         has_default=None,
     ):
-
+        """
+        @param package_name: Name of package to parse docstring from.
+        @param is_specification: Whether to parse docstring within a
+        specification or a trait sub-package, if any.
+        @param namespace: Which C++ namespace to parse docstring from,
+        if any.
+        @param cls: Which class to parse docstring from, if any.
+        @param func: Which function within the `cls` to parse docstring
+        from, if any.
+        @param has_default: If True/False then signals that `func` has
+        an overload with a `defaultValue` argument, and hence selects
+        which of the overloads to parse. If None then assumes no
+        overload.
+        @return: String containing docstring for selected element.
+        """
         root_node = rootnode_for(package_name, is_specification, namespace)
 
         if is_specification is None:
@@ -569,8 +604,30 @@ def docstring_for(rootnode_for, cpp_language):
 
 @pytest.fixture(scope="module")
 def rootnode_for(cpp_parser, generated_path):
+    """
+    Provides a function that returns an AST for a particular file in the
+    generated hierarchy, using the Tree-sitter library.
+
+    This relies on the particular known file system layout of generated
+    files.
+
+    The first `None`-valued argument delimits the file to extract the
+    AST for. E.g. the AST for the top-level package hoisting header file
+    for a package called "my_package" would be extracted by calling:
+
+      rootnode_for("my_package", None, None)
+    """
+
     @functools.lru_cache(maxsize=None)
     def fn(package_name, is_specification, namespace):
+        """
+        @param package_name: Name of package to parse.
+        @param is_specification: Whether to parse within a specification
+        or a trait sub-package, if any.
+        @param namespace: Which specific C++ namespace header file to
+        parse, if any.
+        @return: Tree-sitter root AST node for file.
+        """
         file_path = pathlib.Path(generated_path) / package_name / "include" / package_name
         if is_specification is not None:
             file_path /= "specifications" if is_specification else "traits"
