@@ -48,5 +48,5 @@ jobs:
           python -m pip install black
 
       - name: Check Python formatting
-        run: black --check .
+        run: black --diff --check .
 
