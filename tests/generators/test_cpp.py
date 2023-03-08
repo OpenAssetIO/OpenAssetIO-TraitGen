@@ -428,6 +428,10 @@ class Test_generate:
         )
 
 
+@pytest.mark.skipif(
+    not os.environ.get("OPENASSETIO_TRAITGENTEST_CMAKE_PRESET"),
+    reason="OPENASSETIO_TRAITGENTEST_CMAKE_PRESET environment variable is not set",
+)
 def test_cpp_project(generated_path, tmp_path_factory, cpp_project_dir):
     build_dir = tmp_path_factory.mktemp("test_cpp_project")
 
@@ -463,7 +467,7 @@ def test_cpp_project(generated_path, tmp_path_factory, cpp_project_dir):
             "-B",
             build_dir,
             "--preset",
-            "test",
+            os.environ["OPENASSETIO_TRAITGENTEST_CMAKE_PRESET"],
             f"-DCMAKE_PREFIX_PATH={build_dir}/.conan",
             f"-DOPENASSETIO_TRAITGENTEST_ADDITIONAL_INCLUDE_DIRS={include_paths}",
         ]

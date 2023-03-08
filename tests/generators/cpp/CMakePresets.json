@@ -2,7 +2,7 @@
   "version": 3,
   "configurePresets": [
     {
-      "name": "test",
+      "name": "lint",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "RelWithDebInfo",
         "CMAKE_VERBOSE_MAKEFILE": "ON",
@@ -13,6 +13,13 @@
         "OPENASSETIO_TRAITGENTEST_ENABLE_CMAKE_LINT": "ON",
         "OPENASSETIO_TRAITGENTEST_ENABLE_SANITIZER_ADDRESS": "ON",
         "OPENASSETIO_TRAITGENTEST_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR": "ON"
+      }
+    },
+    {
+      "name": "test",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CMAKE_VERBOSE_MAKEFILE": "ON"
       }
     }
   ]
