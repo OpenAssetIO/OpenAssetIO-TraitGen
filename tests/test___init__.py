@@ -284,8 +284,8 @@ def mock_generator_a(monkeypatch):
 
 
 @pytest.fixture
-def some_output_dir():
-    return os.path.join("some", "path")
+def some_output_dir(tmp_path):
+    return str(tmp_path / os.path.join("some", "path"))
 
 
 @pytest.fixture
