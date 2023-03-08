@@ -1,7 +1,16 @@
 Release Notes
 =============
 
+v1.0.0-alpha.X
+--------------
+
+### Bug fixes
+
+- Fixed line breaks to no longer be platform-specific, and instead
+  conform to Unix-style `\n`.
+
 v1.0.0-alpha.4
+--------------
 
 ### Breaking Changes
 
