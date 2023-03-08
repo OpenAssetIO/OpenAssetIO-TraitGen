@@ -41,6 +41,16 @@ foreach (include_type package subpackage namespace)
     #-----------------------------------------------------------------------
     # CTest target
 
-    add_test(${_target_name} ${_target_name})
+    add_test(NAME ${_target_name} COMMAND $<TARGET_FILE:${_target_name}>)
+    if (MSVC)
+        # If OpenAssetIO was built as a shared library, then Windows
+        # needs the library on PATH.
+        set_tests_properties(
+            ${_target_name}
+            PROPERTIES
+            ENVIRONMENT
+            PATH=$<TARGET_FILE_DIR:OpenAssetIO::openassetio-core>
+        )
+    endif()
 
 endforeach ()
