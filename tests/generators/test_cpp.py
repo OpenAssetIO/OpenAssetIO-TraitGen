@@ -473,9 +473,11 @@ def test_cpp_project(generated_path, tmp_path_factory, cpp_project_dir):
             f"-DOPENASSETIO_TRAITGENTEST_ADDITIONAL_INCLUDE_DIRS={include_paths}",
         ]
     )
-    subprocess.check_call(["cmake", "--build", build_dir])
+    subprocess.check_call(["cmake", "--build", build_dir, "--config", "RelWithDebInfo"])
     # Run tests in CMake project.
-    subprocess.check_call(["ctest", "-VV", "--test-dir", build_dir])
+    subprocess.check_call(
+        ["ctest", "-VV", "--test-dir", build_dir, "--build-config", "RelWithDebInfo"]
+    )
 
 
 #
