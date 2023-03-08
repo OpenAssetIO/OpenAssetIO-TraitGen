@@ -18,7 +18,6 @@ Tests for the main openassetio_traitgen.generate entry point.
 """
 
 import logging
-import os
 from unittest import mock
 
 import pytest
@@ -284,8 +283,8 @@ def mock_generator_a(monkeypatch):
 
 
 @pytest.fixture
-def some_output_dir():
-    return os.path.join("some", "path")
+def some_output_dir(tmp_path):
+    return str(tmp_path)
 
 
 @pytest.fixture
