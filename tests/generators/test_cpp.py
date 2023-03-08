@@ -432,6 +432,7 @@ class Test_generate:
     not os.environ.get("OPENASSETIO_TRAITGENTEST_CMAKE_PRESET"),
     reason="OPENASSETIO_TRAITGENTEST_CMAKE_PRESET environment variable is not set",
 )
+@pytest.mark.ctest
 def test_cpp_project(generated_path, tmp_path_factory, cpp_project_dir):
     build_dir = tmp_path_factory.mktemp("test_cpp_project")
 

@@ -83,3 +83,8 @@ max-line-length = 99
 
 [tool.black]
 line-length = 99
+
+[tool.pytest.ini_options]
+markers = [
+    "ctest: marks tests as involving a CMake CTest test",
+]
