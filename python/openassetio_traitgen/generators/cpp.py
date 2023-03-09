@@ -25,12 +25,18 @@ import logging
 import os
 import re
 
-from typing import List
+from typing import List, Callable, Union
 
 import jinja2
 
 from . import helpers, cpp_keywords
-from ..datamodel import PackageDeclaration, PropertyType
+from ..datamodel import (
+    PackageDeclaration,
+    PropertyType,
+    NamespaceDeclaration,
+    SpecificationDeclaration,
+    TraitDeclaration,
+)
 
 
 __all__ = ["generate"]
@@ -55,10 +61,167 @@ def generate(
     Generates a C++ package for the supplied definition under
     output_directory.
     """
-
     env = _create_jinja_env(globals_, logger)
 
-    def render_template(name: str, path: str, variables: dict):
+    Renderer(env, package_declaration, creation_callback).render_package(output_directory)
+
+
+class Renderer:
+    """
+    Encapsulates the various stages of rendering a C++ package for the
+    supplied package declaration.
+    """
+
+    # pylint: disable=too-few-public-methods
+    def __init__(
+        self,
+        env: jinja2.Environment,
+        package: PackageDeclaration,
+        creation_callback: Callable,
+    ):
+        self.__env = env
+        self.__package = package
+        self.__creation_callback = creation_callback
+
+    def render_package(self, output_directory: str):
+        """
+        Render a package declaration to a C++ header-only package.
+        """
+        # Top level package directory, under an "include" subdirectory
+        package_name = self.__env.filters["to_cpp_module_name"](self.__package.id)
+        package_abs_path = self.__create_dir_with_path_components(
+            output_directory, package_name, "include", package_name
+        )
+
+        # Collect which sub-packages we should import at the top level,
+        # so they're available without needing to `#include` each
+        # individual header file.
+        imports = []
+
+        # Sub-packages for traits and specifications
+        for kind in ("traits", "specifications"):
+            file_name = self.__render_traits_or_specifications(package_abs_path, kind)
+            if file_name is not None:
+                imports.append(f"{kind}/{file_name}")
+
+        # Top-level package header that includes everything.
+        self.__render_package_template(
+            package_abs_path, package_name, self.__package.description, imports
+        )
+
+    def __render_traits_or_specifications(
+        self, parent_abs_path: str, kind: str
+    ) -> Union[str, None]:
+        namespaces = getattr(self.__package, kind, None)
+        if not namespaces:
+            # The package has no subpackage of this kind.
+            return None
+        # Create the directory for the sub-package of this "kind"
+        # (traits or specifications).
+        kind_abs_path = self.__create_dir_with_path_components(parent_abs_path, kind)
+
+        # Collect the resulting file names for each namespace, so we can
+        # pre-import them in the sub-package header.
+        imports = []
+
+        # Generate the file structure for each namespace in this "kind".
+        for namespace in namespaces:
+            file_name = self.__render_namespace(namespace, kind_abs_path, kind)
+            imports.append(file_name)
+
+        # Generate the sub-package header that pre-imports all the
+        # namespaces for this "kind".
+        imports.sort()
+        docstring = f"{kind.capitalize()} defined in the '{self.__package.id}' package."
+        return self.__render_package_template(kind_abs_path, kind, docstring, imports)
+
+    def __render_namespace(
+        self, namespace: NamespaceDeclaration, parent_abs_path: str, kind: str
+    ) -> str:
+        namespace_module_name = self.__env.filters["to_cpp_module_name"](namespace.id)
+        namespace_abs_path = self.__create_dir_with_path_components(
+            parent_abs_path, namespace_module_name
+        )
+        imports = []
+
+        # Render a file per class (trait or specification).
+        for cls in namespace.members:
+            if kind == "traits":
+                file_name = self.__render_trait(namespace, cls, namespace_abs_path)
+            else:
+                file_name = self.__render_specification(namespace, cls, namespace_abs_path)
+
+            imports.append(f"{namespace_module_name}/{file_name}")
+
+        # Generate the namespace header that pre-imports all the
+        # classes.
+        imports.sort()
+        self.__render_template(
+            kind,
+            os.path.join(parent_abs_path, f"{namespace_module_name}.hpp"),
+            {
+                "package": self.__package,
+                "namespace": namespace,
+                "relImports": imports,
+                "traitgen_abi_version": TRAITGEN_ABI_VERSION,
+            },
+        )
+        return f"{namespace_module_name}.hpp"
+
+    def __render_trait(
+        self,
+        namespace: NamespaceDeclaration,
+        cls: TraitDeclaration,
+        namespace_abs_path: str,
+    ) -> str:
+        cls_name = self.__env.filters["to_cpp_class_name"](cls.name) + "Trait"
+        return self.__render_cls_template(namespace, cls, namespace_abs_path, "trait", cls_name)
+
+    def __render_specification(
+        self,
+        namespace: NamespaceDeclaration,
+        cls: SpecificationDeclaration,
+        namespace_abs_path: str,
+    ) -> str:
+        cls_name = self.__env.filters["to_cpp_class_name"](cls.id) + "Specification"
+        return self.__render_cls_template(
+            namespace, cls, namespace_abs_path, "specification", cls_name
+        )
+
+    def __render_package_template(
+        self, package_abs_path: str, name: str, docstring: str, imports: List[str]
+    ) -> str:
+        self.__render_template(
+            "package",
+            os.path.join(package_abs_path, f"{name}.hpp"),
+            {"docstring": docstring, "relImports": imports},
+        )
+        return f"{name}.hpp"
+
+    def __render_cls_template(
+        self,
+        namespace: NamespaceDeclaration,
+        cls: Union[SpecificationDeclaration, TraitDeclaration],
+        namespace_abs_path: str,
+        cls_kind: str,
+        cls_name: str,
+    ) -> str:
+        # pylint: disable=too-many-arguments
+        self.__render_template(
+            cls_kind,
+            os.path.join(namespace_abs_path, f"{cls_name}.hpp"),
+            {
+                "package": self.__package,
+                "namespace": namespace,
+                cls_kind: cls,
+                "imports": helpers.declaration_dependencies(cls),
+                "openassetio_abi_version": OPENASSETIO_ABI_VERSION,
+                "traitgen_abi_version": TRAITGEN_ABI_VERSION,
+            },
+        )
+        return f"{cls_name}.hpp"
+
+    def __render_template(self, name: str, path: str, variables: dict):
         """
         A convenience to render a named template into its corresponding
         file and call the creation_callback.
@@ -66,12 +229,12 @@ def generate(
         # pylint: disable=line-too-long
         # NB: Jinja assumes '/' on all plaftorms:
         #  https://github.com/pallets/jinja/blob/7fb13bf94443f067c74204a1aee368fdf0591764/src/jinja2/loaders.py#L29
-        template = env.get_template(f"cpp/{name}.hpp.in")
+        template = self.__env.get_template(f"cpp/{name}.hpp.in")
         with open(path, "w", encoding="utf-8", newline="\n") as file:
             file.write(template.render(variables))
-        creation_callback(path)
+        self.__creation_callback(path)
 
-    def create_dir_with_path_components(*args) -> str:
+    def __create_dir_with_path_components(self, *args) -> str:
         """
         A convenience to create a directory from the supplied path
         components, calling the creation_callback and returning its path
@@ -79,94 +242,8 @@ def generate(
         """
         path = os.path.join(*args)
         os.makedirs(path, exist_ok=True)
-        creation_callback(path)
+        self.__creation_callback(path)
         return path
-
-    # Top level package directory, under an "include" subdirectory
-    package_name = env.filters["to_cpp_module_name"](package_declaration.id)
-    package_dir_path = create_dir_with_path_components(
-        output_directory, package_name, "include", package_name
-    )
-
-    # Collect which sub-packages we should import at the top level, so
-    # they're available without needing to `#include` each individual
-    # header file.
-    package_init_imports = []
-
-    # Sub-packages for traits and specifications
-    for kind in ("traits", "specifications"):
-
-        namespaces = getattr(package_declaration, kind, None)
-        if namespaces:
-
-            package_init_imports.append(f"{kind}/{kind}.hpp")
-
-            # Create the directory for the sub-package
-            subpackage_dir_path = create_dir_with_path_components(package_dir_path, kind)
-
-            # Collect the resulting module names for each namespace
-            # So we can pre-import them in the sub-package header.
-            subpackage_init_imports = []
-
-            # Generate a single-file module for each namespace
-            for namespace in namespaces:
-                safe_namespace = env.filters["to_cpp_module_name"](namespace.id)
-                namespace_dir_path = create_dir_with_path_components(
-                    package_dir_path, kind, safe_namespace
-                )
-                subpackage_init_imports.append(f"{safe_namespace}.hpp")
-                namespace_init_imports = []
-
-                for cls in namespace.members:
-                    if kind == "traits":
-                        cls_name = env.filters["to_cpp_class_name"](cls.name) + "Trait"
-                    else:
-                        cls_name = env.filters["to_cpp_class_name"](cls.id) + "Specification"
-                    cls_kind = kind[:-1]
-
-                    namespace_init_imports.append(f"{safe_namespace}/{cls_name}.hpp")
-
-                    render_template(
-                        cls_kind,
-                        os.path.join(namespace_dir_path, f"{cls_name}.hpp"),
-                        {
-                            "package": package_declaration,
-                            "namespace": namespace,
-                            cls_kind: cls,
-                            "imports": helpers.declaration_dependencies(cls),
-                            "openassetio_abi_version": OPENASSETIO_ABI_VERSION,
-                            "traitgen_abi_version": TRAITGEN_ABI_VERSION,
-                        },
-                    )
-
-                namespace_init_imports.sort()
-                render_template(
-                    kind,
-                    os.path.join(subpackage_dir_path, f"{safe_namespace}.hpp"),
-                    {
-                        "package": package_declaration,
-                        "namespace": namespace,
-                        "relImports": namespace_init_imports,
-                        "traitgen_abi_version": TRAITGEN_ABI_VERSION,
-                    },
-                )
-
-            # Generate the sub-package headers that pre-imports all the
-            # submodules.
-            subpackage_init_imports.sort()
-            docstring = f"{kind.capitalize()} defined in the '{package_declaration.id}' package."
-            render_template(
-                "package",
-                os.path.join(subpackage_dir_path, kind + ".hpp"),
-                {"docstring": docstring, "relImports": subpackage_init_imports},
-            )
-
-    # Top-level package header that includes everything.
-    render_template(
-        "package",
-        os.path.join(package_dir_path, package_name + ".hpp"),
-        {"docstring": package_declaration.description, "relImports": package_init_imports},
-    )
 
 
 #
