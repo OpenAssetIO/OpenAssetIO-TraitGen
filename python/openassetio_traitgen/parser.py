@@ -131,7 +131,6 @@ def _unpack_trait_set(trait_set: List[dict], package_id: str) -> List[datamodel.
 
     references = set()
     for trait in trait_set:
-
         package = trait.get("package", package_id)
         namespace = trait["namespace"]
         name = trait["name"]
