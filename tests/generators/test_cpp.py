@@ -65,6 +65,8 @@ class Test_cpp_package_all_traits:
             )
             == """
 /**
+ * @namespace openassetio_traitgen_test_all::v1::traits::aNamespace
+ *
  * Trait definitions in the 'aNamespace' namespace.
  *
  * A Namespace
@@ -81,9 +83,31 @@ class Test_cpp_package_all_traits:
             )
             == """
 /**
+ * @namespace openassetio_traitgen_test_all::v1::traits::anotherNamespace
+ *
  * Trait definitions in the 'anotherNamespace' namespace.
  *
  * Another Namespace
+ */
+ """.strip()
+        )
+
+
+class Test_cpp_package_all_specifications:
+    def test_test_docstring_contains_declaration_description(self, docstring_for):
+        assert (
+            docstring_for(
+                "openassetio_traitgen_test_all",
+                is_specification=True,
+                namespace="test",
+            )
+            == """
+/**
+ * @namespace openassetio_traitgen_test_all::v1::specifications::test
+ *
+ * Specification definitions in the 'test' namespace.
+ *
+ * Test specifications.
  */
  """.strip()
         )
@@ -531,7 +555,7 @@ def docstring_for(rootnode_for, cpp_language):
         overload.
         @return: String containing docstring for selected element.
         """
-        root_node = rootnode_for(package_name, is_specification, namespace)
+        root_node = rootnode_for(package_name, is_specification, namespace, cls)
 
         if is_specification is None:
             # Top-level package docstring
@@ -545,7 +569,7 @@ def docstring_for(rootnode_for, cpp_language):
 
         if cls is None:
             # Namespace docstring.
-            query = cpp_language.query("""((comment) . (namespace_definition)) @docstring""")
+            query = cpp_language.query("""((comment) . (preproc_include)) @docstring""")
             return query.captures(root_node)[0][0].text.decode()
 
         query = cpp_language.query(
@@ -626,7 +650,7 @@ def rootnode_for(cpp_parser, generated_path):
     """
 
     @functools.lru_cache(maxsize=None)
-    def fn(package_name, is_specification, namespace):
+    def fn(package_name, is_specification, namespace, cls):
         """
         @param package_name: Name of package to parse.
         @param is_specification: Whether to parse within a specification
@@ -640,6 +664,8 @@ def rootnode_for(cpp_parser, generated_path):
             file_path /= "specifications" if is_specification else "traits"
             if namespace is not None:
                 file_path /= namespace
+                if cls is not None:
+                    file_path /= cls
         else:
             file_path /= package_name
 
@@ -694,9 +720,13 @@ def creations_exotic_values():
     return [
         os.path.join("p_p", "include", "p_p"),
         os.path.join("p_p", "include", "p_p", "traits"),
+        os.path.join("p_p", "include", "p_p", "traits", "t_n"),
+        os.path.join("p_p", "include", "p_p", "traits", "t_n", "TTrait.hpp"),
         os.path.join("p_p", "include", "p_p", "traits", "t_n.hpp"),
         os.path.join("p_p", "include", "p_p", "traits", "traits.hpp"),
         os.path.join("p_p", "include", "p_p", "specifications"),
+        os.path.join("p_p", "include", "p_p", "specifications", "s_n"),
+        os.path.join("p_p", "include", "p_p", "specifications", "s_n", "SSpecification.hpp"),
         os.path.join("p_p", "include", "p_p", "specifications", "s_n.hpp"),
         os.path.join("p_p", "include", "p_p", "specifications", "specifications.hpp"),
         os.path.join("p_p", "include", "p_p", "p_p.hpp"),

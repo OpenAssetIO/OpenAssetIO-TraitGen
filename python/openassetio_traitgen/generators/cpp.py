@@ -105,21 +105,48 @@ def generate(
             subpackage_dir_path = create_dir_with_path_components(package_dir_path, kind)
 
             # Collect the resulting module names for each namespace
-            # So we can pre-import them in the sub-package init.
+            # So we can pre-import them in the sub-package header.
             subpackage_init_imports = []
 
             # Generate a single-file module for each namespace
             for namespace in namespaces:
                 safe_namespace = env.filters["to_cpp_module_name"](namespace.id)
+                namespace_dir_path = create_dir_with_path_components(
+                    package_dir_path, kind, safe_namespace
+                )
                 subpackage_init_imports.append(f"{safe_namespace}.hpp")
+                namespace_init_imports = []
+
+                for cls in namespace.members:
+                    if kind == "traits":
+                        cls_name = env.filters["to_cpp_class_name"](cls.name) + "Trait"
+                    else:
+                        cls_name = env.filters["to_cpp_class_name"](cls.id) + "Specification"
+                    cls_kind = kind[:-1]
+
+                    namespace_init_imports.append(f"{safe_namespace}/{cls_name}.hpp")
+
+                    render_template(
+                        cls_kind,
+                        os.path.join(namespace_dir_path, f"{cls_name}.hpp"),
+                        {
+                            "package": package_declaration,
+                            "namespace": namespace,
+                            cls_kind: cls,
+                            "imports": helpers.declaration_dependencies(cls),
+                            "openassetio_abi_version": OPENASSETIO_ABI_VERSION,
+                            "traitgen_abi_version": TRAITGEN_ABI_VERSION,
+                        },
+                    )
+
+                namespace_init_imports.sort()
                 render_template(
                     kind,
                     os.path.join(subpackage_dir_path, f"{safe_namespace}.hpp"),
                     {
                         "package": package_declaration,
                         "namespace": namespace,
-                        "imports": helpers.package_dependencies(namespace.members),
-                        "openassetio_abi_version": OPENASSETIO_ABI_VERSION,
+                        "relImports": namespace_init_imports,
                         "traitgen_abi_version": TRAITGEN_ABI_VERSION,
                     },
                 )

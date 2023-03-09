@@ -17,6 +17,15 @@
 #include <openassetio_traitgen_test_all/traits/aNamespace.hpp>
 #include <openassetio_traitgen_test_all/traits/anotherNamespace.hpp>
 #include <openassetio_traitgen_test_specifications_only/specifications/test.hpp>
+#elif defined OPENASSETIO_TRAITGENTEST_INCLUDES_CLASS
+#include <openassetio_traitgen_test_all/specifications/test/LocalAndExternalTraitSpecification.hpp>
+#include <openassetio_traitgen_test_all/specifications/test/OneExternalTraitSpecification.hpp>
+#include <openassetio_traitgen_test_all/specifications/test/TwoLocalTraitsSpecification.hpp>
+#include <openassetio_traitgen_test_all/traits/aNamespace/AllPropertiesTrait.hpp>
+#include <openassetio_traitgen_test_all/traits/aNamespace/NoPropertiesMultipleUsageTrait.hpp>
+#include <openassetio_traitgen_test_all/traits/aNamespace/NoPropertiesTrait.hpp>
+#include <openassetio_traitgen_test_all/traits/anotherNamespace/NoPropertiesTrait.hpp>
+#include <openassetio_traitgen_test_specifications_only/specifications/test/SomeSpecification.hpp>
 #else
 #error "An #include style must be chosen"
 #endif

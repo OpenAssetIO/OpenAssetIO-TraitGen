@@ -499,9 +499,13 @@ def creations_minimal_by_generator():
         "cpp": [
             os.path.join("p_p", "include", "p_p"),
             os.path.join("p_p", "include", "p_p", "traits"),
+            os.path.join("p_p", "include", "p_p", "traits", "tn"),
+            os.path.join("p_p", "include", "p_p", "traits", "tn", "TTrait.hpp"),
             os.path.join("p_p", "include", "p_p", "traits", "tn.hpp"),
             os.path.join("p_p", "include", "p_p", "traits", "traits.hpp"),
             os.path.join("p_p", "include", "p_p", "specifications"),
+            os.path.join("p_p", "include", "p_p", "specifications", "sn"),
+            os.path.join("p_p", "include", "p_p", "specifications", "sn", "SSpecification.hpp"),
             os.path.join("p_p", "include", "p_p", "specifications", "sn.hpp"),
             os.path.join("p_p", "include", "p_p", "specifications", "specifications.hpp"),
             os.path.join("p_p", "include", "p_p", "p_p.hpp"),

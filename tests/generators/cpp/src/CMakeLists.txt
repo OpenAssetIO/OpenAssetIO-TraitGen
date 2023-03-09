@@ -8,7 +8,7 @@ find_package(Catch2 REQUIRED)
 #-----------------------------------------------------------------------
 # Loop compile-time variants
 
-foreach (include_type package subpackage namespace)
+foreach (include_type package subpackage namespace class)
 
     set(_target_name openassetio-traitgentest-${include_type})
     string(TOUPPER OPENASSETIO_TRAITGENTEST_INCLUDES_${include_type} _include_toggle)

@@ -6,97 +6,14 @@
 
 #pragma once
 
-#include <stdexcept>
-#include <utility>
-
-#include <openassetio/trait/collection.hpp>
-#include <openassetio/trait/property.hpp>
-#include <openassetio/trait/TraitBase.hpp>
-
-namespace openassetio_abi = openassetio::{{ openassetio_abi_version }};
-
-namespace {{ package.id | to_cpp_module_name }} {
-inline namespace {{ traitgen_abi_version }} {
-
 /**
+ * @namespace {{ package.id | to_cpp_module_name }}::{{ traitgen_abi_version }}::traits::{{ namespace.id | to_cpp_module_name }}
+ *
  * Trait definitions in the '{{ namespace.id }}' namespace.
  *
  * {{ namespace.description | wordwrap(69, wrapstring="\n* ") | indent(1) }}
  */
-namespace traits::{{ namespace.id | to_cpp_module_name }} {
 
-{% for trait in namespace.members -%}
-/**
- * {{ trait.description |  wordwrap(69, wrapstring="\n* ") | indent(1) }}
-{%- if trait.usage %}
- * Usage: {{ trait.usage | join(', ') }}
-{%- endif %}
- */
-struct {{ trait.name | to_cpp_class_name }}Trait : openassetio_abi::trait::TraitBase<{{ trait.name | to_cpp_class_name }}Trait> {
-
-  static inline const openassetio_abi::trait::TraitId kId = "{{ trait.id }}";
-
-  using TraitBase::TraitBase;
-  {%- if trait.properties -%}
-    {%- for property in trait.properties -%}
-       {%- set VarMethodName = property.id | to_cpp_var_accessor_name -%}
-       {%- set VarName = property.id | to_cpp_var_name -%}
-       {%- set VarType = property.type | to_cpp_type %}
-
-  /**
-   * Sets the {{ property.id }} property.
-   *
-   * {{ property.description |  wordwrap(69, wrapstring="\n* ") | indent(5) }}
-   */
-  void set{{ VarMethodName }}({{ VarType }} {{ VarName }}) {
-    {%- if (property.type | is_moveable_type) %}
-    data()->setTraitProperty(kId, openassetio_abi::trait::property::Key{"{{ property.id }}"}, std::move({{ VarName }}));
-    {%- else %}
-    data()->setTraitProperty(kId, openassetio_abi::trait::property::Key{"{{ property.id }}"}, {{ VarName }});
-    {%- endif %}
-  }
-
-  /**
-   * Gets the value of the {{ property.id }} property or the supplied
-   * default.
-   *
-   * {{ property.description |  wordwrap(69, wrapstring="\n* ") | indent(4) }}
-   */
-  [[nodiscard]] {{ VarType }} get{{ VarMethodName }}(const {{ VarType }}& defaultValue) const {
-    using openassetio_abi::trait::TraitPropertyStatus;
-    {{ VarType }} value;
-    const TraitPropertyStatus status = getTraitProperty(&value, kId, "{{ property.id }}");
-    if (status == TraitPropertyStatus::kMissing) {
-       return defaultValue;
-    }
-    if (status == TraitPropertyStatus::kInvalidValue) {
-       return defaultValue;
-    }
-    return value;
-  }
-
-  /**
-   * Gets the value of the {{ property.id }} property or throws if
-   * not found or is of an unexpected type.
-   *
-   * {{ property.description |  wordwrap(69, wrapstring="\n* ") | indent(4) }}
-   */
-  [[nodiscard]] {{ VarType }} get{{ VarMethodName }}() const {
-    using openassetio_abi::trait::TraitPropertyStatus;
-    {{ VarType }} value;
-    const TraitPropertyStatus status = getTraitProperty(&value, kId, "{{ property.id }}");
-    if (status == TraitPropertyStatus::kMissing) {
-       throw std::runtime_error{"Property is not set."};
-    }
-    if (status == TraitPropertyStatus::kInvalidValue) {
-       throw std::runtime_error{"Invalid stored value type: should be '{{ VarType }}'."};
-    }
-    return value;
-  }
-    {%-  endfor %}
-  {%- endif %}
-};
+{% for import in relImports -%}
+#include "{{ import }}"
 {% endfor %}
-}  // namespace traits::{{ namespace.id | to_cpp_module_name }}
-}  // namespace {{ traitgen_abi_version }}
-}  // namespace {{ package.id | to_cpp_module_name }}

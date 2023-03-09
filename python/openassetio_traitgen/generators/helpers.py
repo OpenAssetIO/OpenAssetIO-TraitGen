@@ -73,9 +73,23 @@ def package_dependencies(
     """
     dependencies = set()
     for declaration in declarations:
-        if isinstance(declaration, SpecificationDeclaration):
-            for trait in declaration.trait_set:
-                dependencies.add(trait.package)
+        dependencies |= set(declaration_dependencies(declaration))
+    dependencies = list(dependencies)
+    dependencies.sort()
+    return dependencies
+
+
+def declaration_dependencies(
+    declaration: Union[SpecificationDeclaration, TraitDeclaration]
+) -> List[str]:
+    """
+    Returns a list of all dependent package names for the supplied
+    declaration.
+    """
+    dependencies = set()
+    if isinstance(declaration, SpecificationDeclaration):
+        for trait in declaration.trait_set:
+            dependencies.add(trait.package)
     dependencies = list(dependencies)
     dependencies.sort()
     return dependencies
