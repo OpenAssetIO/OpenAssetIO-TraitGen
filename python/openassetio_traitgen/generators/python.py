@@ -30,6 +30,7 @@ import jinja2
 from . import helpers
 from ..datamodel import PackageDeclaration, PropertyType
 
+
 __all__ = ["generate"]
 
 
@@ -86,10 +87,8 @@ def generate(
 
     # Sub-packages for traits and specifications
     for kind in ("traits", "specifications"):
-
         namespaces = getattr(package_declaration, kind, None)
         if namespaces:
-
             package_init_imports.append(kind)
 
             # Create the directory for the sub-package
