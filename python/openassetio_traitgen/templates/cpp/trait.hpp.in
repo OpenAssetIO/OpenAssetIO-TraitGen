@@ -18,17 +18,62 @@ namespace openassetio_abi = openassetio::{{ openassetio_abi_version }};
 namespace {{ package.id | to_cpp_module_name }} {
 inline namespace {{ traitgen_abi_version }} {
 namespace traits::{{ namespace.id | to_cpp_module_name }} {
+
+namespace property = openassetio_abi::trait::property;
+
 /**
  * {{ trait.description |  wordwrap(69, wrapstring="\n* ") | indent(1) }}
 {%- if trait.usage %}
  * Usage: {{ trait.usage | join(', ') }}
 {%- endif %}
  */
-class {{ trait.name | to_cpp_class_name }}Trait : public openassetio_abi::trait::TraitBase<{{ trait.name | to_cpp_class_name }}Trait> {
+class {{ trait.name | to_cpp_class_name }}Trait {
 public:
   static inline const openassetio_abi::trait::TraitId kId = "{{ trait.id }}";
 
-  using TraitBase::TraitBase;
+  /**
+   * Construct this trait view, wrapping the given TraitsData instance.
+   */
+  explicit {{ trait.name | to_cpp_class_name }}Trait(openassetio_abi::TraitsDataPtr traitsData)
+    : traitsData_{std::move(traitsData)}
+  {}
+
+  /**
+   * Check whether a TraitsData instance has this trait set.
+   *
+   * @param traitsData Data to check.
+   * @return `true` if the given TraitsData instance has this trait
+   * set, `false` otherwise.
+   */
+  [[nodiscard]] static bool isImbuedTo(const openassetio::TraitsDataPtr& traitsData) {
+    return traitsData->hasTrait(kId);
+  }
+
+  /**
+   * Check whether the TraitsData instance this trait has been
+   * constructed with has this trait set.
+   *
+   * @return `true` if the underlying TraitsData instance has this trait
+   * set, `false` otherwise.
+   **/
+  [[nodiscard]] bool isImbued() const { return isImbuedTo(traitsData_); }
+
+  /**
+   * Applies this trait to the wrapped TraitsData instance.
+   *
+   * If the instance already has this trait, it is a no-op.
+   **/
+  void imbue() const { imbueTo(traitsData_); }
+
+  /**
+   * Applies this trait to the supplied TraitsData instance.
+   *
+   * If the instance already has this trait, it is a no-op.
+   *
+   * @param traitsData The instance to apply the trait to.
+   **/
+  static void imbueTo(const openassetio::TraitsDataPtr& traitsData) { traitsData->addTrait(kId); }
+
   {%- if trait.properties -%}
     {%- for property in trait.properties -%}
        {%- set VarMethodName = property.id | to_cpp_var_accessor_name -%}
@@ -42,9 +87,9 @@ public:
    */
   void set{{ VarMethodName }}({{ VarType }} {{ VarName }}) {
     {%- if (property.type | is_moveable_type) %}
-    data()->setTraitProperty(kId, openassetio_abi::trait::property::Key{"{{ property.id }}"}, std::move({{ VarName }}));
+    traitsData_->setTraitProperty(kId, property::Key{"{{ property.id }}"}, std::move({{ VarName }}));
     {%- else %}
-    data()->setTraitProperty(kId, openassetio_abi::trait::property::Key{"{{ property.id }}"}, {{ VarName }});
+    traitsData_->setTraitProperty(kId, property::Key{"{{ property.id }}"}, {{ VarName }});
     {%- endif %}
   }
 
@@ -55,16 +100,12 @@ public:
    * {{ property.description |  wordwrap(69, wrapstring="\n* ") | indent(4) }}
    */
   [[nodiscard]] {{ VarType }} get{{ VarMethodName }}(const {{ VarType }}& defaultValue) const {
-    using openassetio_abi::trait::TraitPropertyStatus;
-    {{ VarType }} value;
-    const TraitPropertyStatus status = getTraitProperty(&value, kId, "{{ property.id }}");
-    if (status == TraitPropertyStatus::kMissing) {
-       return defaultValue;
+    if (property::Value value; traitsData_->getTraitProperty(&value, kId, "{{ property.id }}")) {
+      if ({{ VarType }}* maybeOut = std::get_if<{{ VarType }}>(&value)) {
+        return *maybeOut;
+      }
     }
-    if (status == TraitPropertyStatus::kInvalidValue) {
-       return defaultValue;
-    }
-    return value;
+    return defaultValue;
   }
 
   /**
@@ -74,19 +115,19 @@ public:
    * {{ property.description |  wordwrap(69, wrapstring="\n* ") | indent(4) }}
    */
   [[nodiscard]] {{ VarType }} get{{ VarMethodName }}() const {
-    using openassetio_abi::trait::TraitPropertyStatus;
-    {{ VarType }} value;
-    const TraitPropertyStatus status = getTraitProperty(&value, kId, "{{ property.id }}");
-    if (status == TraitPropertyStatus::kMissing) {
-       throw std::runtime_error{"Property is not set."};
+    if (property::Value value; traitsData_->getTraitProperty(&value, kId, "{{ property.id }}")) {
+      if ({{ VarType }}* maybeOut = std::get_if<{{ VarType }}>(&value)) {
+        return *maybeOut;
+      }
+      throw std::runtime_error{"Invalid stored value type: should be '{{ VarType }}'."};
     }
-    if (status == TraitPropertyStatus::kInvalidValue) {
-       throw std::runtime_error{"Invalid stored value type: should be '{{ VarType }}'."};
-    }
-    return value;
+    throw std::runtime_error{"Property is not set."};
   }
     {%-  endfor %}
   {%- endif %}
+
+private:
+  openassetio_abi::TraitsDataPtr traitsData_;
 };
 }  // namespace traits::{{ namespace.id | to_cpp_module_name }}
 }  // namespace {{ traitgen_abi_version }}
