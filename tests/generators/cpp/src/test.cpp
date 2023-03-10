@@ -48,6 +48,37 @@ TEST_CASE("openassetio_traitgen_test_all - all expected specifications are defin
           openassetio_traitgen_test_all::specifications::test::TwoLocalTraitsSpecification>);
 }
 
+TEST_CASE("openassetio_traitgen_test_all - traits are under an ABI namespace") {
+  STATIC_REQUIRE(
+      std::is_same_v<openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait,
+                     openassetio_traitgen_test_all::v1::traits::aNamespace::NoPropertiesTrait>);
+  STATIC_REQUIRE(
+      std::is_same_v<
+          openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesMultipleUsageTrait,
+          openassetio_traitgen_test_all::v1::traits::aNamespace::NoPropertiesMultipleUsageTrait>);
+  STATIC_REQUIRE(
+      std::is_same_v<openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait,
+                     openassetio_traitgen_test_all::v1::traits::aNamespace::AllPropertiesTrait>);
+  STATIC_REQUIRE(std::is_same_v<
+                 openassetio_traitgen_test_all::traits::anotherNamespace::NoPropertiesTrait,
+                 openassetio_traitgen_test_all::v1::traits::anotherNamespace::NoPropertiesTrait>);
+}
+
+TEST_CASE("openassetio_traitgen_test_all - specifications are under an ABI namespace") {
+  STATIC_REQUIRE(
+      std::is_same_v<
+          openassetio_traitgen_test_all::specifications::test::OneExternalTraitSpecification,
+          openassetio_traitgen_test_all::v1::specifications::test::OneExternalTraitSpecification>);
+  STATIC_REQUIRE(
+      std::is_same_v<
+          openassetio_traitgen_test_all::specifications::test::OneExternalTraitSpecification,
+          openassetio_traitgen_test_all::v1::specifications::test::OneExternalTraitSpecification>);
+  STATIC_REQUIRE(
+      std::is_same_v<
+          openassetio_traitgen_test_all::specifications::test::TwoLocalTraitsSpecification,
+          openassetio_traitgen_test_all::v1::specifications::test::TwoLocalTraitsSpecification>);
+}
+
 TEST_CASE("openassetio_traitgen_test_all - specifications have expected trait sets") {
   CHECK(openassetio_traitgen_test_all::specifications::test::LocalAndExternalTraitSpecification::
             kTraitSet ==

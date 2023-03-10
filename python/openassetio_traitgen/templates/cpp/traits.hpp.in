@@ -15,16 +15,15 @@
 
 namespace openassetio_abi = openassetio::{{ openassetio_abi_version }};
 
-{%- macro namespace_str() -%}
-{{ package.id | to_cpp_module_name }}::traits::{{ namespace.id | to_cpp_module_name }}
-{%- endmacro %}
+namespace {{ package.id | to_cpp_module_name }} {
+inline namespace {{ traitgen_abi_version }} {
 
 /**
  * Trait definitions in the '{{ namespace.id }}' namespace.
  *
  * {{ namespace.description | wordwrap(69, wrapstring="\n* ") | indent(1) }}
  */
-namespace {{ namespace_str() }} {
+namespace traits::{{ namespace.id | to_cpp_module_name }} {
 
 {% for trait in namespace.members -%}
 /**
@@ -98,4 +97,6 @@ struct {{ trait.name | to_cpp_class_name }}Trait : openassetio_abi::trait::Trait
   {%- endif %}
 };
 {% endfor %}
-}  // namespace {{ namespace_str() }}
+}  // namespace traits::{{ namespace.id | to_cpp_module_name }}
+}  // namespace {{ traitgen_abi_version }}
+}  // namespace {{ package.id | to_cpp_module_name }}

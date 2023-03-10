@@ -40,6 +40,7 @@ __all__ = ["generate"]
 #
 
 OPENASSETIO_ABI_VERSION = "v1"
+TRAITGEN_ABI_VERSION = "v1"
 
 
 # pylint: disable=too-many-locals
@@ -119,6 +120,7 @@ def generate(
                         "namespace": namespace,
                         "imports": helpers.package_dependencies(namespace.members),
                         "openassetio_abi_version": OPENASSETIO_ABI_VERSION,
+                        "traitgen_abi_version": TRAITGEN_ABI_VERSION,
                     },
                 )
 

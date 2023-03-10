@@ -31,16 +31,15 @@ traits::{{trait.namespace | to_cpp_module_name }}::{{trait.name | to_cpp_class_n
 {%- endif -%}
 {%- endmacro %}
 
-{%- macro namespace_str() -%}
-{{ package.id | to_cpp_module_name }}::specifications::{{ namespace.id | to_cpp_module_name }}
-{%- endmacro %}
+namespace {{ package.id | to_cpp_module_name }} {
+inline namespace {{ traitgen_abi_version }} {
 
 /**
  * Specification definitions in the '{{ namespace.id }}' namespace.
  *
  * {{ namespace.description | wordwrap(69, wrapstring="\n* ") | indent(1) }}
  */
-namespace {{ namespace_str() }} {
+namespace specifications::{{ namespace.id | to_cpp_module_name }} {
 {% for specification in namespace.members -%}
 /**
  * {{ specification.description | wordwrap(69, wrapstring="\n* ") | indent(1) }}
@@ -72,4 +71,6 @@ struct {{ specification.id | to_cpp_class_name }}Specification {
 };
 
 {% endfor %}
-}  // namespace {{ namespace_str() }}
+}  // namespace specifications::{{ namespace.id | to_cpp_module_name }}
+}  // namespace {{ traitgen_abi_version }}
+}  // namespace {{ package.id | to_cpp_module_name }}
