@@ -1,7 +1,19 @@
 Release Notes
 =============
 
+v1.0.0-alpha.X
+--------------
+
+### New Features
+
+- Added C++ trait and specification class generation, where the
+  generated source tree consists of a header-only package, with a header
+  file per class along with hoisting headers for convenience, broadly
+  mirroring the source tree of the Python generator.
+  [#11](https://github.com/OpenAssetIO/OpenAssetIO-TraitGen/issues/11)
+
 v1.0.0-alpha.4
+--------------
 
 ### Breaking Changes
 
