@@ -24,8 +24,8 @@ namespace traits::{{ namespace.id | to_cpp_module_name }} {
  * Usage: {{ trait.usage | join(', ') }}
 {%- endif %}
  */
-struct {{ trait.name | to_cpp_class_name }}Trait : openassetio_abi::trait::TraitBase<{{ trait.name | to_cpp_class_name }}Trait> {
-
+class {{ trait.name | to_cpp_class_name }}Trait : public openassetio_abi::trait::TraitBase<{{ trait.name | to_cpp_class_name }}Trait> {
+public:
   static inline const openassetio_abi::trait::TraitId kId = "{{ trait.id }}";
 
   using TraitBase::TraitBase;

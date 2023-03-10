@@ -574,7 +574,7 @@ def docstring_for(rootnode_for, cpp_language):
 
         query = cpp_language.query(
             f"""(
-            (comment) @docstring . (struct_specifier name: (type_identifier) @struct_name) @struct
+            (comment) @docstring . (class_specifier name: (type_identifier) @struct_name) @struct
             (#eq? @struct_name "{cls}")
         )"""
         )

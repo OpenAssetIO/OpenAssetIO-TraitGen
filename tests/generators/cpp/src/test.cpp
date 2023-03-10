@@ -33,10 +33,8 @@
 namespace openassetio_abi = openassetio::v1;
 
 TEST_CASE("openassetio_traitgen_test_all - all expected traits are defined") {
-  using openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait;
-  STATIC_REQUIRE(std::is_class_v<NoPropertiesTrait>);
   STATIC_REQUIRE(
-      std::is_base_of_v<openassetio_abi::trait::TraitBase<NoPropertiesTrait>, NoPropertiesTrait>);
+      std::is_class_v<openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait>);
   STATIC_REQUIRE(
       std::is_class_v<
           openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesMultipleUsageTrait>);
@@ -132,6 +130,80 @@ constexpr std::string_view traits = "not defined";  // NOLINT
 
 TEST_CASE("openassetio_traitgen_test_specifications_only - no traits are defined") {
   STATIC_REQUIRE(openassetio_traitgen_test_specifications_only::traits == "not defined");
+}
+
+SCENARIO("Common specification utility functions") {
+  GIVEN("a specification constructed using its create function") {
+    auto specification =
+        openassetio_traitgen_test_all::specifications::test::TwoLocalTraitsSpecification::create();
+
+    WHEN("its TraitsData is retrieved") {
+      openassetio::TraitsDataPtr traitsData;
+      traitsData = specification.traitsData();
+
+      THEN("the TraitsData is imbued with the expected traits") {
+        CHECK(
+            traitsData->traitSet() ==
+            openassetio::trait::TraitSet{
+                openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait::kId,
+                openassetio_traitgen_test_all::traits::anotherNamespace::NoPropertiesTrait::kId});
+      }
+
+      AND_WHEN("the retrieved TraitsData is modified") {
+        traitsData->addTrait("dummy_trait");
+
+        THEN("the specification's TraitsData has been updated") {
+          CHECK(specification.traitsData()->hasTrait("dummy_trait"));
+        }
+      }
+    }
+  }
+}
+
+SCENARIO("Common trait utility functions") {
+  GIVEN("a TraitsData and a trait view on it") {
+    using openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait;
+    auto traitsData = openassetio::TraitsData::make();
+    const AllPropertiesTrait trait{traitsData};
+
+    WHEN("trait view class method is used to query whether TraitsData is imbued") {
+      const bool isImbued = AllPropertiesTrait::isImbuedTo(traitsData);
+
+      THEN("it is not yet imbued") { CHECK(isImbued == false); }
+    }
+    WHEN("trait view instance method is used to query whether TraitsData is imbued") {
+      const bool isImbued = trait.isImbued();
+
+      THEN("it is not yet imbued") { CHECK(isImbued == false); }
+    }
+
+    AND_GIVEN("TraitsData is imbued with the trait") {
+      traitsData->addTrait(AllPropertiesTrait::kId);
+
+      WHEN("trait view class method is used to query whether TraitsData is imbued") {
+        const bool isImbued = AllPropertiesTrait::isImbuedTo(traitsData);
+
+        THEN("it is imbued") { CHECK(isImbued == true); }
+      }
+      WHEN("trait view instance method is used to query whether TraitsData is imbued") {
+        const bool isImbued = trait.isImbued();
+
+        THEN("it is imbued") { CHECK(isImbued == true); }
+      }
+    }
+
+    WHEN("trait view class method is used to imbue the TraitsData") {
+      AllPropertiesTrait::imbueTo(traitsData);
+
+      THEN("TraitsData is imbued") { CHECK(traitsData->hasTrait(AllPropertiesTrait::kId)); }
+    }
+
+    WHEN("trait view instance method is used to imbue the TraitsData") {
+      trait.imbue();
+
+      THEN("TraitsData is imbued") { CHECK(traitsData->hasTrait(AllPropertiesTrait::kId)); }
+    }
+  }
 }
 
 namespace {

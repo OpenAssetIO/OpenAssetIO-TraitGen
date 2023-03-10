@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <memory>
+
 #include <openassetio/TraitsData.hpp>
 #include <openassetio/trait/collection.hpp>
 
@@ -39,7 +41,8 @@ namespace specifications::{{ namespace.id | to_cpp_module_name }} {
  * Usage: {{ specification.usage | join(', ') }}
 {%- endif %}
  */
-struct {{ specification.id | to_cpp_class_name }}Specification {
+class {{ specification.id | to_cpp_class_name }}Specification {
+public:
   inline static const openassetio_abi::trait::TraitSet kTraitSet{
     {%- for trait in specification.trait_set %}
     // '{{ trait.id }}'
@@ -50,6 +53,37 @@ struct {{ specification.id | to_cpp_class_name }}Specification {
       {%- endif %}
     {%- endfor %}
   };
+
+  /**
+   * Returns a new instance of the Specification, holding a new
+   * TraitsData instance, imbued with the specification's traits.
+   */
+  static {{ specification.id | to_cpp_class_name }}Specification create() {
+    return {{ specification.id | to_cpp_class_name }}Specification{
+      openassetio_abi::TraitsData::make(kTraitSet)};
+  }
+
+  /**
+   * Constructs the specification as a view on the supplied shared
+   * TraitsData instance.
+   *
+   * @warning Specifications are always a view on the supplied data,
+   * which is held by reference. Any changes made to the data will be
+   * visible to any other specifications or traits that wrap the same
+   * TraitsData instance.
+   */
+  explicit {{ specification.id | to_cpp_class_name }}Specification(openassetio_abi::TraitsDataPtr traitsData)
+    : traitsData_{std::move(traitsData)}
+  {}
+
+  /**
+   * Returns the underlying (shared) TraitsData instance held by this
+   * specification.
+   */
+  [[nodiscard]] const openassetio_abi::TraitsDataPtr& traitsData() const {
+    return traitsData_;
+  }
+
 {% for trait in specification.trait_set %}
   /**
    * Returns the view for the '{{ trait.id }}'
@@ -59,6 +93,8 @@ struct {{ specification.id | to_cpp_class_name }}Specification {
     return {{ trait_type(trait) }}{traitsData_};
   }
 {% endfor %}
+
+private:
   openassetio_abi::TraitsDataPtr traitsData_;
 };
 }  // namespace specifications::{{ namespace.id | to_cpp_module_name }}
