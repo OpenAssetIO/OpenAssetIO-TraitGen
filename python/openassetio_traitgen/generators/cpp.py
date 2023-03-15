@@ -214,7 +214,7 @@ class Renderer:
                 "package": self.__package,
                 "namespace": namespace,
                 cls_kind: cls,
-                "imports": helpers.declaration_dependencies(cls),
+                "imports": helpers.package_dependencies_for_declaration(cls),
                 "openassetio_abi_version": OPENASSETIO_ABI_VERSION,
                 "traitgen_abi_version": TRAITGEN_ABI_VERSION,
             },
