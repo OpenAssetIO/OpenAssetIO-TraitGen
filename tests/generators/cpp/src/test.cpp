@@ -460,49 +460,129 @@ SCENARIO("Moveable property setters") {
   }
 }
 
-SCENARIO("LocalAndExternalTraitSpecification") {
+SCENARIO("Specifications providing trait views") {
   GIVEN("a LocalAndExternalTraitSpecification") {
-    const auto traitsData = openassetio_abi::TraitsData::make();
+    const auto specification = openassetio_traitgen_test_all::specifications::test::
+        LocalAndExternalTraitSpecification::create();
 
-    const openassetio_traitgen_test_all::specifications::test::LocalAndExternalTraitSpecification
-        specification{traitsData};
-
-    WHEN("an externally defined trait view is requested") {
+    WHEN(
+        "an openassetio-traitgen-test-traits-only:aNamespace.NoProperties trait view is "
+        "requested") {
       const auto trait =
           specification.openassetioTraitgenTestTraitsOnlyANamespaceNoPropertiesTrait();
 
       THEN("trait view has expected type") {
         STATIC_REQUIRE(
-            std::is_same_v<
-                std::remove_const_t<decltype(trait)>,
-                openassetio_traitgen_test_traits_only::traits::aNamespace::NoPropertiesTrait>);
-      }
-
-      AND_WHEN("the trait view's TraitsData is imbued by the trait view") {
-        trait.imbue();
-
-        THEN("the specification's TraitsData is updated") {
-          CHECK(traitsData->hasTrait(
-              openassetio_traitgen_test_traits_only::traits::aNamespace::NoPropertiesTrait::kId));
-        }
+            std::is_same_v<decltype(trait), const openassetio_traitgen_test_traits_only::traits::
+                                                aNamespace::NoPropertiesTrait>);
       }
     }
 
-    WHEN("a locally defined trait view is requested") {
+    WHEN("an openassetio-traitgen-test-all:aNamespace.NoProperties trait view is requested") {
       const auto trait = specification.openassetioTraitgenTestAllANamespaceNoPropertiesTrait();
 
       THEN("trait view has expected type") {
         STATIC_REQUIRE(
-            std::is_same_v<std::remove_const_t<decltype(trait)>,
-                           openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait>);
+            std::is_same_v<
+                decltype(trait),
+                const openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait>);
+      }
+    }
+  }
+
+  GIVEN("a OneExternalTraitSpecification") {
+    const auto specification = openassetio_traitgen_test_all::specifications::test::
+        OneExternalTraitSpecification::create();
+
+    WHEN("an AnotherTrait trait view is requested") {
+      const auto trait = specification.anotherTrait();
+
+      THEN("trait view has expected type") {
+        STATIC_REQUIRE(std::is_same_v<
+                       decltype(trait),
+                       const openassetio_traitgen_test_traits_only::traits::test::AnotherTrait>);
+      }
+    }
+  }
+
+  GIVEN("a TwoLocalTraitsSpecification") {
+    const auto specification =
+        openassetio_traitgen_test_all::specifications::test::TwoLocalTraitsSpecification::create();
+
+    WHEN("an aNamespace.NoPropertiesTrait trait view is requested") {
+      const auto trait = specification.aNamespaceNoPropertiesTrait();
+
+      THEN("trait view has expected type") {
+        STATIC_REQUIRE(
+            std::is_same_v<
+                decltype(trait),
+                const openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait>);
+      }
+    }
+
+    WHEN("an anotherNamespace.NoPropertiesTrait trait view is requested") {
+      const auto trait = specification.anotherNamespaceNoPropertiesTrait();
+
+      THEN("trait view has expected type") {
+        STATIC_REQUIRE(
+            std::is_same_v<
+                decltype(trait),
+                const openassetio_traitgen_test_all::traits::anotherNamespace::NoPropertiesTrait>);
+      }
+    }
+  }
+
+  GIVEN("a SomeSpecification") {
+    const auto specification = openassetio_traitgen_test_specifications_only::specifications::
+        test::SomeSpecification::create();
+
+    WHEN("an AllPropertiesTrait trait view is requested") {
+      const auto trait = specification.allPropertiesTrait();
+
+      THEN("trait view has expected type") {
+        STATIC_REQUIRE(
+            std::is_same_v<
+                decltype(trait),
+                const openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait>);
+      }
+    }
+
+    WHEN("an AnotherTrait trait view is requested") {
+      const auto trait = specification.anotherTrait();
+
+      THEN("trait view has expected type") {
+        STATIC_REQUIRE(std::is_same_v<
+                       decltype(trait),
+                       const openassetio_traitgen_test_traits_only::traits::test::AnotherTrait>);
+      }
+    }
+  }
+}
+
+SCENARIO("Specification-provided trait views updating wrapped TraitsData") {
+  GIVEN("an external TraitsData") {
+    const auto traitsData = openassetio_abi::TraitsData::make();
+
+    AND_GIVEN("a specification wrapping the TraitsData") {
+      const openassetio_traitgen_test_all::specifications::test::LocalAndExternalTraitSpecification
+          specification{traitsData};
+
+      THEN("TraitsData has not yet been imbued") {
+        CHECK(!traitsData->hasTrait(
+            openassetio_traitgen_test_traits_only::traits::aNamespace::NoPropertiesTrait::kId));
       }
 
-      AND_WHEN("the trait view's TraitsData is imbued by the trait view") {
-        trait.imbue();
+      AND_GIVEN("a trait view requested from the specification") {
+        const auto trait =
+            specification.openassetioTraitgenTestTraitsOnlyANamespaceNoPropertiesTrait();
 
-        THEN("the specification's TraitsData is updated") {
-          CHECK(traitsData->hasTrait(
-              openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait::kId));
+        WHEN("the trait view's TraitsData is imbued by the trait view") {
+          trait.imbue();
+
+          THEN("the specification's TraitsData is also updated") {
+            CHECK(traitsData->hasTrait(openassetio_traitgen_test_traits_only::traits::aNamespace::
+                                           NoPropertiesTrait::kId));
+          }
         }
       }
     }
