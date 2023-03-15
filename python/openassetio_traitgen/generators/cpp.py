@@ -145,11 +145,11 @@ class Renderer:
         imports = []
 
         # Render a file per class (trait or specification).
-        for cls in namespace.members:
+        for declaration in namespace.members:
             if kind == "traits":
-                file_name = self.__render_trait(namespace, cls, namespace_abs_path)
+                file_name = self.__render_trait(namespace, declaration, namespace_abs_path)
             else:
-                file_name = self.__render_specification(namespace, cls, namespace_abs_path)
+                file_name = self.__render_specification(namespace, declaration, namespace_abs_path)
 
             imports.append(f"{namespace_module_name}/{file_name}")
 
@@ -171,22 +171,45 @@ class Renderer:
     def __render_trait(
         self,
         namespace: NamespaceDeclaration,
-        cls: TraitDeclaration,
+        declaration: TraitDeclaration,
         namespace_abs_path: str,
     ) -> str:
-        cls_name = self.__env.filters["to_cpp_class_name"](cls.name) + "Trait"
-        return self.__render_cls_template(namespace, cls, namespace_abs_path, "trait", cls_name)
+        cls_name = self.__env.filters["to_cpp_class_name"](declaration.name) + "Trait"
+        self.__render_template(
+            "trait",
+            os.path.join(namespace_abs_path, f"{cls_name}.hpp"),
+            {
+                "package": self.__package,
+                "namespace": namespace,
+                "trait": declaration,
+                "openassetio_abi_version": OPENASSETIO_ABI_VERSION,
+                "traitgen_abi_version": TRAITGEN_ABI_VERSION,
+            },
+        )
+        return f"{cls_name}.hpp"
 
     def __render_specification(
         self,
         namespace: NamespaceDeclaration,
-        cls: SpecificationDeclaration,
+        declaration: SpecificationDeclaration,
         namespace_abs_path: str,
     ) -> str:
-        cls_name = self.__env.filters["to_cpp_class_name"](cls.id) + "Specification"
-        return self.__render_cls_template(
-            namespace, cls, namespace_abs_path, "specification", cls_name
+        cls_name = (
+            self.__env.filters["to_cpp_class_name"](declaration.id) + "Specification"
         )
+        self.__render_template(
+            "specification",
+            os.path.join(namespace_abs_path, f"{cls_name}.hpp"),
+            {
+                "package": self.__package,
+                "namespace": namespace,
+                "specification": declaration,
+                "imports": helpers.package_dependencies_for_declaration(declaration),
+                "openassetio_abi_version": OPENASSETIO_ABI_VERSION,
+                "traitgen_abi_version": TRAITGEN_ABI_VERSION,
+            },
+        )
+        return f"{cls_name}.hpp"
 
     def __render_package_template(
         self, package_abs_path: str, name: str, docstring: str, imports: List[str]
@@ -197,29 +220,6 @@ class Renderer:
             {"docstring": docstring, "relImports": imports},
         )
         return f"{name}.hpp"
-
-    def __render_cls_template(
-        self,
-        namespace: NamespaceDeclaration,
-        cls: Union[SpecificationDeclaration, TraitDeclaration],
-        namespace_abs_path: str,
-        cls_kind: str,
-        cls_name: str,
-    ) -> str:
-        # pylint: disable=too-many-arguments
-        self.__render_template(
-            cls_kind,
-            os.path.join(namespace_abs_path, f"{cls_name}.hpp"),
-            {
-                "package": self.__package,
-                "namespace": namespace,
-                cls_kind: cls,
-                "imports": helpers.package_dependencies_for_declaration(cls),
-                "openassetio_abi_version": OPENASSETIO_ABI_VERSION,
-                "traitgen_abi_version": TRAITGEN_ABI_VERSION,
-            },
-        )
-        return f"{cls_name}.hpp"
 
     def __render_template(self, name: str, path: str, variables: dict):
         """
