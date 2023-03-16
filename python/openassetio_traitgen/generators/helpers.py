@@ -72,11 +72,11 @@ def package_dependencies(
     declarations.
     """
     return sorted(
-        set(dep for decl in declarations for dep in package_dependencies_for_declaration(decl))
+        set(dep for decl in declarations for dep in _package_dependencies_for_declaration(decl))
     )
 
 
-def package_dependencies_for_declaration(
+def _package_dependencies_for_declaration(
     declaration: Union[SpecificationDeclaration, TraitDeclaration]
 ) -> List[str]:
     """
@@ -86,4 +86,4 @@ def package_dependencies_for_declaration(
     if not isinstance(declaration, SpecificationDeclaration):
         return []
 
-    return sorted(set(trait.package for trait in declaration.trait_set))
+    return [trait.package for trait in declaration.trait_set]
