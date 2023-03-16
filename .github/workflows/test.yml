@@ -29,3 +29,44 @@ jobs:
           python -m pip install .
       - name: Test
         run: python -m pytest -v -m "not ctest"
+
+  build-openassetio:
+    name: Build OpenAssetIO
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/openassetio/openassetio-build
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build
+        uses: ./.github/build_openassetio
+
+  ctest:
+    name: C++ tests
+    runs-on: ubuntu-latest
+    needs: build-openassetio
+    container:
+      image: aswf/ci-vfxall:2022-clang14.3
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Get OpenAssetIO
+        uses: actions/download-artifact@v3
+        with:
+          name: OpenAssetIO Build
+          path: ${{ github.workspace }}/openassetio
+
+      - name: Install ctest dependencies
+        run: >
+          python -m pip install
+          -r tests/requirements.txt
+          -r tests/ctest-requirements.txt
+          .
+
+      - name: Test
+        run: python -m pytest -v -m ctest
+        env:
+          CMAKE_PREFIX_PATH: ${{ github.workspace }}/openassetio
+          # TODO(DF): Sanitizers disabled due to lack of support in ASWF
+          # Docker image. Re-enable once per-platform builds enabled
+          # (i.e. once OpenAssetIO Conan package is available).
+          OPENASSETIO_TRAITGENTEST_CMAKE_PRESET: ci
