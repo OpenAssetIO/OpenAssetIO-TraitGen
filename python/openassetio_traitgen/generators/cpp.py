@@ -70,6 +70,11 @@ class Renderer:
     """
     Encapsulates the various stages of rendering a C++ package for the
     supplied package declaration.
+
+    Terminology follows that of the source YAML, i.e. "package",
+    "namespace", "module", etc., and translates to directory names,
+    (hoisting) header file names, C++ namespaces and C++ classes, as
+    appropriate.
     """
 
     # pylint: disable=too-few-public-methods
@@ -86,6 +91,14 @@ class Renderer:
     def render_package(self, output_directory: str):
         """
         Render a package declaration to a C++ header-only package.
+
+        Headers for all traits and specifications are rendered, followed
+        by a top-level convenience hoisting header that imports
+        everything under this package.
+
+        @param output_directory: Top-level directory to place rendered
+        artifacts. Subdirectories will be created to contain trait,
+        specification, namespace and class headers, as appropriate.
         """
         # Top level package directory, under an "include" subdirectory
         package_name = self.__env.filters["to_cpp_module_name"](self.__package.id)
@@ -112,6 +125,18 @@ class Renderer:
     def __render_traits_or_specifications(
         self, parent_abs_path: str, kind: str
     ) -> Union[str, None]:
+        """
+        Render all the headers of a particular "kind" (traits or
+        specifications) for the package.
+
+        If the package has no members of this kind, then this is a
+        no-op.
+
+        Headers are rendered under a directory appropriate to this
+        "kind". An additional top-level convenience hoisting header is
+        rendered outside that directory, which (recursively) imports all
+        related headers.
+        """
         namespaces = getattr(self.__package, kind, None)
         if not namespaces:
             # The package has no subpackage of this kind.
@@ -138,6 +163,17 @@ class Renderer:
     def __render_namespace(
         self, namespace: NamespaceDeclaration, parent_abs_path: str, kind: str
     ) -> str:
+        """
+        Render the headers for a trait namespace.
+
+        The headers for each member class (trait view or specification)
+        are rendered, along with a convenience namespace hoisting header
+        that imports all the member class headers.
+
+        The namespace header is placed alongside a directory with the
+        same basename, and the individual class headers are placed in
+        that directory.
+        """
         namespace_module_name = self.__env.filters["to_cpp_module_name"](namespace.id)
         namespace_abs_path = self.__create_dir_with_path_components(
             parent_abs_path, namespace_module_name
@@ -174,6 +210,12 @@ class Renderer:
         declaration: TraitDeclaration,
         namespace_abs_path: str,
     ) -> str:
+        """
+        Render the template for a trait header.
+
+        Creates a single header file containing a single trait view
+        class.
+        """
         cls_name = self.__env.filters["to_cpp_class_name"](declaration.name) + "Trait"
         self.__render_template(
             "trait",
@@ -194,6 +236,12 @@ class Renderer:
         declaration: SpecificationDeclaration,
         namespace_abs_path: str,
     ) -> str:
+        """
+        Render the template for a specification header.
+
+        Creates a single header file containing a single specification
+        class.
+        """
         cls_name = (
             self.__env.filters["to_cpp_class_name"](declaration.id) + "Specification"
         )
@@ -214,6 +262,12 @@ class Renderer:
     def __render_package_template(
         self, package_abs_path: str, name: str, docstring: str, imports: List[str]
     ) -> str:
+        """
+        Render the template for a logical "package" header.
+
+        I.e. a convenience hoisting header that collects all related
+        headers into one.
+        """
         self.__render_template(
             "package",
             os.path.join(package_abs_path, f"{name}.hpp"),
