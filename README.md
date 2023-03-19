@@ -12,6 +12,7 @@ corresponding python package that can be used for custom generation.
 ## Supported languages
 
 - Python 3.7+
+- C++ 17+
 
 ## Installation
 
@@ -38,8 +39,8 @@ openassetio-traitgen -h
 This package follows the main
 [OpenAssetIO contribution process](https://github.com/OpenAssetIO/OpenAssetIO/blob/main/contributing/PROCESS.md).
 
-However, as a pure Python project, it adheres to strict PEP-8 naming
-conventions.
+However, as an (almost) pure Python project, it adheres to strict PEP-8
+naming conventions.
 
 We recommend using a suitably configured Python virtual environment for
 all development work.
@@ -60,3 +61,30 @@ package, and run the tests:
 python -m pip install -e .
 python -m pytest
 ```
+
+### C++ tests
+
+C++ tests run via `pytest` invoking CMake's `ctest` utility. The
+dependencies for building/linting/running these tests can be installed
+into a Python environment.
+
+```bash
+python -m pip install -r tests/ctest-requirements.txt
+```
+
+It is possible to execute _only_ the C++ tests.
+
+```bash
+python -m pytest -m ctest
+```
+
+Note that `ctest` will be skipped unless the
+`OPENASSETIO_TRAITGENTEST_CMAKE_PRESET` environment variable is set.
+Valid values are `"test"` and `"lint"`, where `"lint"` will perform both
+static and dynamic analysis on the generated sources (as well as the
+tests themselves).
+
+Also ensure that OpenAssetIO is discoverable via CMake's
+[`find_package`](https://cmake.org/cmake/help/v3.24/command/find_package.html).
+For example, you may need to set the `CMAKE_PREFIX_PATH` environment
+variable to an OpenAssetIO installation.

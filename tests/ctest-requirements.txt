@@ -1,0 +1,6 @@
+cmake==3.25.2  # Configure/build C++ tests
+conan==1.59  # Install dependencies for C++ tests.
+cmakelang==0.6.13  # Lint CMake
+cpplint==1.6.1  # Basic linting of C++ files.
+clang-tidy==15.0.2.1  # Static analysis of C++ files
+clang-format==15.0.7  # Formatting of C++ files.

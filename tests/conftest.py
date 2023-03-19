@@ -159,11 +159,6 @@ def declaration_all():
                                 description="A bool-typed property.",
                             ),
                             datamodel.PropertyDeclaration(
-                                id="dictProperty",
-                                type=datamodel.PropertyType.DICT,
-                                description="A dict-typed property.",
-                            ),
-                            datamodel.PropertyDeclaration(
                                 id="floatProperty",
                                 type=datamodel.PropertyType.FLOAT,
                                 description="A float-typed property.",
@@ -178,6 +173,7 @@ def declaration_all():
                                 type=datamodel.PropertyType.STRING,
                                 description="A string-typed property.",
                             ),
+                            # TODO(DF): Add DICT property, once supported.
                         ],
                     ),
                     datamodel.TraitDeclaration(
@@ -427,24 +423,94 @@ def declaration_exotic_values():
     )
 
 
+@pytest.fixture(scope="session")
+def declaration_invalid_identifiers():
+    """
+    A declaration that contains given identifiers (or a valid identifier
+    if not given) that should be used to ensure generators properly
+    throw an error when encountered.
+    """
+
+    def fn(package_name=None, specification_namespace=None, trait_namespace=None):
+        return datamodel.PackageDeclaration(
+            id=(package_name or "valid_package"),
+            description="",
+            traits=[
+                datamodel.NamespaceDeclaration(
+                    id=(trait_namespace or "valid_namespace"),
+                    description="",
+                    members=[
+                        datamodel.TraitDeclaration(
+                            id="some_trait",
+                            name="some_trait",
+                            description="",
+                            usage=[],
+                            properties=[],
+                        ),
+                    ],
+                ),
+            ],
+            specifications=[
+                datamodel.NamespaceDeclaration(
+                    id=(specification_namespace or "valid_namespace"),
+                    description="",
+                    members=[
+                        datamodel.SpecificationDeclaration(
+                            id="some_specification",
+                            description="",
+                            usage=[],
+                            trait_set=[
+                                datamodel.TraitReference(
+                                    id="some_trait",
+                                    name="some_trait",
+                                    namespace="some_namespace",
+                                    package="some_package",
+                                    unique_name_parts=("some_trait",),
+                                )
+                            ],
+                        )
+                    ],
+                )
+            ],
+        )
+
+    return fn
+
+
 # Note: This is here as the CLI tests use python generation to check
 # functionality/console output.
 @pytest.fixture
-def creations_minimal_python():
+def creations_minimal_by_generator():
     """
     The expected list of creations (relative to the output dir)
     from python generation of minimal.yaml.
     """
-    return [
-        os.path.join("p_p"),
-        os.path.join("p_p", "traits"),
-        os.path.join("p_p", "traits", "tn.py"),
-        os.path.join("p_p", "traits", "__init__.py"),
-        os.path.join("p_p", "specifications"),
-        os.path.join("p_p", "specifications", "sn.py"),
-        os.path.join("p_p", "specifications", "__init__.py"),
-        os.path.join("p_p", "__init__.py"),
-    ]
+    return {
+        "python": [
+            os.path.join("p_p"),
+            os.path.join("p_p", "traits"),
+            os.path.join("p_p", "traits", "tn.py"),
+            os.path.join("p_p", "traits", "__init__.py"),
+            os.path.join("p_p", "specifications"),
+            os.path.join("p_p", "specifications", "sn.py"),
+            os.path.join("p_p", "specifications", "__init__.py"),
+            os.path.join("p_p", "__init__.py"),
+        ],
+        "cpp": [
+            os.path.join("p_p", "include", "p_p"),
+            os.path.join("p_p", "include", "p_p", "traits"),
+            os.path.join("p_p", "include", "p_p", "traits", "tn"),
+            os.path.join("p_p", "include", "p_p", "traits", "tn", "TTrait.hpp"),
+            os.path.join("p_p", "include", "p_p", "traits", "tn.hpp"),
+            os.path.join("p_p", "include", "p_p", "traits", "traits.hpp"),
+            os.path.join("p_p", "include", "p_p", "specifications"),
+            os.path.join("p_p", "include", "p_p", "specifications", "sn"),
+            os.path.join("p_p", "include", "p_p", "specifications", "sn", "SSpecification.hpp"),
+            os.path.join("p_p", "include", "p_p", "specifications", "sn.hpp"),
+            os.path.join("p_p", "include", "p_p", "specifications", "specifications.hpp"),
+            os.path.join("p_p", "include", "p_p", "p_p.hpp"),
+        ],
+    }
 
 
 @pytest.fixture

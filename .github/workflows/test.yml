@@ -28,4 +28,4 @@ jobs:
           python -m pip install -r tests/requirements.txt
           python -m pip install .
       - name: Test
-        run: python -m pytest -v
+        run: python -m pytest -v -m "not ctest"

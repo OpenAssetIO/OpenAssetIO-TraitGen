@@ -30,6 +30,7 @@ import jinja2
 from . import helpers
 from ..datamodel import PackageDeclaration, PropertyType
 
+
 __all__ = ["generate"]
 
 
@@ -61,7 +62,7 @@ def generate(
         # NB: Jinja assumes '/' on all plaftorms:
         #  https://github.com/pallets/jinja/blob/7fb13bf94443f067c74204a1aee368fdf0591764/src/jinja2/loaders.py#L29
         template = env.get_template(f"python/{name}.py.in")
-        with open(path, "w", encoding="utf-8") as file:
+        with open(path, "w", encoding="utf-8", newline="\n") as file:
             file.write(template.render(variables))
         creation_callback(path)
 
@@ -86,10 +87,8 @@ def generate(
 
     # Sub-packages for traits and specifications
     for kind in ("traits", "specifications"):
-
         namespaces = getattr(package_declaration, kind, None)
         if namespaces:
-
             package_init_imports.append(kind)
 
             # Create the directory for the sub-package
@@ -248,6 +247,8 @@ def _install_custom_filters(environment, logger):
         """
         Returns the python value type for a property declaration (PropertyType).
         """
+        if declaration_type == PropertyType.DICT:
+            raise TypeError("Dictionary types are not yet supported as trait properties")
         return type_map[declaration_type]
 
     environment.filters["to_upper_camel_alnum"] = helpers.to_upper_camel_alnum
