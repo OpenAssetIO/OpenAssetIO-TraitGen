@@ -13,16 +13,17 @@
 
 namespace openassetio_abi = openassetio::{{ openassetio_abi_version }};
 
-{% if imports -%}
-{%- for import in imports -%}
-{%- if import != package.id -%}
-#include <{{ import | to_cpp_namespace_name }}/{{ import | to_cpp_namespace_name }}.hpp>
-{% endif -%}
+{%- for trait in (specification.trait_set | selectattr("package", "!=", package.id) | sort) -%}
+{%- if loop.first %}
+{% endif %}
+#include <{{ trait.package | to_cpp_namespace_name }}/traits/{{ trait.namespace | to_cpp_namespace_name }}/{{ trait.name | to_cpp_class_name }}Trait.hpp>
 {%- endfor -%}
-{%- endif %}
-{% if package.id in imports -%}
-#include "../../traits/traits.hpp"
-{%- endif %}
+
+{%- for trait in (specification.trait_set | selectattr("package", "==", package.id) | sort) -%}
+{%- if loop.first %}
+{% endif %}
+#include "../../traits/{{ trait.namespace | to_cpp_namespace_name }}/{{ trait.name | to_cpp_class_name }}Trait.hpp"
+{%- endfor -%}
 
 {%- macro trait_type(trait) -%}
 {%- if trait.package == package.id -%}
