@@ -16,6 +16,15 @@
       }
     },
     {
+      "name": "ci",
+      "inherits": "lint",
+      "description": "TODO(DF): Sanitizers disabled due to ASWF Docker image. Re-enable once using Conan instead",
+      "cacheVariables": {
+        "OPENASSETIO_TRAITGENTEST_ENABLE_SANITIZER_ADDRESS": "OFF",
+        "OPENASSETIO_TRAITGENTEST_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR": "OFF"
+      }
+    },
+    {
       "name": "test",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "RelWithDebInfo",
