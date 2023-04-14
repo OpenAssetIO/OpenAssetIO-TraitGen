@@ -1,2 +1,3 @@
 [requires]
 catch2/2.13.9
+openassetio/1.0.0-alpha.9
