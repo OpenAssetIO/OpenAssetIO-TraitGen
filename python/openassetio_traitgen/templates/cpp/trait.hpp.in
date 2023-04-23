@@ -9,9 +9,9 @@
 #include <stdexcept>
 #include <utility>
 
+#include <openassetio/TraitsData.hpp>
 #include <openassetio/trait/collection.hpp>
 #include <openassetio/trait/property.hpp>
-#include <openassetio/trait/TraitBase.hpp>
 
 namespace openassetio_abi = openassetio::{{ openassetio_abi_version }};
 

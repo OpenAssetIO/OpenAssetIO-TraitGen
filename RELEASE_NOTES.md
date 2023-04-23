@@ -1,6 +1,18 @@
 Release Notes
 =============
 
+v1.0.0-alpha.X
+--------------
+
+### Improvements
+- Removed dependence on `TraitsBase` and `SpecificationBase` types in
+  generated python code, rather generating the functionality previously
+  provided by the base directly into the traits and specifications. This
+  mirrors the approach taken by the C++ generator, and breaks a
+  dependency on OpenAssetIO.
+  [#19](https://github.com/OpenAssetIO/OpenAssetIO-TraitGen/issues/19)
+
+
 v1.0.0-alpha.5
 --------------
 
