@@ -12,10 +12,10 @@ Trait definitions in the '{{ namespace.id }}' namespace.
 
 from typing import Union
 
-from openassetio import TraitBase
+from openassetio import TraitsData
 
 {% for trait in namespace.members %}
-class {{ trait.name | to_py_class_name }}Trait(TraitBase):
+class {{ trait.name | to_py_class_name }}Trait:
     """
     {{ trait.description | wordwrap(68) | indent(4) }}
     {% if trait.usage -%}
@@ -23,6 +23,51 @@ class {{ trait.name | to_py_class_name }}Trait(TraitBase):
     {% endif -%}
     """
     kId = "{{ trait.id }}"
+
+    def __init__(self, traitsData):
+        """
+        Construct this trait view, wrapping the given data.
+
+        @param traitsData @fqref{TraitsData}} "TraitsData" The target
+        data that holds/will hold the traits properties.
+        """
+        self._data = traitsData
+
+    def isImbued(self):
+        """
+        Checks whether the data this trait has been applied to
+        actually has this trait.
+        @return `True` if the underlying data has this trait, `False`
+        otherwise.
+        """
+        return self.isImbuedTo(self._data)
+
+    @classmethod
+    def isImbuedTo(cls, traitsData):
+        """
+        Checks whether the given data actually has this trait.
+        @param traitsData: Data to check for trait.
+        @return `True` if the underlying data has this trait, `False`
+        otherwise.
+        """
+        return traitsData.hasTrait(cls.kId)
+
+    def imbue(self):
+        """
+        Adds this trait to the held data.
+
+        If the data already has this trait, it is a no-op.
+        """
+        self._data.addTrait(self.kId)
+
+    @classmethod
+    def imbueTo(cls, traitsData):
+        """
+        Adds this trait to the provided data.
+
+        If the data already has this trait, it is a no-op.
+        """
+        traitsData.addTrait(cls.kId)
 
     {% if trait.properties -%}
         {% for property in trait.properties -%}
