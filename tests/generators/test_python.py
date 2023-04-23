@@ -493,11 +493,6 @@ class Test_AllPropertiesTrait_set:
 
 
 class Test_LocalAndExternalTraitSpecification:
-    def test_subclass_of_openassetio_SpecificationBase(
-        self, local_and_external_trait_specification
-    ):
-        assert issubclass(local_and_external_trait_specification, SpecificationBase)
-
     def test_external_trait_accessor_is_of_expected_type(
         self, local_and_external_trait_specification, module_traits_only
     ):
