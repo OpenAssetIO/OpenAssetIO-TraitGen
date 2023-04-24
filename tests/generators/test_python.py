@@ -28,6 +28,7 @@ import sys
 
 from typing import Any, NamedTuple
 
+from unittest import mock
 import pytest
 
 from openassetio import TraitsData
@@ -371,6 +372,52 @@ class Test_AllPropertiesTrait:
         assert all_properties_trait.kId == "openassetio-traitgen-test-all:aNamespace.AllProperties"
 
 
+class Test_AllPropertiesTrait__Construction:
+    def test_exposes_wrapped_data_via_protected_member(self, all_properties_trait):
+        a_data = mock.Mock()
+        trait = all_properties_trait(a_data)
+        assert trait._data is a_data  # pylint: disable=protected-access
+
+
+class Test_AllPropertiesTrait_isImbued:
+    def test_when_data_has_trait_returns_true(self, all_properties_trait):
+        a_data = TraitsData({all_properties_trait.kId})
+        assert all_properties_trait.isImbuedTo(a_data) is True
+        trait = all_properties_trait(a_data)
+        assert trait.isImbued() is True
+
+    def test_when_data_does_not_have_trait_returns_false(self, all_properties_trait):
+        a_data = TraitsData({"someOtherTrait"})
+        assert all_properties_trait.isImbuedTo(a_data) is False
+        trait = all_properties_trait(a_data)
+        assert trait.isImbued() is False
+
+
+class Test_AllPropertiesTrait_imbue:
+    def test_when_data_empty_then_adds_trait(self, all_properties_trait):
+        a_data = TraitsData()
+        trait = all_properties_trait(a_data)
+        trait.imbue()
+        assert trait.isImbued()
+        assert trait.kId in a_data.traitSet()
+
+    def test_when_data_has_trait_then_is_noop(self, all_properties_trait):
+        a_data = TraitsData({all_properties_trait.kId})
+        trait = all_properties_trait(a_data)
+        trait.imbue()
+
+
+class Test_AllPropertiesTrait_imbueTo:
+    def test_when_data_empty_then_adds_trait(self, all_properties_trait):
+        a_data = TraitsData()
+        all_properties_trait.imbueTo(a_data)
+        assert all_properties_trait.kId in a_data.traitSet()
+
+    def test_when_data_has_trait_then_is_noop(self, all_properties_trait):
+        a_data = TraitsData({all_properties_trait.kId})
+        all_properties_trait.imbueTo(a_data)
+
+
 class PropertyTestValues(NamedTuple):
     name: str
     valid_value: Any
@@ -523,6 +570,25 @@ class Test_LocalAndExternalTraitSpecification:
         a_specification = local_and_external_trait_specification(a_traits_data)
         a_trait = a_specification.openassetioTraitgenTestAllANamespaceNoPropertiesTrait()
         assert a_trait._data is a_traits_data  # pylint: disable=protected-access
+
+    def test_default_constructor_raises_error(self, local_and_external_trait_specification):
+        with pytest.raises(TypeError):
+            local_and_external_trait_specification()  # pylint: disable=no-value-for-parameter
+
+    def test_when_supplied_invalid_object_then_raises_TypeError(
+        self, local_and_external_trait_specification
+    ):
+        with pytest.raises(TypeError):
+            local_and_external_trait_specification({})
+        with pytest.raises(TypeError):
+            local_and_external_trait_specification(None)
+        with pytest.raises(TypeError):
+            local_and_external_trait_specification("a string")
+
+    def test_all_traits_set_in_data(self, local_and_external_trait_specification):
+        specification = local_and_external_trait_specification.create()
+        data = specification.traitsData()
+        assert data.traitSet() == local_and_external_trait_specification.kTraitSet
 
 
 class Test_generate:
