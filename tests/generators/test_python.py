@@ -28,7 +28,6 @@ import sys
 
 from typing import Any, NamedTuple
 
-from unittest import mock
 import pytest
 
 from openassetio import TraitsData
@@ -372,13 +371,6 @@ class Test_AllPropertiesTrait:
         assert all_properties_trait.kId == "openassetio-traitgen-test-all:aNamespace.AllProperties"
 
 
-class Test_AllPropertiesTrait__Construction:
-    def test_exposes_wrapped_data_via_protected_member(self, all_properties_trait):
-        a_data = mock.Mock()
-        trait = all_properties_trait(a_data)
-        assert trait._data is a_data  # pylint: disable=protected-access
-
-
 class Test_AllPropertiesTrait_isImbued:
     def test_when_data_has_trait_returns_true(self, all_properties_trait):
         a_data = TraitsData({all_properties_trait.kId})
@@ -552,7 +544,9 @@ class Test_LocalAndExternalTraitSpecification:
         a_traits_data = TraitsData()
         a_specification = local_and_external_trait_specification(a_traits_data)
         a_trait = a_specification.openassetioTraitgenTestTraitsOnlyANamespaceNoPropertiesTrait()
-        assert a_trait._data is a_traits_data  # pylint: disable=protected-access
+        assert (
+            a_trait._NoPropertiesTrait__data is a_traits_data  # pylint: disable=protected-access
+        )
 
     def test_package_local_trait_accessor_is_of_expected_type(
         self, local_and_external_trait_specification, module_all
@@ -569,7 +563,9 @@ class Test_LocalAndExternalTraitSpecification:
         a_traits_data = TraitsData()
         a_specification = local_and_external_trait_specification(a_traits_data)
         a_trait = a_specification.openassetioTraitgenTestAllANamespaceNoPropertiesTrait()
-        assert a_trait._data is a_traits_data  # pylint: disable=protected-access
+        assert (
+            a_trait._NoPropertiesTrait__data is a_traits_data  # pylint: disable=protected-access
+        )
 
     def test_default_constructor_raises_error(self, local_and_external_trait_specification):
         with pytest.raises(TypeError):

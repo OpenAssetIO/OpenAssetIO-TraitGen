@@ -56,14 +56,14 @@ class {{ specification.id | to_py_class_name }}Specification:
         """
         if not isinstance(traitsData, TraitsData):
             raise TypeError("Specifications must be constructed with a TraitsData instance")
-        self._data = traitsData
+        self.__data = traitsData
 
     def traitsData(self):
         """
         Returns the underlying (shared) @fqref{TraitsData} "TraitsData"
         instance held by this specification.
         """
-        return self._data
+        return self.__data
 
     @classmethod
     def create(cls):

@@ -31,7 +31,7 @@ class {{ trait.name | to_py_class_name }}Trait:
         @param traitsData @fqref{TraitsData}} "TraitsData" The target
         data that holds/will hold the traits properties.
         """
-        self._data = traitsData
+        self.__data = traitsData
 
     def isImbued(self):
         """
@@ -40,7 +40,7 @@ class {{ trait.name | to_py_class_name }}Trait:
         @return `True` if the underlying data has this trait, `False`
         otherwise.
         """
-        return self.isImbuedTo(self._data)
+        return self.isImbuedTo(self.__data)
 
     @classmethod
     def isImbuedTo(cls, traitsData):
@@ -58,7 +58,7 @@ class {{ trait.name | to_py_class_name }}Trait:
 
         If the data already has this trait, it is a no-op.
         """
-        self._data.addTrait(self.kId)
+        self.__data.addTrait(self.kId)
 
     @classmethod
     def imbueTo(cls, traitsData):
@@ -82,7 +82,7 @@ class {{ trait.name | to_py_class_name }}Trait:
         """
         if not isinstance({{ VarName }}, {{ VarType }}):
             raise TypeError("{{ property.id }} must be a '{{ VarType }}'.")
-        self._data.setTraitProperty(self.kId, "{{ property.id }}", {{ VarName }})
+        self.__data.setTraitProperty(self.kId, "{{ property.id }}", {{ VarName }})
 
     def get{{ VarMethodName }}(self, defaultValue: {{ VarType }}=None) -> Union[{{ VarType }}, None]:
         """
@@ -90,7 +90,7 @@ class {{ trait.name | to_py_class_name }}Trait:
 
         {{ property.description | wordwrap(64) | indent(8) }}
         """
-        value = self._data.getTraitProperty(self.kId, "{{ property.id }}")
+        value = self.__data.getTraitProperty(self.kId, "{{ property.id }}")
         if value is None:
             return defaultValue
 
