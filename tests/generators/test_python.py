@@ -30,7 +30,7 @@ from typing import Any, NamedTuple
 
 import pytest
 
-from openassetio import SpecificationBase, TraitBase, TraitsData
+from openassetio import TraitsData
 from openassetio_traitgen import generate
 from openassetio_traitgen.generators import python as python_generator
 
@@ -367,11 +367,47 @@ class Test_python_package_specifications_only:
 
 
 class Test_AllPropertiesTrait:
-    def test_subclass_of_openassetio_Trait(self, all_properties_trait):
-        assert issubclass(all_properties_trait, TraitBase)
-
     def test_traitId_is_composed_of_package_aNamespace_and_name(self, all_properties_trait):
         assert all_properties_trait.kId == "openassetio-traitgen-test-all:aNamespace.AllProperties"
+
+
+class Test_AllPropertiesTrait_isImbued:
+    def test_when_data_has_trait_returns_true(self, all_properties_trait):
+        a_data = TraitsData({all_properties_trait.kId})
+        assert all_properties_trait.isImbuedTo(a_data) is True
+        trait = all_properties_trait(a_data)
+        assert trait.isImbued() is True
+
+    def test_when_data_does_not_have_trait_returns_false(self, all_properties_trait):
+        a_data = TraitsData({"someOtherTrait"})
+        assert all_properties_trait.isImbuedTo(a_data) is False
+        trait = all_properties_trait(a_data)
+        assert trait.isImbued() is False
+
+
+class Test_AllPropertiesTrait_imbue:
+    def test_when_data_empty_then_adds_trait(self, all_properties_trait):
+        a_data = TraitsData()
+        trait = all_properties_trait(a_data)
+        trait.imbue()
+        assert trait.isImbued()
+        assert trait.kId in a_data.traitSet()
+
+    def test_when_data_has_trait_then_is_noop(self, all_properties_trait):
+        a_data = TraitsData({all_properties_trait.kId})
+        trait = all_properties_trait(a_data)
+        trait.imbue()
+
+
+class Test_AllPropertiesTrait_imbueTo:
+    def test_when_data_empty_then_adds_trait(self, all_properties_trait):
+        a_data = TraitsData()
+        all_properties_trait.imbueTo(a_data)
+        assert all_properties_trait.kId in a_data.traitSet()
+
+    def test_when_data_has_trait_then_is_noop(self, all_properties_trait):
+        a_data = TraitsData({all_properties_trait.kId})
+        all_properties_trait.imbueTo(a_data)
 
 
 class PropertyTestValues(NamedTuple):
@@ -493,11 +529,6 @@ class Test_AllPropertiesTrait_set:
 
 
 class Test_LocalAndExternalTraitSpecification:
-    def test_subclass_of_openassetio_SpecificationBase(
-        self, local_and_external_trait_specification
-    ):
-        assert issubclass(local_and_external_trait_specification, SpecificationBase)
-
     def test_external_trait_accessor_is_of_expected_type(
         self, local_and_external_trait_specification, module_traits_only
     ):
@@ -513,7 +544,9 @@ class Test_LocalAndExternalTraitSpecification:
         a_traits_data = TraitsData()
         a_specification = local_and_external_trait_specification(a_traits_data)
         a_trait = a_specification.openassetioTraitgenTestTraitsOnlyANamespaceNoPropertiesTrait()
-        assert a_trait._data is a_traits_data  # pylint: disable=protected-access
+        assert (
+            a_trait._NoPropertiesTrait__data is a_traits_data  # pylint: disable=protected-access
+        )
 
     def test_package_local_trait_accessor_is_of_expected_type(
         self, local_and_external_trait_specification, module_all
@@ -530,7 +563,28 @@ class Test_LocalAndExternalTraitSpecification:
         a_traits_data = TraitsData()
         a_specification = local_and_external_trait_specification(a_traits_data)
         a_trait = a_specification.openassetioTraitgenTestAllANamespaceNoPropertiesTrait()
-        assert a_trait._data is a_traits_data  # pylint: disable=protected-access
+        assert (
+            a_trait._NoPropertiesTrait__data is a_traits_data  # pylint: disable=protected-access
+        )
+
+    def test_default_constructor_raises_error(self, local_and_external_trait_specification):
+        with pytest.raises(TypeError):
+            local_and_external_trait_specification()  # pylint: disable=no-value-for-parameter
+
+    def test_when_supplied_invalid_object_then_raises_TypeError(
+        self, local_and_external_trait_specification
+    ):
+        with pytest.raises(TypeError):
+            local_and_external_trait_specification({})
+        with pytest.raises(TypeError):
+            local_and_external_trait_specification(None)
+        with pytest.raises(TypeError):
+            local_and_external_trait_specification("a string")
+
+    def test_all_traits_set_in_data(self, local_and_external_trait_specification):
+        specification = local_and_external_trait_specification.create()
+        data = specification.traitsData()
+        assert data.traitSet() == local_and_external_trait_specification.kTraitSet
 
 
 class Test_generate:
