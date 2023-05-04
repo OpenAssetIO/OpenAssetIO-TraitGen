@@ -15,6 +15,9 @@ runs:
       with:
         repository: OpenAssetIO/OpenAssetIO
         path: openassetio-checkout
+        # Pin to ensure compatibility with the current release until
+        # alpha.11 is release with API removals.
+        ref: v1.0.0-alpha.10
 
     - name: Build OpenAssetIO
       shell: bash
