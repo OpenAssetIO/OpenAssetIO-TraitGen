@@ -1,17 +1,26 @@
 Release Notes
 =============
 
+v1.0.0-alpha.x
+--------------
+
+### Bug fixes
+
+- Bumped `pyyaml` version to `6.0.0` to avoid issues with `cython` 3+,
+  and `conan` `1.60.1` to be compatible with `pyyaml` `6.0.0`.
+  [pyyaml/#601](https://github.com/yaml/pyyaml/issues/601)
+
 v1.0.0-alpha.6
 --------------
 
 ### Improvements
+
 - Removed dependence on `TraitsBase` and `SpecificationBase` types in
   generated python code, rather generating the functionality previously
   provided by the base directly into the traits and specifications. This
   mirrors the approach taken by the C++ generator, and breaks a
   dependency on OpenAssetIO.
   [#19](https://github.com/OpenAssetIO/OpenAssetIO-TraitGen/issues/19)
-
 
 v1.0.0-alpha.5
 --------------
@@ -28,7 +37,6 @@ v1.0.0-alpha.5
 
 - Fixed line breaks to no longer be platform-specific, and instead
   conform to Unix-style `\n`.
-
 
 v1.0.0-alpha.4
 --------------
