@@ -1,5 +1,5 @@
 pytest==6.2.4
-pyyaml==5.4.1
+pyyaml==6.0.0  # We are currently constrained to pyyaml=6.0.0 exactly due to conan 1.60.1
 pylint==2.15.5  # Guard against warn/error changes
 jsonschema==4.7.2
 tree-sitter==0.20.1  # For parsing C++ AST to assert on comment text.
