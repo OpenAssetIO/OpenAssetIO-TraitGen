@@ -20,7 +20,7 @@ jobs:
         os: ['windows-latest', 'ubuntu-latest', 'macos-latest']
         python: ['3.7', '3.9', '3.10']
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
@@ -36,7 +36,7 @@ jobs:
     container:
       image: ghcr.io/openassetio/openassetio-build
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build
         uses: ./.github/build_openassetio
 
@@ -47,7 +47,7 @@ jobs:
     container:
       image: aswf/ci-vfxall:2022-clang14.3
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Get OpenAssetIO
         uses: actions/download-artifact@v3
