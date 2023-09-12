@@ -369,16 +369,15 @@ TEMPLATE_TEST_CASE("Property getters", "", openassetio_abi::Bool, openassetio_ab
 
     WHEN("property is queried without a default") {
       THEN("exception is thrown") {
-        // TODO(DF): better deterministic exception message.
-        CHECK_THROWS_AS(fixture.getProperty(), std::out_of_range);
+        CHECK_THROWS_MATCHES(fixture.getProperty(), std::runtime_error,
+                             Catch::Matchers::Message("Property is not set."));
       }
     }
 
     WHEN("property is queried with a default") {
-      THEN("exception is thrown") {
-        // TODO(DF): better deterministic exception message.
-        CHECK_THROWS_AS(fixture.getProperty(Fixture::kDefaultValue), std::out_of_range);
-      }
+      const PropertyType value = fixture.getProperty(Fixture::kDefaultValue);
+
+      THEN("default is returned") { CHECK(value == Fixture::kDefaultValue); }
     }
   }
 
