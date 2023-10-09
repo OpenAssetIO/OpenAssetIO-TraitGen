@@ -4,4 +4,4 @@ pylint==2.15.5  # Guard against warn/error changes
 jsonschema==4.7.2
 tree-sitter==0.20.1  # For parsing C++ AST to assert on comment text.
 tree-sitter-languages==1.5.0
-openassetio>=1.0.0b1
+#openassetio>=1.0.0b1
