@@ -1,6 +1,16 @@
 Release Notes
 =============
 
+v1.0.0-alpha.x
+--------------
+
+### Breaking Changes
+
+- Updated to use non-deprecated version of `TraitsData`.
+  Due to this, the required runtime openassetio version is now beta
+  1.0.0.
+  [#1127](https://github.com/OpenAssetIO/OpenAssetIO/issues/1127)
+
 v1.0.0-alpha.7
 --------------
 

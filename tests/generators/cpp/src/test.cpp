@@ -138,7 +138,7 @@ SCENARIO("Common specification utility functions") {
         openassetio_traitgen_test_all::specifications::test::TwoLocalTraitsSpecification::create();
 
     WHEN("its TraitsData is retrieved") {
-      openassetio::TraitsDataPtr traitsData;
+      openassetio::trait::TraitsDataPtr traitsData;
       traitsData = specification.traitsData();
 
       THEN("the TraitsData is imbued with the expected traits") {
@@ -163,7 +163,7 @@ SCENARIO("Common specification utility functions") {
 SCENARIO("Common trait utility functions") {
   GIVEN("a TraitsData and a trait view on it") {
     using openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait;
-    auto traitsData = openassetio::TraitsData::make();
+    auto traitsData = openassetio::trait::TraitsData::make();
     const AllPropertiesTrait trait{traitsData};
 
     WHEN("trait view class method is used to query whether TraitsData is imbued") {
@@ -319,8 +319,8 @@ TEMPLATE_TEST_CASE("Property getters", "", openassetio_abi::Bool, openassetio_ab
   using Fixture = PropertyFixture<PropertyType>;
 
   GIVEN("an AllPropertiesTrait view of a fully populated TraitsData") {
-    const openassetio_abi::TraitsDataPtr traitsData =
-        openassetio_abi::TraitsData::make({AllPropertiesTrait::kId});
+    const openassetio_abi::trait::TraitsDataPtr traitsData =
+        openassetio_abi::trait::TraitsData::make({AllPropertiesTrait::kId});
 
     traitsData->setTraitProperty(AllPropertiesTrait::kId, Fixture::kPropertyKey,
                                  Fixture::kExpectedValue);
@@ -341,8 +341,8 @@ TEMPLATE_TEST_CASE("Property getters", "", openassetio_abi::Bool, openassetio_ab
   }
 
   GIVEN("an AllPropertiesTrait view of an imbued TraitsData with no properties set") {
-    const openassetio_abi::TraitsDataPtr traitsData =
-        openassetio_abi::TraitsData::make({AllPropertiesTrait::kId});
+    const openassetio_abi::trait::TraitsDataPtr traitsData =
+        openassetio_abi::trait::TraitsData::make({AllPropertiesTrait::kId});
 
     const Fixture fixture{AllPropertiesTrait{traitsData}};
 
@@ -363,7 +363,8 @@ TEMPLATE_TEST_CASE("Property getters", "", openassetio_abi::Bool, openassetio_ab
   GIVEN("an AllPropertiesTrait view of a blank TraitsData") {
     using openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait;
 
-    const openassetio_abi::TraitsDataPtr traitsData = openassetio_abi::TraitsData::make();
+    const openassetio_abi::trait::TraitsDataPtr traitsData =
+        openassetio_abi::trait::TraitsData::make();
 
     const Fixture fixture{AllPropertiesTrait{traitsData}};
 
@@ -384,8 +385,8 @@ TEMPLATE_TEST_CASE("Property getters", "", openassetio_abi::Bool, openassetio_ab
   GIVEN("an AllPropertiesTrait view of a TraitsData populated with unexpected types") {
     using openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait;
 
-    const openassetio_abi::TraitsDataPtr traitsData =
-        openassetio_abi::TraitsData::make({AllPropertiesTrait::kId});
+    const openassetio_abi::trait::TraitsDataPtr traitsData =
+        openassetio_abi::trait::TraitsData::make({AllPropertiesTrait::kId});
 
     traitsData->setTraitProperty(AllPropertiesTrait::kId, Fixture::kPropertyKey,
                                  Fixture::kMismatchedTypeValue);
@@ -419,7 +420,8 @@ TEMPLATE_TEST_CASE("Property setters", "", openassetio_abi::Bool, openassetio_ab
   using Fixture = PropertyFixture<PropertyType>;
 
   GIVEN("an AllPropertiesTrait view of a blank TraitsData") {
-    const openassetio_abi::TraitsDataPtr traitsData = openassetio_abi::TraitsData::make();
+    const openassetio_abi::trait::TraitsDataPtr traitsData =
+        openassetio_abi::trait::TraitsData::make();
     Fixture fixture{AllPropertiesTrait{traitsData}};
 
     WHEN("property is set") {
@@ -444,7 +446,8 @@ SCENARIO("Moveable property setters") {
   using openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait;
 
   GIVEN("an AllPropertiesTrait view of a blank TraitsData") {
-    const openassetio_abi::TraitsDataPtr traitsData = openassetio_abi::TraitsData::make();
+    const openassetio_abi::trait::TraitsDataPtr traitsData =
+        openassetio_abi::trait::TraitsData::make();
     AllPropertiesTrait trait{traitsData};
 
     WHEN("string property is set with a moveable string") {
@@ -560,7 +563,7 @@ SCENARIO("Specifications providing trait views") {
 
 SCENARIO("Specification-provided trait views updating wrapped TraitsData") {
   GIVEN("an external TraitsData") {
-    const auto traitsData = openassetio_abi::TraitsData::make();
+    const auto traitsData = openassetio_abi::trait::TraitsData::make();
 
     AND_GIVEN("a specification wrapping the TraitsData") {
       const openassetio_traitgen_test_all::specifications::test::LocalAndExternalTraitSpecification

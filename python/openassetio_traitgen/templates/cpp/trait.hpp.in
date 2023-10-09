@@ -9,7 +9,7 @@
 #include <stdexcept>
 #include <utility>
 
-#include <openassetio/TraitsData.hpp>
+#include <openassetio/trait/TraitsData.hpp>
 #include <openassetio/trait/collection.hpp>
 #include <openassetio/trait/property.hpp>
 
@@ -34,7 +34,7 @@ public:
   /**
    * Construct this trait view, wrapping the given TraitsData instance.
    */
-  explicit {{ trait.name | to_cpp_class_name }}Trait(openassetio_abi::TraitsDataPtr traitsData)
+  explicit {{ trait.name | to_cpp_class_name }}Trait(openassetio_abi::trait::TraitsDataPtr traitsData)
     : traitsData_{std::move(traitsData)}
   {}
 
@@ -45,7 +45,7 @@ public:
    * @return `true` if the given TraitsData instance has this trait
    * set, `false` otherwise.
    */
-  [[nodiscard]] static bool isImbuedTo(const openassetio::TraitsDataPtr& traitsData) {
+  [[nodiscard]] static bool isImbuedTo(const openassetio::trait::TraitsDataPtr& traitsData) {
     return traitsData->hasTrait(kId);
   }
 
@@ -72,7 +72,7 @@ public:
    *
    * @param traitsData The instance to apply the trait to.
    **/
-  static void imbueTo(const openassetio::TraitsDataPtr& traitsData) { traitsData->addTrait(kId); }
+  static void imbueTo(const openassetio::trait::TraitsDataPtr& traitsData) { traitsData->addTrait(kId); }
 
   {%- if trait.properties -%}
     {%- for property in trait.properties -%}
@@ -127,7 +127,7 @@ public:
   {%- endif %}
 
 private:
-  openassetio_abi::TraitsDataPtr traitsData_;
+  openassetio_abi::trait::TraitsDataPtr traitsData_;
 };
 }  // namespace traits::{{ namespace.id | to_cpp_namespace_name }}
 }  // namespace {{ traitgen_abi_version }}
