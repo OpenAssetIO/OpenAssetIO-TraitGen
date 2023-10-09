@@ -26,11 +26,13 @@ jobs:
           python -m pip install -r tests/requirements.txt
 
       - name: Lint
-        uses: TheFoundryVisionmongers/fn-pylint-action@v1.1
+        uses: TheFoundryVisionmongers/fn-pylint-action@v2.0
         with:
-          pylint-disable: fixme  # We track 'todo's through other means
-          pylint-rcfile: "./pyproject.toml"
-          pylint-paths: "python tests"
+          pylint-args: >
+            --disable=fixme
+            --rcfile=./pyproject.toml
+            python
+            tests
 
   black:
     runs-on: ubuntu-latest
