@@ -30,7 +30,7 @@ from typing import Any, NamedTuple
 
 import pytest
 
-from openassetio import TraitsData
+from openassetio.trait import TraitsData
 from openassetio_traitgen import generate
 from openassetio_traitgen.generators import python as python_generator
 

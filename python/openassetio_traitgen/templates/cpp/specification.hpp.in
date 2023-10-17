@@ -8,7 +8,7 @@
 
 #include <memory>
 
-#include <openassetio/TraitsData.hpp>
+#include <openassetio/trait/TraitsData.hpp>
 #include <openassetio/trait/collection.hpp>
 
 namespace openassetio_abi = openassetio::{{ openassetio_abi_version }};
@@ -61,7 +61,7 @@ public:
    */
   static {{ specification.id | to_cpp_class_name }}Specification create() {
     return {{ specification.id | to_cpp_class_name }}Specification{
-      openassetio_abi::TraitsData::make(kTraitSet)};
+      openassetio_abi::trait::TraitsData::make(kTraitSet)};
   }
 
   /**
@@ -73,7 +73,7 @@ public:
    * visible to any other specifications or traits that wrap the same
    * TraitsData instance.
    */
-  explicit {{ specification.id | to_cpp_class_name }}Specification(openassetio_abi::TraitsDataPtr traitsData)
+  explicit {{ specification.id | to_cpp_class_name }}Specification(openassetio_abi::trait::TraitsDataPtr traitsData)
     : traitsData_{std::move(traitsData)}
   {}
 
@@ -81,7 +81,7 @@ public:
    * Returns the underlying (shared) TraitsData instance held by this
    * specification.
    */
-  [[nodiscard]] const openassetio_abi::TraitsDataPtr& traitsData() const {
+  [[nodiscard]] const openassetio_abi::trait::TraitsDataPtr& traitsData() const {
     return traitsData_;
   }
 
@@ -96,7 +96,7 @@ public:
 {% endfor %}
 
 private:
-  openassetio_abi::TraitsDataPtr traitsData_;
+  openassetio_abi::trait::TraitsDataPtr traitsData_;
 };
 }  // namespace specifications::{{ namespace.id | to_cpp_namespace_name }}
 }  // namespace {{ traitgen_abi_version }}
