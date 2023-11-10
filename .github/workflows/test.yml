@@ -40,7 +40,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ['windows-2019', 'ubuntu-20.04', 'macos-11']
+        config:
+          - os: windows-2019
+            site-packages: Lib/site-packages
+          - os: ubuntu-20.04
+            site-packages: lib/python3.9/site-packages
+          - os: macos-11
+            site-packages: lib/python3.9/site-packages
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v3
 
@@ -59,7 +68,6 @@ jobs:
 
       - name: Set CMAKE_PREFIX_PATH
         run: echo "CMAKE_PREFIX_PATH=${{ github.workspace }}/openassetio" >> $GITHUB_ENV
-        shell: bash
 
       - name: Install ctest dependencies
         run: >
@@ -75,16 +83,5 @@ jobs:
           # Set the PYTHONPATH to the downloaded-artifact
           # Even though we are running C++ tests, pytest still discovers
           # all the python files, so they need to be valid imports.
-          PYTHONPATH: ./openassetio/lib/python3.9/site-packages
-          OPENASSETIO_TRAITGENTEST_CMAKE_PRESET: lint
-
-      # The site-packages layout on windows is different.
-      - name: Test (Windows)
-        if: runner.os == 'Windows'
-        run: python -m pytest -v -m ctest
-        env:
-          # Set the PYTHONPATH to the downloaded-artifact
-          # Even though we are running C++ tests, pytest still discovers
-          # all the python files, so they need to be valid imports.
-          PYTHONPATH: ./openassetio/Lib/site-packages
+          PYTHONPATH: ./openassetio/${{ matrix.config.site-packages }}
           OPENASSETIO_TRAITGENTEST_CMAKE_PRESET: lint
