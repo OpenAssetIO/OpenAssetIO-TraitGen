@@ -40,7 +40,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ['windows-latest', 'ubuntu-latest', 'macos-latest']
+        os: ['windows-2019', 'ubuntu-20.04', 'macos-11']
     steps:
       - uses: actions/checkout@v3
 
@@ -52,8 +52,8 @@ jobs:
         uses: dawidd6/action-download-artifact@v2
         with:
           name: openassetio-${{ runner.os }}
-          repo: elliotcmorris/openassetio
-          workflow: build-archive.yml
+          repo: openassetio/openassetio
+          workflow: build.yml
           branch: main
           path: openassetio
 
@@ -86,5 +86,5 @@ jobs:
           # Set the PYTHONPATH to the downloaded-artifact
           # Even though we are running C++ tests, pytest still discovers
           # all the python files, so they need to be valid imports.
-          PYTHONPATH: ./openassetio/lib/site-packages
+          PYTHONPATH: ./openassetio/Lib/site-packages
           OPENASSETIO_TRAITGENTEST_CMAKE_PRESET: lint
