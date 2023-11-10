@@ -35,8 +35,8 @@ jobs:
         run: python -m pytest -v -m "not ctest"
 
   ctest:
-    name: C++ tests ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+    name: C++ tests ${{ matrix.config.os }}
+    runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -76,8 +76,7 @@ jobs:
           -r tests/requirements.txt
           .
 
-      - name: Test (Linux/MacOS)
-        if: runner.os != 'Windows'
+      - name: Test
         run: python -m pytest -v -m ctest
         env:
           # Set the PYTHONPATH to the downloaded-artifact
