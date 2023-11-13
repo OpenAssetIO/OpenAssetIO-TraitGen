@@ -57,6 +57,11 @@ jobs:
         with:
           python-version: 3.9
 
+      # TODO: EM. This is not pinned to the appropriate SHA just yet, as
+      # we don't have runs from before we introduced the build.yml
+      # action, which is what the correct pin was when we introduced
+      # this. As soon as there's a proper update, pin this the the same
+      # tag that the python tests above use.
       - name: Download Latest OpenAssetIO Artifact
         uses: dawidd6/action-download-artifact@v2
         with:
@@ -64,6 +69,7 @@ jobs:
           repo: openassetio/openassetio
           workflow: build.yml
           branch: main
+          commit: 2198d02b8415785effb779ed76eba78ed6362fb9
           path: openassetio
 
       - name: Install ctest dependencies
