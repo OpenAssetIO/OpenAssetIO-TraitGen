@@ -1,2 +1,2 @@
- # Disable end of line conversions
-* -text
+ # Force linux style line endings.
+* text=auto eol=lf
