@@ -66,9 +66,6 @@ jobs:
           branch: main
           path: openassetio
 
-      - name: Set CMAKE_PREFIX_PATH
-        run: echo "CMAKE_PREFIX_PATH=${{ github.workspace }}/openassetio" >> $GITHUB_ENV
-
       - name: Install ctest dependencies
         run: >
           python -m pip install
@@ -84,3 +81,4 @@ jobs:
           # all the python files, so they need to be valid imports.
           PYTHONPATH: ./openassetio/${{ matrix.config.site-packages }}
           OPENASSETIO_TRAITGENTEST_CMAKE_PRESET: lint
+          CMAKE_PREFIX_PATH: ./openassetio/
