@@ -62,6 +62,7 @@ jobs:
       # action, which is what the correct pin was when we introduced
       # this. As soon as there's a proper update, pin this the the same
       # tag that the python tests above use.
+      # The SHA used here is the first SHA we introduced builds with.
       - name: Download Latest OpenAssetIO Artifact
         uses: dawidd6/action-download-artifact@v2
         with:
