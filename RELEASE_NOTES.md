@@ -11,6 +11,13 @@ v1.0.0-alpha.x
   1.0.0.
   [#1127](https://github.com/OpenAssetIO/OpenAssetIO/issues/1127)
 
+### Bug fixes
+
+- Added support for setuptools 69.0.0 and above. This setuptools update
+  removed transitionary support for mismatched `setup.py` and
+  `pyproject.toml` configurations. `setup.py` has been removed.
+  [#59](https://github.com/OpenAssetIO/OpenAssetIO-TraitGen/issues/59)
+
 v1.0.0-alpha.7
 --------------
 
