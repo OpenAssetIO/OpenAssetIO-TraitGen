@@ -13,7 +13,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "openassetio-traitgen"
-version = "1.0.0a7"
+version = "1.0.0a8"
 requires-python = ">=3.7"
 dependencies = ["jinja2==3.1.2", "pyyaml==6.0.0", "jsonschema==4.7.2"]
 
