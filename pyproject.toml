@@ -14,6 +14,7 @@ build-backend = "setuptools.build_meta"
 name = "openassetio-traitgen"
 version = "1.0.0a7"
 requires-python = ">=3.7"
+dependencies = ["jinja2==3.1.2", "pyyaml==6.0.0", "jsonschema==4.7.2"]
 
 authors = [
     { name = "Contributors to the OpenAssetIO project", email = "openassetio-discussion@lists.aswf.io" }
@@ -35,6 +36,9 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Software Development :: Code Generators"
 ]
+
+[project.scripts]
+openassetio-traitgen = "openassetio_traitgen.__main__:main"
 
 [project.readme]
 text = """\
@@ -72,6 +76,12 @@ content-type = "text/markdown"
 OpenAssetIO = "https://github.com/OpenAssetIO/OpenAssetIO"
 Source = "https://github.com/OpenAssetIO/OpenAssetIO-TraitGen"
 Issues = "https://github.com/OpenAssetIO/OpenAssetIO-TraitGen/issues"
+
+[tool.setuptools.packages.find]
+where = ["python"]
+
+[tool.setuptools]
+package-dir = {"" = "python"}
 
 # NB: This requires the use of pyproject-flake8
 [tool.flake8]
