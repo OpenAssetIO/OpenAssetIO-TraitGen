@@ -11,10 +11,16 @@ v1.0.0-alpha.x
   1.0.0.
   [#1127](https://github.com/OpenAssetIO/OpenAssetIO/issues/1127)
 
+### Improvements
+
+- Pinned `setuptools` version used to build from source to `68.x`, which
+  is the latest version to maintain compatability with Python 3.7.
+  [#59](https://github.com/OpenAssetIO/OpenAssetIO-TraitGen/issues/59)
+
 ### Bug fixes
 
-- Added support for setuptools 69.0.0 and above. This setuptools update
-  removed transitionary support for mismatched `setup.py` and
+- Added support for `setuptools` `69.0.0` and above. This `setuptools`
+  update removed transitionary support for mismatched `setup.py` and
   `pyproject.toml` configurations. `setup.py` has been removed.
   [#59](https://github.com/OpenAssetIO/OpenAssetIO-TraitGen/issues/59)
 
