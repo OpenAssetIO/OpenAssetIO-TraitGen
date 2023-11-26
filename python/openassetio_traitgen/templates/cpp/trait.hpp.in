@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <optional>
 #include <stdexcept>
 #include <utility>
 
@@ -109,19 +110,19 @@ public:
   }
 
   /**
-   * Gets the value of the {{ property.id }} property or throws if
-   * not found or is of an unexpected type.
+   * Gets the value of the {{ property.id }} property. Returns an empty
+   * optional if not found or is of an unexpected type.
    *
    * {{ property.description |  wordwrap(69, wrapstring="\n* ") | indent(4) }}
    */
-  [[nodiscard]] {{ VarType }} get{{ VarMethodName }}() const {
+  [[nodiscard]] std::optional<{{ VarType }}> get{{ VarMethodName }}() const {
     if (property::Value value; traitsData_->getTraitProperty(&value, kId, "{{ property.id }}")) {
       if ({{ VarType }}* maybeOut = std::get_if<{{ VarType }}>(&value)) {
         return *maybeOut;
       }
       throw std::runtime_error{"Invalid stored value type: should be '{{ VarType }}'."};
     }
-    throw std::runtime_error{"Property is not set."};
+    return std::optional<{{VarType}}>{};
   }
     {%-  endfor %}
   {%- endif %}

@@ -1,6 +1,16 @@
 Release Notes
 =============
 
+v1.0.0-alpha.x
+--------------
+
+### Breaking Changes
+
+- C++ `getProperty` methods now return `std::optional<T>` rather
+  than throwing when invoked without a default parameter. This mirrors
+  the python behaviour of returning `None` in this case.
+  [#57](https://github.com/OpenAssetIO/OpenAssetIO-TraitGen/issues/57)
+
 v1.0.0-alpha.8
 --------------
 
