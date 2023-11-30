@@ -328,9 +328,16 @@ TEMPLATE_TEST_CASE("Property getters", "", openassetio_abi::Bool, openassetio_ab
     const Fixture fixture{AllPropertiesTrait{traitsData}};
 
     WHEN("property is queried without a default") {
-      const PropertyType value = fixture.getProperty();
+      const std::optional<PropertyType> value = fixture.getProperty();
 
-      THEN("value is as expected") { CHECK(value == Fixture::kExpectedValue); }
+      THEN("value is as expected") {
+        REQUIRE(value.has_value());
+        // Guard required because clang-tidy isn't clever enough to
+        // understand the require.
+        if (value.has_value()) {
+          CHECK(value.value() == Fixture::kExpectedValue);
+        }
+      }
     }
 
     WHEN("property is queried with a default") {
@@ -347,10 +354,7 @@ TEMPLATE_TEST_CASE("Property getters", "", openassetio_abi::Bool, openassetio_ab
     const Fixture fixture{AllPropertiesTrait{traitsData}};
 
     WHEN("property is queried without a default") {
-      THEN("exception is thrown") {
-        CHECK_THROWS_MATCHES(fixture.getProperty(), std::runtime_error,
-                             Catch::Matchers::Message("Property is not set."));
-      }
+      THEN("optional return is empty") { CHECK(!fixture.getProperty().has_value()); }
     }
 
     WHEN("property is queried with a default") {
@@ -369,10 +373,7 @@ TEMPLATE_TEST_CASE("Property getters", "", openassetio_abi::Bool, openassetio_ab
     const Fixture fixture{AllPropertiesTrait{traitsData}};
 
     WHEN("property is queried without a default") {
-      THEN("exception is thrown") {
-        CHECK_THROWS_MATCHES(fixture.getProperty(), std::runtime_error,
-                             Catch::Matchers::Message("Property is not set."));
-      }
+      THEN("optional return is empty") { CHECK(!fixture.getProperty().has_value()); }
     }
 
     WHEN("property is queried with a default") {

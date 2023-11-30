@@ -181,8 +181,8 @@ class Test_cpp_package_all_traits_aNamespace_AllPropertiesTrait:
             )
             == f"""
   /**
-   * Gets the value of the {property_name} property or throws if
-   * not found or is of an unexpected type.
+   * Gets the value of the {property_name} property. Returns an empty
+   * optional if not found or is of an unexpected type.
    *
    * A {property_type}-typed property.
    */
