@@ -21,7 +21,7 @@ jobs:
         python: ['3.7', '3.9', '3.10']
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
       # Pin openassetio to match C++ version, since
