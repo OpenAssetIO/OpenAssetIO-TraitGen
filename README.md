@@ -37,7 +37,7 @@ openassetio-traitgen -h
 ## Development notes
 
 This package follows the main
-[OpenAssetIO contribution process](https://github.com/OpenAssetIO/OpenAssetIO/blob/main/contributing/PROCESS.md).
+[OpenAssetIO contribution process](https://github.com/OpenAssetIO/OpenAssetIO/blob/main/doc/contributing/PROCESS.md).
 
 However, as an (almost) pure Python project, it adheres to strict PEP-8
 naming conventions.
