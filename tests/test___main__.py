@@ -303,11 +303,8 @@ class Test_CLI_args:
 
 
 def execute_cli(*args):
-    # Str wrapping prevents issues with Path objects in Windows
-    # Python 3.7
     all_args = ["openassetio-traitgen"]
-    str_args = [str(a) for a in args]
-    all_args.extend(str_args)
+    all_args.extend(args)
     # We explicitly don't want an exception to be raised.
     # pylint: disable=subprocess-run-check
     return subprocess.run(all_args, capture_output=True, encoding="utf-8")

@@ -1,6 +1,16 @@
 Release Notes
 =============
 
+v1.0.0-alpha.x
+--------------
+
+### Breaking changes
+
+- Removed support for VFX Reference Platform CY22 or lower and added
+  support for CY24. This means Python 3.7 and 3.9 builds are no longer
+  tested or published, whereas Python 3.11 is now published.
+  [OpenAssetIO#1351](https://github.com/OpenAssetIO/OpenAssetIO/issues/1351)
+
 v1.0.0-alpha.9
 --------------
 
