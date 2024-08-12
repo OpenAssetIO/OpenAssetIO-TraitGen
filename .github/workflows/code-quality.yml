@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   pylint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: Pylint
     steps:
       - uses: actions/checkout@v3
@@ -18,7 +18,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.9
+          python-version: "3.11"
 
       - name: Install dependencies
         # Pin openassetio to match C++ version, since
@@ -39,7 +39,7 @@ jobs:
             tests
 
   black:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: Python formatting
     steps:
       - uses: actions/checkout@v3
@@ -47,7 +47,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.9
+          python-version: "3.11"
 
       - name: Install dependencies
         run: |
@@ -57,7 +57,7 @@ jobs:
         run: black --diff --check .
 
   markdown-link-check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4
     - uses: gaurav-nelson/github-action-markdown-link-check@v1
