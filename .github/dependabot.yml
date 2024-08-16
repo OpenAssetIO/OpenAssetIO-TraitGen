@@ -9,8 +9,3 @@ updates:
       interval: "weekly"
     commit-message:
       prefix: "[CI]"
-    ignore:
-      # TODO(DF): Remove once no longer stuck on ASWF CY22 Docker image
-      # for CI (causing nodejs glibc error).
-      - dependency-name: "actions/checkout"
-        update-types: [ "version-update:semver-major" ]

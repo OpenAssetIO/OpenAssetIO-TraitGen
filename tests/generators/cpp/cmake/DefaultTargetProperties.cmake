@@ -45,15 +45,6 @@ function(openassetio_traitgentest_set_default_target_properties target_name)
         target_link_options(${target_name} PRIVATE "-Wl,--exclude-libs,ALL")
     endif ()
 
-    # Whether to use the old or new C++ ABI with gcc.
-    if (IS_GCC_GTEQ_5)
-        if (OPENASSETIO_TRAITGENTEST_GLIBCXX_USE_CXX11_ABI)
-            target_compile_definitions(${target_name} PRIVATE _GLIBCXX_USE_CXX11_ABI=1)
-        else ()
-            target_compile_definitions(${target_name} PRIVATE _GLIBCXX_USE_CXX11_ABI=0)
-        endif ()
-    endif ()
-
     #-------------------------------------------------------------------
     # Library version
 

@@ -11,7 +11,7 @@ corresponding python package that can be used for custom generation.
 
 ## Supported languages
 
-- Python 3.7+
+- Python 3.10+
 - C++ 17+
 
 ## Installation

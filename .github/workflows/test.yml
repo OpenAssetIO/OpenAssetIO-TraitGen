@@ -17,18 +17,25 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ['windows-latest', 'ubuntu-latest', 'macos-13']
-        python: ['3.7', '3.9', '3.10']
+        os: ['windows-2022', 'ubuntu-22.04', 'macos-13']
+        python: ["3.10", "3.11"]
     steps:
       - uses: actions/checkout@v3
+
+      - name: Download wheels from OpenAssetIO main
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: build-wheels.yml
+          workflow_conclusion: success
+          name: openassetio-wheels
+          repo: OpenAssetIO/OpenAssetIO
+          path: deps
+
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
-      # Pin openassetio to match C++ version, since
-      # tests/requirements.txt specifies a range. Also see
-      # build_openassetio action.
       - run: |
-          python -m pip install openassetio==1.0.0b1.rev0
+          python -m pip install --find-links ./deps openassetio
           python -m pip install -r tests/requirements.txt
           python -m pip install .
       - name: Test
@@ -36,7 +43,7 @@ jobs:
 
   build-openassetio:
     name: Build OpenAssetIO
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     container:
       image: ghcr.io/openassetio/openassetio-build
     steps:
@@ -46,10 +53,10 @@ jobs:
 
   ctest:
     name: C++ tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: build-openassetio
     container:
-      image: aswf/ci-vfxall:2022-clang14.3
+      image: aswf/ci-base:2024
     steps:
       - uses: actions/checkout@v3
 
@@ -72,7 +79,7 @@ jobs:
           # Set the PYTHONPATH to the output of build-openassetio
           # Even though we are running C++ tests, pytest still discovers
           # all the python files, so they need to be valid imports.
-          PYTHONPATH: ${{ github.workspace }}/openassetio/lib/python3.9/site-packages
+          PYTHONPATH: ${{ github.workspace }}/openassetio/lib/python3.11/site-packages
           CMAKE_PREFIX_PATH: ${{ github.workspace }}/openassetio
           # TODO(DF): Sanitizers disabled due to lack of support in ASWF
           # Docker image. Re-enable once per-platform builds enabled

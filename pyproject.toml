@@ -5,16 +5,13 @@
 # repository (Python versions, platforms, etc): https://github.com/OpenAssetIO/OpenAssetIO
 
 [build-system]
-requires = [
-    # Pinned to the last version that supports Python 3.7
-    "setuptools==68.*"
-]
+requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "openassetio-traitgen"
 version = "1.0.0a9"
-requires-python = ">=3.7"
+requires-python = ">=3.10"
 dependencies = ["jinja2==3.1.4", "pyyaml==6.0.0", "jsonschema==4.7.2"]
 
 authors = [
@@ -56,7 +53,7 @@ corresponding python package that can be used for custom generation.
 
 ## Supported languages
 
-- Python 3.7+
+- Python 3.10+
 
 ## Installation
 
