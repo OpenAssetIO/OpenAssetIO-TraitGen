@@ -216,6 +216,12 @@ class Test_python_package_all_specifications_test_TwoLocalTraitsSpecification:
         }
         assert module_all.specifications.test.TwoLocalTraitsSpecification.kTraitSet == expected
 
+        # Ensure we can use the trait set as a dict key, i.e. it is a
+        # `frozenset`.
+        assert {module_all.specifications.test.TwoLocalTraitsSpecification.kTraitSet: True}[
+            module_all.specifications.test.TwoLocalTraitsSpecification.kTraitSet
+        ] is True
+
     def test_has_trait_getters_with_expected_docstring(self, module_all):
         trait_one = module_all.traits.aNamespace.NoPropertiesTrait
         trait_two = module_all.traits.anotherNamespace.NoPropertiesTrait
@@ -260,6 +266,11 @@ class Test_python_package_all_specifications_test_OneExternalTraitSpecification:
             module_traits_only.traits.test.AnotherTrait.kId,
         }
         assert module_all.specifications.test.OneExternalTraitSpecification.kTraitSet == expected
+        # Ensure we can use the trait set as a dict key, i.e. it is a
+        # `frozenset`.
+        assert {module_all.specifications.test.OneExternalTraitSpecification.kTraitSet: True}[
+            module_all.specifications.test.OneExternalTraitSpecification.kTraitSet
+        ] is True
 
     def test_has_trait_getters_with_expected_docstring(self, module_all, module_traits_only):
         trait = module_traits_only.traits.test.AnotherTrait
@@ -294,6 +305,11 @@ class Test_python_package_all_specifications_test_LocalAndExternalTraitSpecifica
         assert (
             module_all.specifications.test.LocalAndExternalTraitSpecification.kTraitSet == expected
         )
+        # Ensure we can use the trait set as a dict key, i.e. it is a
+        # `frozenset`.
+        assert {module_all.specifications.test.LocalAndExternalTraitSpecification.kTraitSet: True}[
+            module_all.specifications.test.LocalAndExternalTraitSpecification.kTraitSet
+        ] is True
 
     def test_has_trait_getters_with_expected_docstring(self, module_all, module_traits_only):
         trait_one = module_all.traits.aNamespace.NoPropertiesTrait
