@@ -11,7 +11,12 @@ v1.0.0-alpha.x
   tested or published, whereas Python 3.11 is now published.
   [OpenAssetIO#1351](https://github.com/OpenAssetIO/OpenAssetIO/issues/1351)
 
-v1.0.0-alpha.9
+- Changed the `kTraitSet` member of Specification classes in Python to
+  use the `frozenset` type, rather than standard `set`. This allows
+  the `kTraitSet` to be used as a dictionary key.
+  [#55](https://github.com/OpenAssetIO/OpenAssetIO-TraitGen/issues/55)`
+
+`v1.0.0-alpha.9
 --------------
 
 ### Breaking Changes
