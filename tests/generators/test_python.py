@@ -434,7 +434,7 @@ class PropertyTestValues(NamedTuple):
 
 kAllPropertiesTrait_property_test_values = (
     PropertyTestValues("boolProperty", True, 123),
-    PropertyTestValues("intProperty", 42, "🐁"),
+    PropertyTestValues("intProperty", 42, False),
     PropertyTestValues("floatProperty", 12.3, False),
     PropertyTestValues("stringProperty", "⛅ outside today", 12),
     # Re-instate once InfoDictionary is supported in TraitsData

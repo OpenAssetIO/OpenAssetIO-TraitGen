@@ -80,7 +80,7 @@ class {{ trait.name | to_py_class_name }}Trait:
 
         {{ property.description | wordwrap(64) | indent(8) }}
         """
-        if not isinstance({{ VarName }}, {{ VarType }}):
+        if not type({{ VarName }}) is {{ VarType }}:
             raise TypeError("{{ property.id }} must be a '{{ VarType }}'.")
         self.__data.setTraitProperty(self.kId, "{{ property.id }}", {{ VarName }})
 
@@ -94,7 +94,7 @@ class {{ trait.name | to_py_class_name }}Trait:
         if value is None:
             return defaultValue
 
-        if not isinstance(value, {{ VarType }}):
+        if not type(value) is {{ VarType }}:
             if defaultValue is None:
                 raise TypeError(f"Invalid stored value type: '{type(value).__name__}' should be '{{ VarType }}'.")
             return defaultValue
