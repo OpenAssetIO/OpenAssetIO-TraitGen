@@ -20,18 +20,12 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Download wheels from OpenAssetIO main
-        uses: dawidd6/action-download-artifact@v6
-        with:
-          workflow: build-wheels.yml
-          workflow_conclusion: success
-          name: openassetio-wheels
-          repo: OpenAssetIO/OpenAssetIO
-          path: deps
-
       - name: Install dependencies
+        # Pin openassetio to match C++ version, since
+        # tests/requirements.txt specifies a range. Also see
+        # build_openassetio action.
         run: |
-          python -m pip install --find-links ./deps openassetio
+          python -m pip install openassetio==1.0.0rc1.rev0
           python -m pip install -r requirements.txt
           python -m pip install -r tests/requirements.txt
 

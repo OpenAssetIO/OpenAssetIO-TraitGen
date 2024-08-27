@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-v1.0.0-alpha.x
+v1.0.0-alpha.10
 --------------
 
 ### Breaking changes
@@ -14,9 +14,9 @@ v1.0.0-alpha.x
 - Changed the `kTraitSet` member of Specification classes in Python to
   use the `frozenset` type, rather than standard `set`. This allows
   the `kTraitSet` to be used as a dictionary key.
-  [#55](https://github.com/OpenAssetIO/OpenAssetIO-TraitGen/issues/55)`
+  [#55](https://github.com/OpenAssetIO/OpenAssetIO-TraitGen/issues/55)
 
-`v1.0.0-alpha.9
+v1.0.0-alpha.9
 --------------
 
 ### Breaking Changes
