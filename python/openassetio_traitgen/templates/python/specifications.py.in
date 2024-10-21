@@ -31,7 +31,7 @@ class {{ specification.id | to_py_class_name }}Specification:
     Usage: {{ specification.usage | join(', ') }}
     {% endif -%}
     """
-    kTraitSet = frozenset({
+    kTraitSet = {
         {% for trait in specification.trait_set -%}
         # '{{ trait.id }}'
         {% if trait.package == package.id -%}
@@ -40,7 +40,7 @@ class {{ specification.id | to_py_class_name }}Specification:
         {{ trait.package | to_py_module_name }}.traits.{{ trait.namespace | to_py_module_name }}.{{ trait.name | to_py_class_name }}Trait.kId,
         {% endif -%}
         {% endfor %}
-    })
+    }
 
     def __init__(self, traitsData):
         """
