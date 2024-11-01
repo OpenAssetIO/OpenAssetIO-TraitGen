@@ -1,6 +1,14 @@
 Release Notes
 =============
 
+v1.0.0-alpha.x
+--------------
+
+- Reverted change to `kTraitSet` member of Specification classes
+  from using the `frozenset` type back to using the standard `set`. This
+  is for compatibility with pybind11<2.10.
+  [#94](https://github.com/OpenAssetIO/OpenAssetIO-TraitGen/issues/94)
+
 v1.0.0-alpha.10
 --------------
 
