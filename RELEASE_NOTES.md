@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-v1.0.0-alpha.x
+v1.0.0-alpha.11
 --------------
 
 - Reverted change to `kTraitSet` member of Specification classes
