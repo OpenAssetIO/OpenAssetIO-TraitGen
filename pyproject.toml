@@ -12,7 +12,7 @@ build-backend = "setuptools.build_meta"
 name = "openassetio-traitgen"
 version = "1.0.0a11"
 requires-python = ">=3.10"
-dependencies = ["jinja2==3.1.4", "pyyaml==6.0.0", "jsonschema==4.7.2"]
+dependencies = ["jinja2==3.1.5", "pyyaml==6.0.0", "jsonschema==4.7.2"]
 
 authors = [
     { name = "Contributors to the OpenAssetIO project", email = "openassetio-discussion@lists.aswf.io" }
