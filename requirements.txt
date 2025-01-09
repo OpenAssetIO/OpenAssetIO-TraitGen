@@ -1,6 +1,6 @@
 # Requirements for openassetio-traitgen de-coupled from setup.py.
 # This allows them to be collected/installed prior to build if
 # required.
-jinja2==3.1.4
+jinja2==3.1.5
 pyyaml==6.0.0  # We are currently constrained to pyyaml=6.0.0 exactly due to conan 1.60.1
 jsonschema==4.7.2
