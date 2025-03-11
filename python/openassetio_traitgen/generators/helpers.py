@@ -65,7 +65,7 @@ def default_template_globals() -> dict:
 
 
 def package_dependencies(
-    declarations: List[Union[SpecificationDeclaration, TraitDeclaration]]
+    declarations: List[Union[SpecificationDeclaration, TraitDeclaration]],
 ) -> List[str]:
     """
     Returns a list of all dependent package names for the supplied
@@ -77,7 +77,7 @@ def package_dependencies(
 
 
 def _package_dependencies_for_declaration(
-    declaration: Union[SpecificationDeclaration, TraitDeclaration]
+    declaration: Union[SpecificationDeclaration, TraitDeclaration],
 ) -> List[str]:
     """
     Returns a list of all dependent package names for the supplied
