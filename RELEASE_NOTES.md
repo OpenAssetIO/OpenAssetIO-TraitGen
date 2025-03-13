@@ -1,8 +1,19 @@
 Release Notes
 =============
 
+v1.0.0-alpha.x
+--------------
+
+### Improvements
+
+- Added `ui` and `uiPolicy` options for the `usage` field on traits and
+  specifications.
+  [#103](https://github.com/OpenAssetIO/OpenAssetIO-TraitGen/issues/103)
+
 v1.0.0-alpha.11
 --------------
+
+### Bug fixes
 
 - Reverted change to `kTraitSet` member of Specification classes
   from using the `frozenset` type back to using the standard `set`. This
