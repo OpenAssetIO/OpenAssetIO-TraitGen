@@ -55,7 +55,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Get OpenAssetIO
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: OpenAssetIO Build
           path: ${{ github.workspace }}/openassetio
