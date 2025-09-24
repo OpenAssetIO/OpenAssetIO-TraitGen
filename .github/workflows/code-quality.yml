@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-22.04
     name: Pylint
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-22.04
     name: Python formatting
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -59,6 +59,6 @@ jobs:
   markdown-link-check:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - uses: gaurav-nelson/github-action-markdown-link-check@v1
 
