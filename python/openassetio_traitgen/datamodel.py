@@ -122,7 +122,7 @@ class TraitReference(NamedTuple):
     # Trait instance from a Specification, as it handles the
     # case where a Specification may reference two identically
     # named traits in different packages or namespaces.
-    unique_name_parts: Tuple[str]
+    unique_name_parts: Tuple[str, ...]
 
 
 class SpecificationDeclaration(NamedTuple):
