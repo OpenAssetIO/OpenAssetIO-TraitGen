@@ -22,20 +22,29 @@ namespace traits::{{ namespace.id | to_cpp_namespace_name }} {
 
 namespace property = openassetio_abi::trait::property;
 
+{%- for trait in versions %}
+{% set classname = trait.name | to_cpp_class_name ~ 'Trait_v' ~ trait.version -%}
 /**
  * {{ trait.description |  wordwrap(69, wrapstring="\n* ") | indent(1) }}
 {%- if trait.usage %}
  * Usage: {{ trait.usage | join(', ') }}
 {%- endif %}
+{%- if trait.deprecated %}
+ *
+ * @deprecated This trait is flagged for future removal.
+{%- endif %}
  */
-class {{ trait.name | to_cpp_class_name }}Trait {
+class
+{%- if trait.deprecated %}
+[[deprecated("The '{{ trait.id }}' trait is deprecated.")]]
+{% endif %} {{ classname }} {
 public:
   static inline const openassetio_abi::trait::TraitId kId = "{{ trait.id }}";
 
   /**
    * Construct this trait view, wrapping the given TraitsData instance.
    */
-  explicit {{ trait.name | to_cpp_class_name }}Trait(openassetio_abi::trait::TraitsDataPtr traitsData)
+  explicit {{ classname }}(openassetio_abi::trait::TraitsDataPtr traitsData)
     : traitsData_{std::move(traitsData)}
   {}
 
@@ -129,6 +138,26 @@ public:
 
 private:
   openassetio_abi::trait::TraitsDataPtr traitsData_;
+};
+
+{% endfor %}
+
+{%- set trait = versions[0] %}
+{%- set base_classname = trait.name | to_cpp_class_name ~ "Trait" %}
+/**
+ * {{ trait.description |  wordwrap(69, wrapstring="\n* ") | indent(1) }}
+{%- if trait.usage %}
+ * Usage: {{ trait.usage | join(', ') }}
+{%- endif %}
+ *
+ * @deprecated Unversioned trait view classes are deprecated, please use
+ * {{ base_classname }}_v1 explicitly.
+ */
+class
+[[deprecated("Unversioned trait view classes are deprecated, please use {{ base_classname }}_v1 explicitly.")]]
+{{ base_classname }} : public {{ base_classname }}_v1 {
+public:
+using {{ base_classname }}_v1::{{ base_classname }}_v1;
 };
 }  // namespace traits::{{ namespace.id | to_cpp_namespace_name }}
 }  // namespace {{ traitgen_abi_version }}

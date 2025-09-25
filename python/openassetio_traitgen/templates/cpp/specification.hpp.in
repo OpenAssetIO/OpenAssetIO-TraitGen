@@ -13,45 +13,51 @@
 
 namespace openassetio_abi = openassetio::{{ openassetio_abi_version }};
 
-{%- for trait in (specification.trait_set | selectattr("package", "!=", package.id) | sort) -%}
+{%- for header_path_tokens in (all_trait_header_path_tokens | selectattr("package", "!=", package.id) | sort) -%}
 {%- if loop.first %}
 {% endif %}
-#include <{{ trait.package | to_cpp_namespace_name }}/traits/{{ trait.namespace | to_cpp_namespace_name }}/{{ trait.name | to_cpp_class_name }}Trait.hpp>
+#include <{{ header_path_tokens.package | to_cpp_namespace_name }}/traits/{{ header_path_tokens.namespace | to_cpp_namespace_name }}/{{ header_path_tokens.name | to_cpp_class_name }}Trait.hpp>
 {%- endfor -%}
 
-{%- for trait in (specification.trait_set | selectattr("package", "==", package.id) | sort) -%}
+{%- for header_path_tokens in (all_trait_header_path_tokens | selectattr("package", "==", package.id) | sort) -%}
 {%- if loop.first %}
 {% endif %}
-#include "../../traits/{{ trait.namespace | to_cpp_namespace_name }}/{{ trait.name | to_cpp_class_name }}Trait.hpp"
+#include "../../traits/{{ header_path_tokens.namespace | to_cpp_namespace_name }}/{{ header_path_tokens.name | to_cpp_class_name }}Trait.hpp"
 {%- endfor -%}
 
 {%- macro trait_type(trait) -%}
 {%- if trait.package == package.id -%}
-traits::{{trait.namespace | to_cpp_namespace_name }}::{{trait.name | to_cpp_class_name }}Trait
+traits::{{trait.namespace | to_cpp_namespace_name }}::{{trait.name | to_cpp_class_name }}Trait_v{{ trait.version }}
 {%- else -%}
-{{ trait.package | to_cpp_namespace_name }}::traits::{{trait.namespace | to_cpp_namespace_name }}::{{ trait.name | to_cpp_class_name }}Trait
+{{ trait.package | to_cpp_namespace_name }}::traits::{{trait.namespace | to_cpp_namespace_name }}::{{ trait.name | to_cpp_class_name }}Trait_v{{ trait.version }}
 {%- endif -%}
 {%- endmacro %}
 
 namespace {{ package.id | to_cpp_namespace_name }} {
 inline namespace {{ traitgen_abi_version }} {
 namespace specifications::{{ namespace.id | to_cpp_namespace_name }} {
+
+{%- for specification in versions %}
+{% set classname = specification.id | to_cpp_class_name ~ 'Specification_v' ~ specification.version -%}
 /**
  * {{ specification.description | wordwrap(69, wrapstring="\n* ") | indent(1) }}
 {%- if specification.usage %}
  * Usage: {{ specification.usage | join(', ') }}
 {%- endif %}
+{%- if specification.deprecated %}
+ *
+ * @deprecated This specification is flagged for future removal.
+{%- endif %}
  */
-class {{ specification.id | to_cpp_class_name }}Specification {
+class
+{%- if specification.deprecated %}
+[[deprecated("The '{{ namespace.id | to_cpp_namespace_name }}.{{ specification.id }}' specification of the '{{ package.id | to_cpp_namespace_name }}' package is deprecated.")]]
+{% endif %} {{ classname }} {
 public:
   inline static const openassetio_abi::trait::TraitSet kTraitSet{
     {%- for trait in specification.trait_set %}
     // '{{ trait.id }}'
-      {%- if trait.package == package.id %}
-    traits::{{ trait.namespace | to_cpp_namespace_name }}::{{ trait.name | to_cpp_class_name }}Trait::kId,
-      {%- else %}
-    {{ trait.package | to_cpp_namespace_name }}::traits::{{ trait.namespace | to_cpp_namespace_name }}::{{ trait.name | to_cpp_class_name }}Trait::kId,
-      {%- endif %}
+    {{ trait_type(trait) }}::kId,
     {%- endfor %}
   };
 
@@ -59,8 +65,8 @@ public:
    * Returns a new instance of the Specification, holding a new
    * TraitsData instance, imbued with the specification's traits.
    */
-  static {{ specification.id | to_cpp_class_name }}Specification create() {
-    return {{ specification.id | to_cpp_class_name }}Specification{
+  static {{ classname }} create() {
+    return {{ classname }}{
       openassetio_abi::trait::TraitsData::make(kTraitSet)};
   }
 
@@ -73,7 +79,7 @@ public:
    * visible to any other specifications or traits that wrap the same
    * TraitsData instance.
    */
-  explicit {{ specification.id | to_cpp_class_name }}Specification(openassetio_abi::trait::TraitsDataPtr traitsData)
+  explicit {{ classname }}(openassetio_abi::trait::TraitsDataPtr traitsData)
     : traitsData_{std::move(traitsData)}
   {}
 
@@ -98,6 +104,35 @@ public:
 private:
   openassetio_abi::trait::TraitsDataPtr traitsData_;
 };
+
+{% endfor %}
+{%- set specification = versions[0] -%}
+{%- set base_classname = specification.id | to_cpp_class_name ~ 'Specification' %}
+/**
+ * {{ specification.description | wordwrap(69, wrapstring="\n* ") | indent(1) }}
+{%- if specification.usage %}
+ * Usage: {{ specification.usage | join(', ') }}
+{%- endif %}
+ *
+ * @deprecated Unversioned specification view classes are deprecated,
+ * please use {{ base_classname }}_v1 explicitly.
+ */
+class
+[[deprecated("Unversioned specification view classes are deprecated, please use {{ base_classname }}_v1 explicitly.")]]
+{{ base_classname }} : public {{ base_classname }}_v1 {
+public:
+  using {{ base_classname }}_v1::{{ base_classname }}_v1;
+
+ /**
+  * Returns a new instance of the Specification, holding a new
+  * TraitsData instance, imbued with the specification's traits.
+  */
+  static {{ base_classname }} create() {
+    return {{ base_classname }}{
+      openassetio_abi::trait::TraitsData::make(kTraitSet)};
+  }
+};
 }  // namespace specifications::{{ namespace.id | to_cpp_namespace_name }}
 }  // namespace {{ traitgen_abi_version }}
 }  // namespace {{ package.id | to_cpp_namespace_name }}
+

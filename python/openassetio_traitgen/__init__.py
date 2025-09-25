@@ -176,10 +176,10 @@ def _log_package_declaration(package, logger):
         for namespace in package.traits:
             logger.info(f"{namespace.id}:")
             for trait in namespace.members:
-                logger.info("  - %s", trait.name)
+                logger.info("  - %s (v%s)", trait.name, trait.version)
     if package.specifications:
         logger.info("Specifications:")
         for namespace in package.specifications:
             logger.info(f"{namespace.id}:")
             for specification in namespace.members:
-                logger.info("  - %s", specification.id)
+                logger.info("  - %s (v%s)", specification.id, specification.version)

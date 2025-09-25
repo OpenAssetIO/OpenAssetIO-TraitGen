@@ -12,6 +12,10 @@ macro(enable_clang_tidy)
         # compiler warning flags will cause the build to fail.
         list(APPEND CMAKE_CXX_CLANG_TIDY -extra-arg=-Wno-unknown-warning-option)
 
+        # Allow [[deprecated]] - we'll catch these through compiler
+        # warnings.
+        list(APPEND CMAKE_CXX_CLANG_TIDY -extra-arg=-Wno-deprecated-declarations)
+
         # Set standard
         if (NOT "${CMAKE_CXX_STANDARD}" STREQUAL "")
             if ("${CMAKE_CXX_CLANG_TIDY_DRIVER_MODE}" STREQUAL "cl")
