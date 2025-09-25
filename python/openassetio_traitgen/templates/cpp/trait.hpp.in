@@ -102,7 +102,7 @@ public:
    */
   [[nodiscard]] {{ VarType }} get{{ VarMethodName }}(const {{ VarType }}& defaultValue) const {
     if (property::Value value; traitsData_->getTraitProperty(&value, kId, "{{ property.id }}")) {
-      if ({{ VarType }}* maybeOut = std::get_if<{{ VarType }}>(&value)) {
+      if (auto* maybeOut = std::get_if<{{ VarType }}>(&value)) {
         return *maybeOut;
       }
     }
@@ -117,7 +117,7 @@ public:
    */
   [[nodiscard]] std::optional<{{ VarType }}> get{{ VarMethodName }}() const {
     if (property::Value value; traitsData_->getTraitProperty(&value, kId, "{{ property.id }}")) {
-      if ({{ VarType }}* maybeOut = std::get_if<{{ VarType }}>(&value)) {
+      if (auto* maybeOut = std::get_if<{{ VarType }}>(&value)) {
         return *maybeOut;
       }
       throw std::runtime_error{"Invalid stored value type: should be '{{ VarType }}'."};
