@@ -21,7 +21,7 @@ import functools
 # pylint: disable=invalid-name,redefined-outer-name
 # pylint: disable=too-few-public-methods,too-many-arguments
 # pylint: disable=missing-class-docstring,missing-function-docstring
-# pylint: disable=too-many-return-statements
+# pylint: disable=too-many-return-statements,too-many-lines
 
 import logging
 import os
@@ -120,7 +120,8 @@ class Test_cpp_package_all_traits_aNamespace_NoPropertiesTrait:
                 "openassetio_traitgen_test_all",
                 is_specification=False,
                 namespace="aNamespace",
-                cls="NoPropertiesTrait",
+                name="NoPropertiesTrait",
+                version="1",
             )
             == """
 /**
@@ -137,7 +138,8 @@ class Test_cpp_package_all_traits_aNamespace_NoPropertiesMultipleUsageTrait:
                 "openassetio_traitgen_test_all",
                 is_specification=False,
                 namespace="aNamespace",
-                cls="NoPropertiesMultipleUsageTrait",
+                name="NoPropertiesMultipleUsageTrait",
+                version="1",
             )
             == """
 /**
@@ -155,7 +157,8 @@ class Test_cpp_package_all_traits_aNamespace_AllPropertiesTrait:
                 "openassetio_traitgen_test_all",
                 is_specification=False,
                 namespace="aNamespace",
-                cls="AllPropertiesTrait",
+                name="AllPropertiesTrait",
+                version="1",
             )
             == """
 /**
@@ -175,7 +178,8 @@ class Test_cpp_package_all_traits_aNamespace_AllPropertiesTrait:
                 "openassetio_traitgen_test_all",
                 is_specification=False,
                 namespace="aNamespace",
-                cls="AllPropertiesTrait",
+                name="AllPropertiesTrait",
+                version="1",
                 func=function_name,
                 has_default=False,
             )
@@ -200,7 +204,8 @@ class Test_cpp_package_all_traits_aNamespace_AllPropertiesTrait:
                 "openassetio_traitgen_test_all",
                 is_specification=False,
                 namespace="aNamespace",
-                cls="AllPropertiesTrait",
+                name="AllPropertiesTrait",
+                version="1",
                 func=function_name,
                 has_default=True,
             )
@@ -226,7 +231,8 @@ class Test_cpp_package_all_traits_aNamespace_AllPropertiesTrait:
                 "openassetio_traitgen_test_all",
                 is_specification=False,
                 namespace="aNamespace",
-                cls="AllPropertiesTrait",
+                name="AllPropertiesTrait",
+                version="1",
                 func=function_name,
             )
             == f"""
@@ -239,20 +245,144 @@ class Test_cpp_package_all_traits_aNamespace_AllPropertiesTrait:
         )
 
 
+class Test_cpp_package_all_traits_aNamespace_MultipleVersionsTrait:
+    def test_v1_has_expected_docstring(self, docstring_for):
+        assert (
+            docstring_for(
+                "openassetio_traitgen_test_all",
+                is_specification=False,
+                namespace="aNamespace",
+                name="MultipleVersionsTrait",
+                version="1",
+            )
+            == """
+/**
+ * A trait with multiple versions, version 1.
+ * Usage: entity
+ */
+ """.strip()
+        )
+
+    def test_v1_has_expected_property(self, docstring_for):
+        assert (
+            docstring_for(
+                "openassetio_traitgen_test_all",
+                is_specification=False,
+                namespace="aNamespace",
+                name="MultipleVersionsTrait",
+                version="1",
+                func="getOldProperty",
+                has_default=False,
+            )
+            == """
+  /**
+   * Gets the value of the oldProperty property. Returns an empty
+   * optional if not found or is of an unexpected type.
+   *
+   * A deprecated string-typed property.
+   */
+""".strip()
+        )
+
+    def test_v2_has_expected_docstring(self, docstring_for):
+        assert (
+            docstring_for(
+                "openassetio_traitgen_test_all",
+                is_specification=False,
+                namespace="aNamespace",
+                name="MultipleVersionsTrait",
+                version="2",
+            )
+            == """
+/**
+ * A trait with multiple versions, version 2.
+ */
+ """.strip()
+        )
+
+    def test_v2_has_expected_property(self, docstring_for):
+        assert (
+            docstring_for(
+                "openassetio_traitgen_test_all",
+                is_specification=False,
+                namespace="aNamespace",
+                name="MultipleVersionsTrait",
+                version="2",
+                func="getNewProperty",
+                has_default=False,
+            )
+            == """
+  /**
+   * Gets the value of the newProperty property. Returns an empty
+   * optional if not found or is of an unexpected type.
+   *
+   * A new int-typed property.
+   */
+""".strip()
+        )
+
+    def test_unversioned_has_same_docstring_as_v1_but_with_deprecation(self, docstring_for):
+        v1_docstring = docstring_for(
+            "openassetio_traitgen_test_all",
+            is_specification=False,
+            namespace="aNamespace",
+            name="MultipleVersionsTrait",
+            version="1",
+        )
+
+        expected_docstring = (
+            v1_docstring[:-1]
+            + """
+ * @deprecated Unversioned trait view classes are deprecated, please use
+ * MultipleVersionsTrait_v1 explicitly.
+ */"""
+        )
+
+        actual_docstring = docstring_for(
+            "openassetio_traitgen_test_all",
+            is_specification=False,
+            namespace="aNamespace",
+            name="MultipleVersionsTrait",
+            version="",
+        )
+
+        assert actual_docstring == expected_docstring
+
+
+class Test_cpp_package_all_traits_aNamespace_DeprecatedTrait:
+    def test_docstring_contains_deprecation_warning(self, docstring_for):
+        assert (
+            docstring_for(
+                "openassetio_traitgen_test_all",
+                is_specification=False,
+                namespace="aNamespace",
+                name="DeprecatedTrait",
+                version="1",
+            )
+            == """/**
+ * A deprecated trait.
+ *
+ * @deprecated This trait is flagged for future removal.
+ */"""
+        )
+
+
 class Test_cpp_package_all_specifications_test_TwoLocalTraitsSpecification:
     def test_docstring_contains_description(self, docstring_for):
         docstring_for(
             "openassetio_traitgen_test_all",
             is_specification=True,
             namespace="test",
-            cls="TwoLocalTraitsSpecification",
+            name="TwoLocalTraitsSpecification",
+            version="1",
         )
         assert (
             docstring_for(
                 "openassetio_traitgen_test_all",
                 is_specification=True,
                 namespace="test",
-                cls="TwoLocalTraitsSpecification",
+                name="TwoLocalTraitsSpecification",
+                version="1",
             )
             == """
 /**
@@ -267,7 +397,8 @@ class Test_cpp_package_all_specifications_test_TwoLocalTraitsSpecification:
                 "openassetio_traitgen_test_all",
                 is_specification=True,
                 namespace="test",
-                cls="TwoLocalTraitsSpecification",
+                name="TwoLocalTraitsSpecification",
+                version="1",
                 func="aNamespaceNoPropertiesTrait",
             )
             == """
@@ -283,7 +414,8 @@ class Test_cpp_package_all_specifications_test_TwoLocalTraitsSpecification:
                 "openassetio_traitgen_test_all",
                 is_specification=True,
                 namespace="test",
-                cls="TwoLocalTraitsSpecification",
+                name="TwoLocalTraitsSpecification",
+                version="1",
                 func="anotherNamespaceNoPropertiesTrait",
             )
             == """
@@ -302,7 +434,8 @@ class Test_cpp_package_all_specifications_test_OneExternalTraitSpecification:
                 "openassetio_traitgen_test_all",
                 is_specification=True,
                 namespace="test",
-                cls="OneExternalTraitSpecification",
+                name="OneExternalTraitSpecification",
+                version="1",
             )
             == """
 /**
@@ -317,7 +450,8 @@ class Test_cpp_package_all_specifications_test_OneExternalTraitSpecification:
                 "openassetio_traitgen_test_all",
                 is_specification=True,
                 namespace="test",
-                cls="OneExternalTraitSpecification",
+                name="OneExternalTraitSpecification",
+                version="1",
                 func="anotherTrait",
             )
             == """
@@ -336,7 +470,8 @@ class Test_cpp_package_all_specifications_test_LocalAndExternalTraitSpecificatio
                 "openassetio_traitgen_test_all",
                 is_specification=True,
                 namespace="test",
-                cls="LocalAndExternalTraitSpecification",
+                name="LocalAndExternalTraitSpecification",
+                version="1",
             )
             == """
 /**
@@ -352,7 +487,8 @@ class Test_cpp_package_all_specifications_test_LocalAndExternalTraitSpecificatio
                 "openassetio_traitgen_test_all",
                 is_specification=True,
                 namespace="test",
-                cls="LocalAndExternalTraitSpecification",
+                name="LocalAndExternalTraitSpecification",
+                version="1",
                 func="openassetioTraitgenTestAllANamespaceNoPropertiesTrait",
             )
             == """
@@ -368,7 +504,8 @@ class Test_cpp_package_all_specifications_test_LocalAndExternalTraitSpecificatio
                 "openassetio_traitgen_test_all",
                 is_specification=True,
                 namespace="test",
-                cls="LocalAndExternalTraitSpecification",
+                name="LocalAndExternalTraitSpecification",
+                version="1",
                 func="openassetioTraitgenTestTraitsOnlyANamespaceNoPropertiesTrait",
             )
             == """
@@ -377,6 +514,124 @@ class Test_cpp_package_all_specifications_test_LocalAndExternalTraitSpecificatio
    * trait wrapped around the data held in this instance.
    */
 """.strip()
+        )
+
+
+class Test_cpp_package_all_specifications_test_MultipleVersionsOfTrait:
+    def test_v1_docstring_contains_description(self, docstring_for):
+        assert (
+            docstring_for(
+                "openassetio_traitgen_test_all",
+                is_specification=True,
+                namespace="test",
+                name="MultipleVersionsOfTraitSpecification",
+                version="1",
+            )
+            == """
+/**
+ * Version 1 of a specification referencing version 1 of a trait.
+ * Usage: entity
+ */
+""".strip()
+        )
+
+    def test_v1_has_trait_getter_with_expected_docstring(self, docstring_for):
+        assert (
+            docstring_for(
+                "openassetio_traitgen_test_all",
+                is_specification=True,
+                namespace="test",
+                name="MultipleVersionsOfTraitSpecification",
+                version="1",
+                func="multipleVersionsTrait",
+            )
+            == """
+  /**
+   * Returns the view for the 'openassetio-traitgen-test-all:aNamespace.MultipleVersions'
+   * trait wrapped around the data held in this instance.
+   */
+""".strip()
+        )
+
+    def test_v2_docstring_contains_description(self, docstring_for):
+        assert (
+            docstring_for(
+                "openassetio_traitgen_test_all",
+                is_specification=True,
+                namespace="test",
+                name="MultipleVersionsOfTraitSpecification",
+                version="2",
+            )
+            == """
+/**
+ * Version 2 of a specification referencing version 2 of a trait.
+ */
+""".strip()
+        )
+
+    def test_v2_has_trait_getter_with_expected_docstring(self, docstring_for):
+        assert (
+            docstring_for(
+                "openassetio_traitgen_test_all",
+                is_specification=True,
+                namespace="test",
+                name="MultipleVersionsOfTraitSpecification",
+                version="2",
+                func="multipleVersionsTrait",
+            )
+            == """
+  /**
+   * Returns the view for the 'openassetio-traitgen-test-all:aNamespace.MultipleVersions.v2'
+   * trait wrapped around the data held in this instance.
+   */
+""".strip()
+        )
+
+    def test_unversioned_specification_has_same_docstring_as_v1_but_with_deprecation(
+        self, docstring_for
+    ):
+        v1_docstring = docstring_for(
+            "openassetio_traitgen_test_all",
+            is_specification=True,
+            namespace="test",
+            name="MultipleVersionsOfTraitSpecification",
+            version="1",
+        )
+
+        expected_docstring = (
+            v1_docstring[:-1]
+            + """
+ * @deprecated Unversioned specification view classes are deprecated,
+ * please use MultipleVersionsOfTraitSpecification_v1 explicitly.
+ */"""
+        )
+
+        actual_docstring = docstring_for(
+            "openassetio_traitgen_test_all",
+            is_specification=True,
+            namespace="test",
+            name="MultipleVersionsOfTraitSpecification",
+            version="",
+        )
+
+        assert actual_docstring == expected_docstring
+
+
+class Test_cpp_package_all_specifications_test_DeprecatedSpecification:
+    def test_docstring_contains_deprecation_warning(self, docstring_for):
+        assert (
+            docstring_for(
+                "openassetio_traitgen_test_all",
+                is_specification=True,
+                namespace="test",
+                name="DeprecatedSpecification",
+                version="1",
+            )
+            == """/**
+ * A deprecated specification.
+ *
+ * @deprecated This specification is flagged for future removal.
+ */"""
         )
 
 
@@ -530,13 +785,17 @@ def docstring_for(rootnode_for, cpp_language):
 
       docstring_for(
         "my_package", is_specification=False, namespace="my_namespace")
+
+    The exception to this is the name and version, which must be
+    supplied together (or not at all).
     """
 
     def fn(
         package_name,
         is_specification=None,
         namespace=None,
-        cls=None,
+        name=None,
+        version=None,
         func=None,
         has_default=None,
     ):
@@ -546,7 +805,8 @@ def docstring_for(rootnode_for, cpp_language):
         specification or a trait sub-package, if any.
         @param namespace: Which C++ namespace to parse docstring from,
         if any.
-        @param cls: Which class to parse docstring from, if any.
+        @param name: The name of a trait/specification.
+        @param version: The version of the trait/specification.
         @param func: Which function within the `cls` to parse docstring
         from, if any.
         @param has_default: If True/False then signals that `func` has
@@ -555,7 +815,8 @@ def docstring_for(rootnode_for, cpp_language):
         overload.
         @return: String containing docstring for selected element.
         """
-        root_node = rootnode_for(package_name, is_specification, namespace, cls)
+        # pylint: disable=too-many-locals
+        root_node = rootnode_for(package_name, is_specification, namespace, name)
 
         if is_specification is None:
             # Top-level package docstring
@@ -567,15 +828,16 @@ def docstring_for(rootnode_for, cpp_language):
             query = cpp_language.query("""(translation_unit . (comment) @docstring)""")
             return query.captures(root_node)[0][0].text.decode()
 
-        if cls is None:
+        if name is None:
             # Namespace docstring.
             query = cpp_language.query("""((comment) . (preproc_include)) @docstring""")
             return query.captures(root_node)[0][0].text.decode()
 
+        class_name = f"{name}_v{version}" if version else name
         query = cpp_language.query(
             f"""(
             (comment) @docstring . (class_specifier name: (type_identifier) @struct_name) @struct
-            (#eq? @struct_name "{cls}")
+            (#eq? @struct_name "{class_name}")
         )"""
         )
 

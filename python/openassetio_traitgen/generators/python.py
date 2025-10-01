@@ -181,7 +181,7 @@ def _install_custom_filters(environment, logger):
         no_hypens = string.replace("-", "_")
         module_name = re.sub(r"[^a-zA-Z0-9_]", "_", no_hypens)
         if module_name != no_hypens:
-            logger.warning(f"Conforming '{string}' to '{module_name}' for module name")
+            _conform_warning(string, module_name, "module name")
         return module_name
 
     def to_py_class_name(string: str):
@@ -190,7 +190,7 @@ def _install_custom_filters(environment, logger):
         """
         class_name = helpers.to_upper_camel_alnum(string)
         if class_name != string:
-            logger.warning(f"Conforming '{string}' to '{class_name}' for class name")
+            _conform_warning(string, class_name, "class name")
         validate_identifier(class_name, string)
         return class_name
 
@@ -204,9 +204,7 @@ def _install_custom_filters(environment, logger):
         accessor_name = helpers.to_lower_camel_alnum(unique_name)
         # We expect the first letter to change to lowercase
         if accessor_name != f"{unique_name[0].lower()}{unique_name[1:]}":
-            logger.warning(
-                f"Conforming '{unique_name}' to '{accessor_name}' for trait getter name"
-            )
+            _conform_warning(unique_name, accessor_name, "trait getter name")
         validate_identifier(accessor_name, unique_name)
         return accessor_name
 
@@ -218,9 +216,7 @@ def _install_custom_filters(environment, logger):
         """
         accessor_name = helpers.to_upper_camel_alnum(string)
         if accessor_name != f"{string[0].upper()}{string[1:]}":
-            logger.warning(
-                f"Conforming '{string}' to '{accessor_name}' for property accessor name"
-            )
+            _conform_warning(string, accessor_name, "property accessor name")
         validate_identifier(accessor_name, string)
         return accessor_name
 
@@ -231,7 +227,7 @@ def _install_custom_filters(environment, logger):
         """
         var_name = helpers.to_lower_camel_alnum(string)
         if var_name != string:
-            logger.warning(f"Conforming '{string}' to '{var_name}' for variable name")
+            _conform_warning(string, var_name, "variable name")
         validate_identifier(var_name, string)
         return var_name
 
@@ -251,6 +247,19 @@ def _install_custom_filters(environment, logger):
             raise TypeError("Dictionary types are not yet supported as trait properties")
         return type_map[declaration_type]
 
+    def _conform_warning(original: str, conformed: str, context: str):
+        """
+        Log a warning that an input name has been modified to conform
+        to a valid identifier, if the warning has not already been
+        logged.
+        """
+        warning = f"Conforming '{original}' to '{conformed}' for {context}"
+        if warning in environment.globals["conform_warnings"]:
+            return
+        environment.globals["conform_warnings"].append(warning)
+        logger.warning(warning)
+
+    environment.globals["conform_warnings"] = []
     environment.filters["to_upper_camel_alnum"] = helpers.to_upper_camel_alnum
     environment.filters["to_py_module_name"] = to_py_module_name
     environment.filters["to_py_class_name"] = to_py_class_name

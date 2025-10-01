@@ -17,6 +17,9 @@
 A traitgen generator that outputs a C++ package based on the
 openassetio_traitgen PackageDefinition model.
 """
+import collections
+import itertools
+
 # TODO(DF): Refactor to pull out common code, then remove this
 #  suppression.
 # pylint: disable=duplicate-code
@@ -180,12 +183,27 @@ class Renderer:
         )
         imports = []
 
-        # Render a file per class (trait or specification).
-        for declaration in namespace.members:
+        # We group multiple versions of the same trait (or
+        # specification) together to render in the same header. Note
+        # that declarations in a namespace are already sorted
+        # appropriately by name, so we don't need to sort before
+        # applying groupby.
+        declarations_by_name = itertools.groupby(
+            namespace.members,
+            lambda declaration: declaration.name if kind == "traits" else declaration.id,
+        )
+
+        # Render a file per trait/specification, containing all
+        # versions of that trait/specification.
+        for name, declarations in declarations_by_name:
             if kind == "traits":
-                file_name = self.__render_trait(namespace, declaration, namespace_abs_path)
+                file_name = self.__render_trait(
+                    namespace, name, tuple(declarations), namespace_abs_path
+                )
             else:
-                file_name = self.__render_specification(namespace, declaration, namespace_abs_path)
+                file_name = self.__render_specification(
+                    namespace, name, tuple(declarations), namespace_abs_path
+                )
 
             imports.append(f"{namespace_name}/{file_name}")
 
@@ -207,7 +225,8 @@ class Renderer:
     def __render_trait(
         self,
         namespace: NamespaceDeclaration,
-        declaration: TraitDeclaration,
+        name: str,
+        declarations: tuple[TraitDeclaration, ...],
         namespace_abs_path: str,
     ) -> str:
         """
@@ -216,24 +235,25 @@ class Renderer:
         Creates a single header file containing a single trait view
         class.
         """
-        cls_name = self.__env.filters["to_cpp_class_name"](declaration.name) + "Trait"
+        header_name = self.__env.filters["to_cpp_class_name"](name) + "Trait"
         self.__render_template(
             "trait",
-            os.path.join(namespace_abs_path, f"{cls_name}.hpp"),
+            os.path.join(namespace_abs_path, f"{header_name}.hpp"),
             {
                 "package": self.__package,
                 "namespace": namespace,
-                "trait": declaration,
+                "versions": declarations,
                 "openassetio_abi_version": OPENASSETIO_ABI_VERSION,
                 "traitgen_abi_version": TRAITGEN_ABI_VERSION,
             },
         )
-        return f"{cls_name}.hpp"
+        return f"{header_name}.hpp"
 
     def __render_specification(
         self,
         namespace: NamespaceDeclaration,
-        declaration: SpecificationDeclaration,
+        name: str,
+        declarations: tuple[SpecificationDeclaration, ...],
         namespace_abs_path: str,
     ) -> str:
         """
@@ -242,19 +262,38 @@ class Renderer:
         Creates a single header file containing a single specification
         class.
         """
-        cls_name = self.__env.filters["to_cpp_class_name"](declaration.id) + "Specification"
+
+        # Properties required to interpolate when constructing #include
+        # directives.
+        TraitHeaderPathTokens = collections.namedtuple(
+            "TraitHeaderPathTokens", ("package", "namespace", "name")
+        )
+
+        # All versions of a given trait live in a single header.
+        # Extract fields required to #include the trait headers
+        # referenced by all versions of this specification, de-duped.
+        all_trait_header_path_tokens = sorted(
+            {
+                TraitHeaderPathTokens(trait_decl.package, trait_decl.namespace, trait_decl.name)
+                for spec_decl in declarations
+                for trait_decl in spec_decl.trait_set
+            }
+        )
+
+        header_name = self.__env.filters["to_cpp_class_name"](name) + "Specification"
         self.__render_template(
             "specification",
-            os.path.join(namespace_abs_path, f"{cls_name}.hpp"),
+            os.path.join(namespace_abs_path, f"{header_name}.hpp"),
             {
                 "package": self.__package,
                 "namespace": namespace,
-                "specification": declaration,
+                "versions": declarations,
+                "all_trait_header_path_tokens": all_trait_header_path_tokens,
                 "openassetio_abi_version": OPENASSETIO_ABI_VERSION,
                 "traitgen_abi_version": TRAITGEN_ABI_VERSION,
             },
         )
-        return f"{cls_name}.hpp"
+        return f"{header_name}.hpp"
 
     def __render_package_template(
         self, package_abs_path: str, name: str, docstring: str, imports: List[str]

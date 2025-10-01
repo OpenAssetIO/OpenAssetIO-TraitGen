@@ -87,18 +87,18 @@ Another Namespace
         )
 
     def test_aNamespace_module_traits_are_suffixed_with_Trait(self, module_all):
-        assert inspect.isclass(module_all.traits.aNamespace.NoPropertiesTrait)
-        assert inspect.isclass(module_all.traits.aNamespace.NoPropertiesMultipleUsageTrait)
-        assert inspect.isclass(module_all.traits.aNamespace.AllPropertiesTrait)
+        assert inspect.isclass(module_all.traits.aNamespace.NoPropertiesTrait_v1)
+        assert inspect.isclass(module_all.traits.aNamespace.NoPropertiesMultipleUsageTrait_v1)
+        assert inspect.isclass(module_all.traits.aNamespace.AllPropertiesTrait_v1)
 
     def test_anotherNamespace_module_traits_are_suffixed_with_Trait(self, module_all):
-        assert inspect.isclass(module_all.traits.anotherNamespace.NoPropertiesTrait)
+        assert inspect.isclass(module_all.traits.anotherNamespace.NoPropertiesTrait_v1)
 
 
 class Test_python_package_all_traits_aNamespace_NoPropertiesTrait:
     def test_docstring_contains_description(self, module_all):
         assert (
-            module_all.traits.aNamespace.NoPropertiesTrait.__doc__
+            module_all.traits.aNamespace.NoPropertiesTrait_v1.__doc__
             == """
     Another trait, this time with no properties.
     """
@@ -106,7 +106,7 @@ class Test_python_package_all_traits_aNamespace_NoPropertiesTrait:
 
     def test_kId_is_declaration_id(self, module_all):
         assert (
-            module_all.traits.aNamespace.NoPropertiesTrait.kId
+            module_all.traits.aNamespace.NoPropertiesTrait_v1.kId
             == "openassetio-traitgen-test-all:aNamespace.NoProperties"
         )
 
@@ -114,7 +114,7 @@ class Test_python_package_all_traits_aNamespace_NoPropertiesTrait:
 class Test_python_package_all_traits_aNamespace_NoPropertiesMultipleUsageTrait:
     def test_has_expected_docstring(self, module_all):
         assert (
-            module_all.traits.aNamespace.NoPropertiesMultipleUsageTrait.__doc__
+            module_all.traits.aNamespace.NoPropertiesMultipleUsageTrait_v1.__doc__
             == """
     Another trait, this time with multiple usage.
     Usage: entity, relationship
@@ -123,7 +123,7 @@ class Test_python_package_all_traits_aNamespace_NoPropertiesMultipleUsageTrait:
 
     def test_kId_is_declaration_id(self, module_all):
         assert (
-            module_all.traits.aNamespace.NoPropertiesMultipleUsageTrait.kId
+            module_all.traits.aNamespace.NoPropertiesMultipleUsageTrait_v1.kId
             == "openassetio-traitgen-test-all:aNamespace.NoPropertiesMultipleUsage"
         )
 
@@ -131,7 +131,7 @@ class Test_python_package_all_traits_aNamespace_NoPropertiesMultipleUsageTrait:
 class Test_python_package_all_traits_aNamespace_AllPropertiesTrait:
     def test_has_expected_docstring(self, module_all):
         assert (
-            module_all.traits.aNamespace.AllPropertiesTrait.__doc__
+            module_all.traits.aNamespace.AllPropertiesTrait_v1.__doc__
             == """
     A trait with properties of all types.
     """
@@ -139,7 +139,7 @@ class Test_python_package_all_traits_aNamespace_AllPropertiesTrait:
 
     def test_kId_is_declaration_id(self, module_all):
         assert (
-            module_all.traits.aNamespace.AllPropertiesTrait.kId
+            module_all.traits.aNamespace.AllPropertiesTrait_v1.kId
             == "openassetio-traitgen-test-all:aNamespace.AllProperties"
         )
 
@@ -149,7 +149,7 @@ class Test_python_package_all_traits_aNamespace_AllPropertiesTrait:
     ):
         property_name = f"{property_type}Property"
         function_name = f"get{property_type.capitalize()}Property"
-        function = getattr(module_all.traits.aNamespace.AllPropertiesTrait, function_name)
+        function = getattr(module_all.traits.aNamespace.AllPropertiesTrait_v1, function_name)
 
         assert inspect.isfunction(function)
         assert (
@@ -167,7 +167,7 @@ class Test_python_package_all_traits_aNamespace_AllPropertiesTrait:
     ):
         property_name = f"{property_type}Property"
         function_name = f"set{property_type.capitalize()}Property"
-        function = getattr(module_all.traits.aNamespace.AllPropertiesTrait, function_name)
+        function = getattr(module_all.traits.aNamespace.AllPropertiesTrait_v1, function_name)
 
         assert inspect.isfunction(function)
         assert (
@@ -195,15 +195,17 @@ Test specifications.
         )
 
     def test_test_module_specifications_are_suffixed_with_Specification(self, module_all):
-        assert inspect.isclass(module_all.specifications.test.TwoLocalTraitsSpecification)
-        assert inspect.isclass(module_all.specifications.test.OneExternalTraitSpecification)
-        assert inspect.isclass(module_all.specifications.test.LocalAndExternalTraitSpecification)
+        assert inspect.isclass(module_all.specifications.test.TwoLocalTraitsSpecification_v1)
+        assert inspect.isclass(module_all.specifications.test.OneExternalTraitSpecification_v1)
+        assert inspect.isclass(
+            module_all.specifications.test.LocalAndExternalTraitSpecification_v1
+        )
 
 
 class Test_python_package_all_specifications_test_TwoLocalTraitsSpecification:
     def test_docstring_contains_description(self, module_all):
         assert (
-            module_all.specifications.test.TwoLocalTraitsSpecification.__doc__
+            module_all.specifications.test.TwoLocalTraitsSpecification_v1.__doc__
             == """
     A specification with two traits.
     """
@@ -211,21 +213,19 @@ class Test_python_package_all_specifications_test_TwoLocalTraitsSpecification:
 
     def test_trait_set_composes_target_trait_kIds(self, module_all):
         expected = {
-            module_all.traits.aNamespace.NoPropertiesTrait.kId,
-            module_all.traits.anotherNamespace.NoPropertiesTrait.kId,
+            module_all.traits.aNamespace.NoPropertiesTrait_v1.kId,
+            module_all.traits.anotherNamespace.NoPropertiesTrait_v1.kId,
         }
-        assert module_all.specifications.test.TwoLocalTraitsSpecification.kTraitSet == expected
+        assert module_all.specifications.test.TwoLocalTraitsSpecification_v1.kTraitSet == expected
 
     def test_has_trait_getters_with_expected_docstring(self, module_all):
-        trait_one = module_all.traits.aNamespace.NoPropertiesTrait
-        trait_two = module_all.traits.anotherNamespace.NoPropertiesTrait
+        trait_one = module_all.traits.aNamespace.NoPropertiesTrait_v1
+        trait_two = module_all.traits.anotherNamespace.NoPropertiesTrait_v1
+        test = module_all.specifications.test
 
-        assert inspect.isfunction(
-            module_all.specifications.test.TwoLocalTraitsSpecification.aNamespaceNoPropertiesTrait
-        )
+        assert inspect.isfunction(test.TwoLocalTraitsSpecification_v1.aNamespaceNoPropertiesTrait)
         assert (
-            # pylint: disable=line-too-long
-            module_all.specifications.test.TwoLocalTraitsSpecification.aNamespaceNoPropertiesTrait.__doc__
+            test.TwoLocalTraitsSpecification_v1.aNamespaceNoPropertiesTrait.__doc__
             == f"""
         Returns the view for the '{trait_one.kId}' trait wrapped around
         the data held in this instance.
@@ -233,12 +233,10 @@ class Test_python_package_all_specifications_test_TwoLocalTraitsSpecification:
         )
 
         assert inspect.isfunction(
-            # pylint: disable=line-too-long
-            module_all.specifications.test.TwoLocalTraitsSpecification.anotherNamespaceNoPropertiesTrait
+            test.TwoLocalTraitsSpecification_v1.anotherNamespaceNoPropertiesTrait
         )
         assert (
-            # pylint: disable=line-too-long
-            module_all.specifications.test.TwoLocalTraitsSpecification.anotherNamespaceNoPropertiesTrait.__doc__
+            test.TwoLocalTraitsSpecification_v1.anotherNamespaceNoPropertiesTrait.__doc__
             == f"""
         Returns the view for the '{trait_two.kId}' trait wrapped around
         the data held in this instance.
@@ -249,7 +247,7 @@ class Test_python_package_all_specifications_test_TwoLocalTraitsSpecification:
 class Test_python_package_all_specifications_test_OneExternalTraitSpecification:
     def test_docstring_contains_description(self, module_all):
         assert (
-            module_all.specifications.test.OneExternalTraitSpecification.__doc__
+            module_all.specifications.test.OneExternalTraitSpecification_v1.__doc__
             == """
     A specification referencing traits in another package.
     """
@@ -257,18 +255,20 @@ class Test_python_package_all_specifications_test_OneExternalTraitSpecification:
 
     def test_trait_set_composes_target_trait_kIds(self, module_all, module_traits_only):
         expected = {
-            module_traits_only.traits.test.AnotherTrait.kId,
+            module_traits_only.traits.test.AnotherTrait_v1.kId,
         }
-        assert module_all.specifications.test.OneExternalTraitSpecification.kTraitSet == expected
+        assert (
+            module_all.specifications.test.OneExternalTraitSpecification_v1.kTraitSet == expected
+        )
 
     def test_has_trait_getters_with_expected_docstring(self, module_all, module_traits_only):
-        trait = module_traits_only.traits.test.AnotherTrait
+        trait = module_traits_only.traits.test.AnotherTrait_v1
 
         assert inspect.isfunction(
-            module_all.specifications.test.OneExternalTraitSpecification.anotherTrait
+            module_all.specifications.test.OneExternalTraitSpecification_v1.anotherTrait
         )
         assert (
-            module_all.specifications.test.OneExternalTraitSpecification.anotherTrait.__doc__
+            module_all.specifications.test.OneExternalTraitSpecification_v1.anotherTrait.__doc__
             == f"""
         Returns the view for the '{trait.kId}' trait wrapped around
         the data held in this instance.
@@ -279,7 +279,7 @@ class Test_python_package_all_specifications_test_OneExternalTraitSpecification:
 class Test_python_package_all_specifications_test_LocalAndExternalTraitSpecification:
     def test_docstring_contains_description(self, module_all):
         assert (
-            module_all.specifications.test.LocalAndExternalTraitSpecification.__doc__
+            module_all.specifications.test.LocalAndExternalTraitSpecification_v1.__doc__
             == """
     A specification referencing traits in this and another package.
     Usage: entity, managementPolicy
@@ -288,37 +288,32 @@ class Test_python_package_all_specifications_test_LocalAndExternalTraitSpecifica
 
     def test_trait_set_composes_target_trait_kIds(self, module_all, module_traits_only):
         expected = {
-            module_all.traits.aNamespace.NoPropertiesTrait.kId,
-            module_traits_only.traits.aNamespace.NoPropertiesTrait.kId,
+            module_all.traits.aNamespace.NoPropertiesTrait_v1.kId,
+            module_traits_only.traits.aNamespace.NoPropertiesTrait_v1.kId,
         }
         assert (
-            module_all.specifications.test.LocalAndExternalTraitSpecification.kTraitSet == expected
+            module_all.specifications.test.LocalAndExternalTraitSpecification_v1.kTraitSet
+            == expected
         )
 
     def test_has_trait_getters_with_expected_docstring(self, module_all, module_traits_only):
-        trait_one = module_all.traits.aNamespace.NoPropertiesTrait
-        trait_two = module_traits_only.traits.aNamespace.NoPropertiesTrait
+        trait_one = module_all.traits.aNamespace.NoPropertiesTrait_v1
+        trait_two = module_traits_only.traits.aNamespace.NoPropertiesTrait_v1
+        spec = module_all.specifications.test.LocalAndExternalTraitSpecification_v1
 
-        assert inspect.isfunction(
-            # pylint: disable=line-too-long
-            module_all.specifications.test.LocalAndExternalTraitSpecification.openassetioTraitgenTestAllANamespaceNoPropertiesTrait
-        )
+        assert inspect.isfunction(spec.openassetioTraitgenTestAllANamespaceNoPropertiesTrait)
         assert (
-            # pylint: disable=line-too-long
-            module_all.specifications.test.LocalAndExternalTraitSpecification.openassetioTraitgenTestAllANamespaceNoPropertiesTrait.__doc__
+            spec.openassetioTraitgenTestAllANamespaceNoPropertiesTrait.__doc__
             == f"""
         Returns the view for the '{trait_one.kId}' trait wrapped around
         the data held in this instance.
         """
         )
-
         assert inspect.isfunction(
-            # pylint: disable=line-too-long
-            module_all.specifications.test.LocalAndExternalTraitSpecification.openassetioTraitgenTestTraitsOnlyANamespaceNoPropertiesTrait
+            spec.openassetioTraitgenTestTraitsOnlyANamespaceNoPropertiesTrait
         )
         assert (
-            # pylint: disable=line-too-long
-            module_all.specifications.test.LocalAndExternalTraitSpecification.openassetioTraitgenTestTraitsOnlyANamespaceNoPropertiesTrait.__doc__
+            spec.openassetioTraitgenTestTraitsOnlyANamespaceNoPropertiesTrait.__doc__
             == f"""
         Returns the view for the '{trait_two.kId}' trait wrapped around
         the data held in this instance.
@@ -338,8 +333,8 @@ class Test_python_package_traits_only:
             module_traits_only.specifications  # pylint: disable=pointless-statement
 
     def test_traits_are_suffixed_with_Trait(self, module_traits_only):
-        assert inspect.isclass(module_traits_only.traits.test.AnotherTrait)
-        assert inspect.isclass(module_traits_only.traits.aNamespace.NoPropertiesTrait)
+        assert inspect.isclass(module_traits_only.traits.test.AnotherTrait_v1)
+        assert inspect.isclass(module_traits_only.traits.aNamespace.NoPropertiesTrait_v1)
 
 
 class Test_python_package_specifications_only:
@@ -354,7 +349,7 @@ class Test_python_package_specifications_only:
             module_specifications_only.traits  # pylint: disable=pointless-statement
 
     def test_specifications_are_suffixed_with_Specification(self, module_specifications_only):
-        assert inspect.isclass(module_specifications_only.specifications.test.SomeSpecification)
+        assert inspect.isclass(module_specifications_only.specifications.test.SomeSpecification_v1)
 
 
 #
@@ -544,6 +539,114 @@ class Test_AllPropertiesTrait_set:
         )
 
 
+class Test_MultipleVersionsTrait:
+    def test_version_1_has_expected_id(self, module_all):
+        assert module_all.traits.aNamespace.MultipleVersionsTrait_v1.kId == (
+            "openassetio-traitgen-test-all:aNamespace.MultipleVersions"
+        )
+
+    def test_version_2_has_expected_id(self, module_all):
+        assert module_all.traits.aNamespace.MultipleVersionsTrait_v2.kId == (
+            "openassetio-traitgen-test-all:aNamespace.MultipleVersions.v2"
+        )
+
+    def test_version_1_has_expected_docstring(self, module_all):
+        assert (
+            module_all.traits.aNamespace.MultipleVersionsTrait_v1.__doc__
+            == """
+    A trait with multiple versions, version 1.
+    Usage: entity
+    """
+        )
+
+    def test_version_2_has_expected_docstring(self, module_all):
+        assert (
+            module_all.traits.aNamespace.MultipleVersionsTrait_v2.__doc__
+            == """
+    A trait with multiple versions, version 2.
+    """
+        )
+
+    def test_version_1_has_expected_property(self, module_all):
+        assert hasattr(module_all.traits.aNamespace.MultipleVersionsTrait_v1, "getOldProperty")
+        assert not hasattr(module_all.traits.aNamespace.MultipleVersionsTrait_v1, "getNewProperty")
+
+    def test_version_2_has_expected_property(self, module_all):
+        assert not hasattr(module_all.traits.aNamespace.MultipleVersionsTrait_v2, "getOldProperty")
+        assert hasattr(module_all.traits.aNamespace.MultipleVersionsTrait_v2, "getNewProperty")
+
+    def test_unversioned_is_version_1(self, module_all):
+        assert issubclass(
+            module_all.traits.aNamespace.MultipleVersionsTrait,
+            module_all.traits.aNamespace.MultipleVersionsTrait_v1,
+        )
+
+        # Create an empty class and get its __dict__ keys.
+        builtin_attr_names = set(type("Empty", (), {}).__dict__.keys())
+
+        # Get attributes defined on subclass, minus builtin attrs.
+        user_defined_attr_names = [
+            attr_name
+            for attr_name in module_all.traits.aNamespace.MultipleVersionsTrait.__dict__
+            if attr_name not in builtin_attr_names
+        ]
+        # Ensure no overrides of the base class, other than constructor
+        # (for deprecation warning).
+        assert user_defined_attr_names == ["__init__"]
+
+    def test_unversioned_has_same_docstring_as_version_1_but_with_deprecation(self, module_all):
+        assert (
+            module_all.traits.aNamespace.MultipleVersionsTrait.__doc__
+            == module_all.traits.aNamespace.MultipleVersionsTrait_v1.__doc__.rstrip()
+            + """
+
+    @deprecated Unversioned trait view classes are deprecated, please
+    use MultipleVersionsTrait_v1 explicitly.
+    """
+        )
+        assert (
+            module_all.traits.aNamespace.MultipleVersionsTrait.__doc__
+            != module_all.traits.aNamespace.MultipleVersionsTrait_v2.__doc__
+        )
+
+    def test_when_unversioned_constructed_then_logs_deprecation_warning(self, module_all):
+        expected_warning = (
+            "Unversioned trait view classes are deprecated. Please switch from"
+            " MultipleVersionsTrait to MultipleVersionsTrait_v1."
+        )
+        with pytest.deprecated_call(match=expected_warning):
+            module_all.traits.aNamespace.MultipleVersionsTrait(TraitsData())
+
+    def test_when_unversioned_constructed_then_calls_base_constructor(self, module_all):
+        data = TraitsData()
+        trait = module_all.traits.aNamespace.MultipleVersionsTrait(data)
+        expected_value = "some string"
+        # Ensure TraitsData is passed through (i.e. no AttributeError).
+        trait.setOldProperty(expected_value)
+        actual_value = trait.getOldProperty()
+
+        assert actual_value == expected_value
+
+
+class Test_DeprecatedTrait:
+    def test_when_constructed_then_logs_deprecation_warning(self, module_all):
+        expected_warning = (
+            "The 'openassetio-traitgen-test-all:aNamespace.Deprecated' trait is deprecated."
+        )
+        with pytest.deprecated_call(match=expected_warning):
+            module_all.traits.aNamespace.DeprecatedTrait_v1(TraitsData())
+
+    def test_docstring_contains_deprecation_notice(self, module_all):
+        assert (
+            module_all.traits.aNamespace.DeprecatedTrait_v1.__doc__
+            == """
+    A deprecated trait.
+
+    @deprecated This trait is flagged for future removal.
+    """
+        )
+
+
 class Test_LocalAndExternalTraitSpecification:
     def test_external_trait_accessor_is_of_expected_type(
         self, local_and_external_trait_specification, module_traits_only
@@ -551,7 +654,7 @@ class Test_LocalAndExternalTraitSpecification:
         a_specification = local_and_external_trait_specification(TraitsData())
         assert isinstance(
             a_specification.openassetioTraitgenTestTraitsOnlyANamespaceNoPropertiesTrait(),
-            module_traits_only.traits.aNamespace.NoPropertiesTrait,
+            module_traits_only.traits.aNamespace.NoPropertiesTrait_v1,
         )
 
     def test_external_trait_instance_wraps_specifications_traits_data(
@@ -561,7 +664,8 @@ class Test_LocalAndExternalTraitSpecification:
         a_specification = local_and_external_trait_specification(a_traits_data)
         a_trait = a_specification.openassetioTraitgenTestTraitsOnlyANamespaceNoPropertiesTrait()
         assert (
-            a_trait._NoPropertiesTrait__data is a_traits_data  # pylint: disable=protected-access
+            a_trait._NoPropertiesTrait_v1__data  # pylint: disable=protected-access
+            is a_traits_data
         )
 
     def test_package_local_trait_accessor_is_of_expected_type(
@@ -570,7 +674,7 @@ class Test_LocalAndExternalTraitSpecification:
         a_specification = local_and_external_trait_specification(TraitsData())
         assert isinstance(
             a_specification.openassetioTraitgenTestAllANamespaceNoPropertiesTrait(),
-            module_all.traits.aNamespace.NoPropertiesTrait,
+            module_all.traits.aNamespace.NoPropertiesTrait_v1,
         )
 
     def test_local_trait_instance_wraps_specifications_traits_data(
@@ -580,7 +684,8 @@ class Test_LocalAndExternalTraitSpecification:
         a_specification = local_and_external_trait_specification(a_traits_data)
         a_trait = a_specification.openassetioTraitgenTestAllANamespaceNoPropertiesTrait()
         assert (
-            a_trait._NoPropertiesTrait__data is a_traits_data  # pylint: disable=protected-access
+            a_trait._NoPropertiesTrait_v1__data  # pylint: disable=protected-access
+            is a_traits_data
         )
 
     def test_default_constructor_raises_error(self, local_and_external_trait_specification):
@@ -601,6 +706,111 @@ class Test_LocalAndExternalTraitSpecification:
         specification = local_and_external_trait_specification.create()
         data = specification.traitsData()
         assert data.traitSet() == local_and_external_trait_specification.kTraitSet
+
+
+class Test_MultipleVersionsOfTraitSpecification:
+
+    def test_version_1_has_version_1_of_trait(self, module_all):
+        assert (
+            module_all.specifications.test.MultipleVersionsOfTraitSpecification_v1.kTraitSet
+            == {
+                module_all.traits.aNamespace.MultipleVersionsTrait_v1.kId,
+                module_all.traits.aNamespace.NoPropertiesTrait_v1.kId,
+            }
+        )
+
+    def test_version_2_has_version_2_of_trait(self, module_all):
+        assert (
+            module_all.specifications.test.MultipleVersionsOfTraitSpecification_v2.kTraitSet
+            == {
+                module_all.traits.aNamespace.MultipleVersionsTrait_v2.kId,
+                module_all.traits.aNamespace.NoPropertiesTrait_v1.kId,
+            }
+        )
+
+    def test_unversioned_is_version_1(self, module_all):
+        assert issubclass(
+            module_all.specifications.test.MultipleVersionsOfTraitSpecification,
+            module_all.specifications.test.MultipleVersionsOfTraitSpecification_v1,
+        )
+
+        # Create an empty class and get its __dict__ keys.
+        builtin_attr_names = set(type("Empty", (), {}).__dict__.keys())
+
+        # Get attributes defined on subclass, minus builtin attrs.
+        user_defined_attr_names = [
+            attr_name
+            for attr_name in module_all.traits.aNamespace.MultipleVersionsTrait.__dict__
+            if attr_name not in builtin_attr_names
+        ]
+        # Ensure no overrides of the base class, other than constructor
+        # (for deprecation warning).
+        assert user_defined_attr_names == ["__init__"]
+
+    def test_unversioned_has_same_docstring_as_version_1_but_with_deprecation(self, module_all):
+        spec = module_all.specifications.test.MultipleVersionsOfTraitSpecification
+        spec_v1 = module_all.specifications.test.MultipleVersionsOfTraitSpecification_v1
+        assert (
+            spec.__doc__
+            == spec_v1.__doc__.rstrip()
+            + """
+
+    @deprecated Unversioned specification view classes are deprecated,
+    please use MultipleVersionsOfTraitSpecification_v1 explicitly.
+    """
+        )
+        assert (
+            module_all.specifications.test.MultipleVersionsOfTraitSpecification.__doc__
+            != module_all.specifications.test.MultipleVersionsOfTraitSpecification_v2.__doc__
+        )
+
+    def test_when_unversioned_constructed_then_logs_deprecation_warning(self, module_all):
+        expected_warning = (
+            "Unversioned specification view classes are deprecated. Please switch from"
+            " MultipleVersionsOfTraitSpecification to MultipleVersionsOfTraitSpecification_v1."
+        )
+        with pytest.deprecated_call(match=expected_warning):
+            module_all.specifications.test.MultipleVersionsOfTraitSpecification(TraitsData())
+
+        with pytest.deprecated_call(match=expected_warning):
+            module_all.specifications.test.MultipleVersionsOfTraitSpecification.create()
+
+    def test_when_unversioned_created_then_is_correct_instance(self, module_all):
+        spec = module_all.specifications.test.MultipleVersionsOfTraitSpecification.create()
+
+        assert isinstance(
+            spec, module_all.specifications.test.MultipleVersionsOfTraitSpecification
+        )
+
+    def test_when_unversioned_constructed_then_calls_base_constructor(self, module_all):
+        data = TraitsData()
+        spec = module_all.specifications.test.MultipleVersionsOfTraitSpecification(data)
+        expected_value = "some string"
+        # Ensure TraitsData is passed through (i.e. no AttributeError).
+        spec.multipleVersionsTrait().setOldProperty(expected_value)
+        actual_value = spec.multipleVersionsTrait().getOldProperty()
+
+        assert actual_value == expected_value
+
+
+class Test_DeprecatedSpecification:
+    def test_when_constructed_then_logs_deprecation_warning(self, module_all):
+        expected_warning = (
+            "The 'test.Deprecated' specification of the 'openassetio_traitgen_test_all' package is"
+            " deprecated."
+        )
+        with pytest.deprecated_call(match=expected_warning):
+            module_all.specifications.test.DeprecatedSpecification_v1(TraitsData())
+
+    def test_docstring_contains_deprecation_notice(self, module_all):
+        assert (
+            module_all.specifications.test.DeprecatedSpecification_v1.__doc__
+            == """
+    A deprecated specification.
+
+    @deprecated This specification is flagged for future removal.
+    """
+        )
 
 
 class Test_generate:
@@ -717,7 +927,7 @@ def module_specifications_only(extended_python_path):
 
 @pytest.fixture
 def all_properties_trait(module_all):
-    return module_all.traits.aNamespace.AllPropertiesTrait
+    return module_all.traits.aNamespace.AllPropertiesTrait_v1
 
 
 @pytest.fixture
@@ -727,12 +937,12 @@ def an_empty_traitsData():
 
 @pytest.fixture
 def an_all_properties_traitsData(module_all):
-    return TraitsData({module_all.traits.aNamespace.AllPropertiesTrait.kId})
+    return TraitsData({module_all.traits.aNamespace.AllPropertiesTrait_v1.kId})
 
 
 @pytest.fixture
 def local_and_external_trait_specification(module_all):
-    return module_all.specifications.test.LocalAndExternalTraitSpecification
+    return module_all.specifications.test.LocalAndExternalTraitSpecification_v1
 
 
 @pytest.fixture
@@ -759,8 +969,4 @@ def warnings_exotic_values():
         (logging.WARNING, "Conforming 'p$' to 'p' for variable name"),
         (logging.WARNING, "Conforming 's!n' to 's_n' for module name"),
         (logging.WARNING, "Conforming 's^' to 'S' for class name"),
-        (logging.WARNING, "Conforming 't!n' to 't_n' for module name"),
-        (logging.WARNING, "Conforming 't&' to 'T' for class name"),
-        (logging.WARNING, "Conforming 't!n' to 't_n' for module name"),
-        (logging.WARNING, "Conforming 't&' to 'T' for class name"),
     ]

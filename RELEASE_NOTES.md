@@ -1,6 +1,36 @@
 Release Notes
 =============
 
+v1.0.0-alpha.x
+--------------
+
+### Breaking changes
+
+- Updated the YAML schema to group traits/specifications under a version
+  number key.
+  [#80](https://github.com/OpenAssetIO/OpenAssetIO-TraitGen/issues/80)
+
+### New features
+
+- Added support for trait versioning. Suffixed generated
+  trait/specification view classes with a `_vX` and trait IDs with a `.vX`
+  (where `X` is a version number), except for the first version of a
+  trait, where the ID has no version suffix, retaining backward
+  compatibility.
+  [#80](https://github.com/OpenAssetIO/OpenAssetIO-TraitGen/issues/80)
+
+- Added an optional `deprecated` field to trait and specification YAML
+  definitions, which causes a deprecation warning/annotation to be
+  generated for all versions of that trait/specification.
+  [#80](https://github.com/OpenAssetIO/OpenAssetIO-TraitGen/issues/80)
+
+### Improvements
+
+- Updated classes without a version suffix to alias version 1, but with
+  a deprecation warning/annotation, for backward compatibility.
+  [#80](https://github.com/OpenAssetIO/OpenAssetIO-TraitGen/issues/80)
+
+
 v1.0.0-alpha.12
 --------------
 
