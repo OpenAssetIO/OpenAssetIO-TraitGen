@@ -88,11 +88,14 @@ def _unpack_specifications(model: dict, package_id: str) -> List[datamodel.Names
         specifications = [
             datamodel.SpecificationDeclaration(
                 id=name,
+                deprecated=props.get("deprecated", False),
+                version=version_num,
                 description=definition.get("description", "").strip(),
                 trait_set=_unpack_trait_set(definition["traitSet"], package_id),
                 usage=definition.get("usage", []),
             )
-            for name, definition in data["members"].items()
+            for name, props in data["members"].items()
+            for version_num, definition in props["versions"].items()
         ]
         specifications.sort(key=_byId)
 
@@ -134,8 +137,9 @@ def _unpack_trait_set(trait_set: List[dict], package_id: str) -> List[datamodel.
         package = trait.get("package", package_id)
         namespace = trait["namespace"]
         name = trait["name"]
+        version = trait["version"]
 
-        identifier = _build_trait_id(package, namespace, name)
+        identifier = _build_trait_id(package, namespace, name, version)
 
         # Check to see which of the possible combinations of reference
         # parts is unique for this trait.
@@ -153,6 +157,7 @@ def _unpack_trait_set(trait_set: List[dict], package_id: str) -> List[datamodel.
                 name=name,
                 namespace=namespace,
                 package=package,
+                version=version,
                 unique_name_parts=unique_name_parts,
             )
         )
@@ -162,7 +167,15 @@ def _unpack_trait_set(trait_set: List[dict], package_id: str) -> List[datamodel.
     return references
 
 
-def _build_trait_id(package: str, namespace: str, name: str) -> str:
+def _build_trait_id(package: str, namespace: str, name: str, version: str) -> str:
+    """
+    Builds a trait ID from the supplied components.
+
+    The first version "1" omits the version suffix to maintain backward
+    compatibility with existing traits.
+    """
+    if version != "1":
+        return f"{package}:{namespace}.{name}.v{version}"
     return f"{package}:{namespace}.{name}"
 
 
@@ -180,13 +193,16 @@ def _unpack_traits(
     for namespace, data in model.items():
         traits = [
             datamodel.TraitDeclaration(
-                id=_build_trait_id(package_id, namespace, name),
+                id=_build_trait_id(package_id, namespace, name, version_num),
                 name=name,
+                deprecated=props.get("deprecated", False),
+                version=version_num,
                 description=definition.get("description", "").strip(),
                 properties=_unpack_properties(definition.get("properties", {})),
                 usage=definition.get("usage", []),
             )
-            for name, definition in data["members"].items()
+            for name, props in data["members"].items()
+            for version_num, definition in props["versions"].items()
         ]
         traits.sort(key=_byName)
 

@@ -1,4 +1,4 @@
 # A comment
 topLevelProperty: 1
 nested:
-    property: A property
+  property: A property

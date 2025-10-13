@@ -40,63 +40,83 @@
                   "description": "A single Trait. The object's key forms the name of the trait, and will be used to generate the class name (or similar) in resulting code. Trait names need to be unique within each namespace.",
                   "additionalProperties": false,
                   "properties": {
-                    "description": {
-                      "type": "string",
-                      "description": "A description of the trait and its uses.",
-                      "minLength": 1
+                    "deprecated": {
+                      "type": "boolean",
+                      "description": "Whether trait is deprecated."
                     },
-                    "additionalProperties": false,
-                    "properties": {
+                    "versions": {
                       "type": "object",
-                      "description": "The Trait's properties.",
+                      "description": "Versions of this trait.",
                       "additionalProperties": false,
                       "patternProperties": {
-                        "^[a-z][a-zA-Z0-9]*$": {
+                        "^[1-9][0-9]*$": {
                           "type": "object",
+                          "description": "A version of the trait definition.",
+                          "additionalProperties": false,
                           "properties": {
                             "description": {
                               "type": "string",
-                              "description": "A description of the value held by the property and its use",
+                              "description": "A description of the trait and its uses.",
                               "minLength": 1
                             },
-                            "type": {
-                              "description": "The type of the value held by the property",
-                              "type": "string",
-                              "enum": [
-                                "string",
-                                "integer",
-                                "float",
-                                "boolean",
-                                "dictionary"
-                              ]
+                            "properties": {
+                              "type": "object",
+                              "description": "The Trait's properties.",
+                              "additionalProperties": false,
+                              "patternProperties": {
+                                "^[a-z][a-zA-Z0-9]*$": {
+                                  "type": "object",
+                                  "properties": {
+                                    "description": {
+                                      "type": "string",
+                                      "description": "A description of the value held by the property and its use",
+                                      "minLength": 1
+                                    },
+                                    "type": {
+                                      "description": "The type of the value held by the property",
+                                      "type": "string",
+                                      "enum": [
+                                        "string",
+                                        "integer",
+                                        "float",
+                                        "boolean",
+                                        "dictionary"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "description",
+                                    "type"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              }
+                            },
+                            "usage": {
+                              "description": "The potential use cases for the Trait, these map to specific areas of the OpenAssetIO API where it makes sense to use the Trait.",
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "enum": [
+                                  "entity",
+                                  "relationship",
+                                  "locale",
+                                  "managementPolicy",
+                                  "ui",
+                                  "uiPolicy"
+                                ]
+                              }
                             }
                           },
                           "required": [
-                            "description",
-                            "type"
-                          ],
-                          "additionalProperties": false
+                            "description"
+                          ]
                         }
-                      }
-                    },
-                    "usage": {
-                      "description": "The potential use cases for the Trait, these map to specific areas of the OpenAssetIO API where it makes sense to use the Trait.",
-                      "type": "array",
-                      "items": {
-                        "type": "string",
-                        "enum": [
-                          "entity",
-                          "relationship",
-                          "locale",
-                          "managementPolicy",
-                          "ui",
-                          "uiPolicy"
-                        ]
                       }
                     }
                   },
                   "required": [
-                    "description"
+                    "versions"
                   ]
                 }
               }
@@ -133,60 +153,87 @@
                   "description": "A single Specification. The object's key forms the name of the Specification, and will be used to generate the class name (or similar) in resulting code. Specification names need to be unique within each namespace.",
                   "additionalProperties": false,
                   "properties": {
-                    "description": {
-                      "type": "string",
-                      "description": "A description of the Specification and its uses.",
-                      "minLength": 1
+                    "deprecated": {
+                      "type": "boolean",
+                      "description": "Whether this Specification is deprecated."
                     },
-                    "traitSet": {
-                      "description": "The Traits composed by the Specification. These can references Traits within this package, or another.",
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "additionalProperties": false,
-                        "properties": {
-                          "package": {
-                            "description": "The package the Trait belongs to, if it is not in the package defined by this description.",
-                            "type": "string",
-                            "pattern": "^[a-zA-Z0-9_-]+$"
+                    "versions": {
+                      "type": "object",
+                      "description": "Versions of this specification.",
+                      "additionalProperties": false,
+                      "patternProperties": {
+                        "^[1-9][0-9]*$": {
+                          "type": "object",
+                          "description": "A version of the specification definition.",
+                          "additionalProperties": false,
+                          "properties": {
+                            "description": {
+                              "type": "string",
+                              "description": "A description of the Specification and its uses.",
+                              "minLength": 1
+                            },
+                            "traitSet": {
+                              "description": "The Traits composed by the Specification. These can references Traits within this package, or another.",
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                  "package": {
+                                    "description": "The package the Trait belongs to, if it is not in the package defined by this description.",
+                                    "type": "string",
+                                    "pattern": "^[a-zA-Z0-9_-]+$"
+                                  },
+                                  "namespace": {
+                                    "description": "The Trait's namespace",
+                                    "type": "string",
+                                    "pattern": "^[a-z][a-zA-Z0-9]*$"
+                                  },
+                                  "name": {
+                                    "description": "The Trait's name",
+                                    "type": "string",
+                                    "pattern": "^[A-Z][a-zA-Z0-9]*$"
+                                  },
+                                  "version": {
+                                    "description": "The Trait's version",
+                                    "type": "string",
+                                    "pattern": "^[1-9][0-9]*$"
+                                  }
+                                },
+                                "required": [
+                                  "namespace",
+                                  "name",
+                                  "version"
+                                ]
+                              },
+                              "minItems": 1
+                            },
+                            "usage": {
+                              "description": "The potential use cases for the specification, these map to specific areas of the OpenAssetIO API where it makes sense to use supply the Specification's Trait Set.",
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "enum": [
+                                  "entity",
+                                  "relationship",
+                                  "locale",
+                                  "managementPolicy",
+                                  "ui",
+                                  "uiPolicy"
+                                ]
+                              }
+                            }
                           },
-                          "namespace": {
-                            "description": "The Trait's namespace",
-                            "type": "string",
-                            "pattern": "^[a-z][a-zA-Z0-9]*$"
-                          },
-                          "name": {
-                            "description": "The Trait's name",
-                            "type": "string",
-                            "pattern": "^[A-Z][a-zA-Z0-9]*$"
-                          }
-                        },
-                        "required": [
-                          "namespace",
-                          "name"
-                        ]
-                      },
-                      "minItems": 1
-                    },
-                    "usage": {
-                      "description": "The potential use cases for the specification, these map to specific areas of the OpenAssetIO API where it makes sense to use supply the Specification's Trait Set.",
-                      "type": "array",
-                      "items": {
-                        "type": "string",
-                        "enum": [
-                          "entity",
-                          "relationship",
-                          "locale",
-                          "managementPolicy",
-                          "ui",
-                          "uiPolicy"
-                        ]
+                          "required": [
+                            "description",
+                            "traitSet"
+                          ]
+                        }
                       }
                     }
                   },
                   "required": [
-                    "description",
-                    "traitSet"
+                    "versions"
                   ]
                 }
               }

@@ -3,71 +3,146 @@
 package: openassetio-traitgen-test-all
 
 description:
-    Test classes to validate the integrity of the openassetio-traitgen tool.
+  Test classes to validate the integrity of the openassetio-traitgen tool.
 
 traits:
-    aNamespace:
-        description: A Namespace
-        members:
-            NoProperties:
-                description: Another trait, this time with no properties.
+  aNamespace:
+    description: A Namespace
+    members:
+      NoProperties:
+        versions:
+          "1":
+            description: Another trait, this time with no properties.
 
-            NoPropertiesMultipleUsage:
-                description: Another trait, this time with multiple usage.
-                usage:
-                    - entity
-                    - relationship
+      NoPropertiesMultipleUsage:
+        versions:
+          "1":
+            description: Another trait, this time with multiple usage.
+            usage:
+              - entity
+              - relationship
 
-            AllProperties:
-                description: A trait with properties of all types.
-                properties:
-                    stringProperty:
-                        type: string
-                        description: A string-typed property.
-                    intProperty:
-                        type: integer
-                        description: A int-typed property.
-                    floatProperty:
-                        type: float
-                        description: A float-typed property.
-                    boolProperty:
-                        type: boolean
-                        description: A bool-typed property.
-                    # TODO(DF): Add dictProperty once supported.
+      AllProperties:
+        versions:
+          "1":
+            description: A trait with properties of all types.
+            properties:
+              stringProperty:
+                type: string
+                description: A string-typed property.
+              intProperty:
+                type: integer
+                description: A int-typed property.
+              floatProperty:
+                type: float
+                description: A float-typed property.
+              boolProperty:
+                type: boolean
+                description: A bool-typed property.
+              # TODO(DF): Add dictProperty once supported.
 
-    anotherNamespace:
-        description: Another Namespace
-        members:
-            NoProperties:
-                description: Another NoProperties trait in a different namespace
+      MultipleVersions:
+        versions:
+          "1":
+            description: A trait with multiple versions, version 1.
+            properties:
+              oldProperty:
+                type: string
+                description: A deprecated string-typed property.
+            usage:
+              - entity
+          "2":
+            description: A trait with multiple versions, version 2.
+            properties:
+              newProperty:
+                type: integer
+                description: A new int-typed property.
+
+      Deprecated:
+        deprecated: true
+        versions:
+          "1":
+            description: A deprecated trait.
+
+  anotherNamespace:
+    description: Another Namespace
+    members:
+      NoProperties:
+        versions:
+          "1":
+            description: Another NoProperties trait in a different namespace
 
 specifications:
-    test:
-        description: Test specifications.
-        members:
-            TwoLocalTraits:
-                description: A specification with two traits.
-                traitSet:
-                    - namespace: aNamespace
-                      name: NoProperties
-                    - namespace: anotherNamespace
-                      name: NoProperties
+  test:
+    description: Test specifications.
+    members:
+      TwoLocalTraits:
+        versions:
+          "1":
+            description: A specification with two traits.
+            traitSet:
+              - namespace: aNamespace
+                name: NoProperties
+                version: "1"
+              - namespace: anotherNamespace
+                name: NoProperties
+                version: "1"
 
-            OneExternalTrait:
-                description: A specification referencing traits in another package.
-                traitSet:
-                    - package: openassetio-traitgen-test-traits-only
-                      namespace: test
-                      name: Another
+      OneExternalTrait:
+        versions:
+          "1":
+            description: A specification referencing traits in another package.
+            traitSet:
+              - package: openassetio-traitgen-test-traits-only
+                namespace: test
+                name: Another
+                version: "1"
 
-            LocalAndExternalTrait:
-                description: A specification referencing traits in this and another package.
-                traitSet:
-                    - package: openassetio-traitgen-test-traits-only
-                      namespace: aNamespace
-                      name: NoProperties
-                    - namespace: aNamespace
-                      name: NoProperties
-                usage:
-                    - entity
-                    - managementPolicy
+      LocalAndExternalTrait:
+        versions:
+          "1":
+            description: A specification referencing traits in this and another package.
+            traitSet:
+              - package: openassetio-traitgen-test-traits-only
+                namespace: aNamespace
+                name: NoProperties
+                version: "1"
+              - namespace: aNamespace
+                name: NoProperties
+                version: "1"
+            usage:
+              - entity
+              - managementPolicy
+
+      MultipleVersionsOfTrait:
+        versions:
+          "1":
+            description: Version 1 of a specification referencing version 1 of a trait.
+            traitSet:
+              - namespace: aNamespace
+                name: NoProperties
+                version: "1"
+              - namespace: aNamespace
+                name: MultipleVersions
+                version: "1"
+            usage:
+              - entity
+          "2":
+            description: Version 2 of a specification referencing version 2 of a trait.
+            traitSet:
+              - namespace: aNamespace
+                name: NoProperties
+                version: "1"
+              - namespace: aNamespace
+                name: MultipleVersions
+                version: "2"
+
+      Deprecated:
+        deprecated: true
+        versions:
+          "1":
+            description: A deprecated specification.
+            traitSet:
+              - namespace: aNamespace
+                name: Deprecated
+                version: "1"

@@ -5,22 +5,27 @@ package: p-p
 description: p
 
 traits:
-    t!n:
-        description: n
-        members:
-            t&:
-                description: t
-                properties:
-                    p$:
-                        type: boolean
-                        description: p
+  t!n:
+    description: n
+    members:
+      t&:
+        versions:
+          "1":
+            description: t
+            properties:
+              p$:
+                type: boolean
+                description: p
 
 specifications:
-    s!n:
-        description: n
-        members:
-            s^:
-                description: s
-                traitSet:
-                    - namespace: t!n
-                      name: t&
+  s!n:
+    description: n
+    members:
+      s^:
+        versions:
+          "1":
+            description: s
+            traitSet:
+              - namespace: t!n
+                name: t&
+                version: "1"

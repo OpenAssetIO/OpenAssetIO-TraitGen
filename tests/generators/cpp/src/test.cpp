@@ -18,10 +18,14 @@
 #include <openassetio_traitgen_test_all/traits/anotherNamespace.hpp>
 #include <openassetio_traitgen_test_specifications_only/specifications/test.hpp>
 #elif defined OPENASSETIO_TRAITGENTEST_INCLUDES_CLASS
+#include <openassetio_traitgen_test_all/specifications/test/DeprecatedSpecification.hpp>
 #include <openassetio_traitgen_test_all/specifications/test/LocalAndExternalTraitSpecification.hpp>
+#include <openassetio_traitgen_test_all/specifications/test/MultipleVersionsOfTraitSpecification.hpp>
 #include <openassetio_traitgen_test_all/specifications/test/OneExternalTraitSpecification.hpp>
 #include <openassetio_traitgen_test_all/specifications/test/TwoLocalTraitsSpecification.hpp>
 #include <openassetio_traitgen_test_all/traits/aNamespace/AllPropertiesTrait.hpp>
+#include <openassetio_traitgen_test_all/traits/aNamespace/DeprecatedTrait.hpp>
+#include <openassetio_traitgen_test_all/traits/aNamespace/MultipleVersionsTrait.hpp>
 #include <openassetio_traitgen_test_all/traits/aNamespace/NoPropertiesMultipleUsageTrait.hpp>
 #include <openassetio_traitgen_test_all/traits/aNamespace/NoPropertiesTrait.hpp>
 #include <openassetio_traitgen_test_all/traits/anotherNamespace/NoPropertiesTrait.hpp>
@@ -32,86 +36,170 @@
 
 namespace openassetio_abi = openassetio::v1;
 
+// False-positive linter errors with Catch2 macros.
+// NOLINTBEGIN(bugprone-chained-comparison)
+
 TEST_CASE("openassetio_traitgen_test_all - all expected traits are defined") {
   STATIC_REQUIRE(
-      std::is_class_v<openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait>);
+      std::is_class_v<openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait_v1>);
   STATIC_REQUIRE(
       std::is_class_v<
-          openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesMultipleUsageTrait>);
+          openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesMultipleUsageTrait_v1>);
   STATIC_REQUIRE(
-      std::is_class_v<openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait>);
-  STATIC_REQUIRE(
-      std::is_class_v<openassetio_traitgen_test_all::traits::anotherNamespace::NoPropertiesTrait>);
+      std::is_class_v<openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait_v1>);
+  STATIC_REQUIRE(std::is_class_v<
+                 openassetio_traitgen_test_all::traits::anotherNamespace::NoPropertiesTrait_v1>);
+  STATIC_REQUIRE(std::is_class_v<
+                 openassetio_traitgen_test_all::traits::aNamespace::MultipleVersionsTrait_v1>);
+  STATIC_REQUIRE(std::is_class_v<
+                 openassetio_traitgen_test_all::traits::aNamespace::MultipleVersionsTrait_v2>);
 }
 
 TEST_CASE("openassetio_traitgen_test_all - all expected specifications are defined") {
   STATIC_REQUIRE(std::is_class_v<openassetio_traitgen_test_all::specifications::test::
-                                     LocalAndExternalTraitSpecification>);
+                                     LocalAndExternalTraitSpecification_v1>);
   STATIC_REQUIRE(
       std::is_class_v<
-          openassetio_traitgen_test_all::specifications::test::OneExternalTraitSpecification>);
+          openassetio_traitgen_test_all::specifications::test::OneExternalTraitSpecification_v1>);
   STATIC_REQUIRE(
       std::is_class_v<
-          openassetio_traitgen_test_all::specifications::test::TwoLocalTraitsSpecification>);
+          openassetio_traitgen_test_all::specifications::test::TwoLocalTraitsSpecification_v1>);
+  STATIC_REQUIRE(std::is_class_v<openassetio_traitgen_test_all::specifications::test::
+                                     MultipleVersionsOfTraitSpecification_v1>);
+  STATIC_REQUIRE(std::is_class_v<openassetio_traitgen_test_all::specifications::test::
+                                     MultipleVersionsOfTraitSpecification_v2>);
 }
 
 TEST_CASE("openassetio_traitgen_test_all - traits are under an ABI namespace") {
   STATIC_REQUIRE(
-      std::is_same_v<openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait,
-                     openassetio_traitgen_test_all::v1::traits::aNamespace::NoPropertiesTrait>);
+      std::is_same_v<openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait_v1,
+                     openassetio_traitgen_test_all::v1::traits::aNamespace::NoPropertiesTrait_v1>);
   STATIC_REQUIRE(
       std::is_same_v<
-          openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesMultipleUsageTrait,
-          openassetio_traitgen_test_all::v1::traits::aNamespace::NoPropertiesMultipleUsageTrait>);
-  STATIC_REQUIRE(
-      std::is_same_v<openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait,
-                     openassetio_traitgen_test_all::v1::traits::aNamespace::AllPropertiesTrait>);
+          openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesMultipleUsageTrait_v1,
+          openassetio_traitgen_test_all::v1::traits::aNamespace::
+              NoPropertiesMultipleUsageTrait_v1>);
   STATIC_REQUIRE(std::is_same_v<
-                 openassetio_traitgen_test_all::traits::anotherNamespace::NoPropertiesTrait,
-                 openassetio_traitgen_test_all::v1::traits::anotherNamespace::NoPropertiesTrait>);
+                 openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait_v1,
+                 openassetio_traitgen_test_all::v1::traits::aNamespace::AllPropertiesTrait_v1>);
+  STATIC_REQUIRE(
+      std::is_same_v<
+          openassetio_traitgen_test_all::traits::anotherNamespace::NoPropertiesTrait_v1,
+          openassetio_traitgen_test_all::v1::traits::anotherNamespace::NoPropertiesTrait_v1>);
+  STATIC_REQUIRE(std::is_same_v<
+                 openassetio_traitgen_test_all::traits::aNamespace::MultipleVersionsTrait_v1,
+                 openassetio_traitgen_test_all::v1::traits::aNamespace::MultipleVersionsTrait_v1>);
+  STATIC_REQUIRE(std::is_same_v<
+                 openassetio_traitgen_test_all::traits::aNamespace::MultipleVersionsTrait_v2,
+                 openassetio_traitgen_test_all::v1::traits::aNamespace::MultipleVersionsTrait_v2>);
 }
 
 TEST_CASE("openassetio_traitgen_test_all - specifications are under an ABI namespace") {
   STATIC_REQUIRE(
       std::is_same_v<
-          openassetio_traitgen_test_all::specifications::test::OneExternalTraitSpecification,
-          openassetio_traitgen_test_all::v1::specifications::test::OneExternalTraitSpecification>);
+          openassetio_traitgen_test_all::specifications::test::OneExternalTraitSpecification_v1,
+          openassetio_traitgen_test_all::v1::specifications::test::
+              OneExternalTraitSpecification_v1>);
   STATIC_REQUIRE(
       std::is_same_v<
-          openassetio_traitgen_test_all::specifications::test::OneExternalTraitSpecification,
-          openassetio_traitgen_test_all::v1::specifications::test::OneExternalTraitSpecification>);
-  STATIC_REQUIRE(
-      std::is_same_v<
-          openassetio_traitgen_test_all::specifications::test::TwoLocalTraitsSpecification,
-          openassetio_traitgen_test_all::v1::specifications::test::TwoLocalTraitsSpecification>);
+          openassetio_traitgen_test_all::specifications::test::TwoLocalTraitsSpecification_v1,
+          openassetio_traitgen_test_all::v1::specifications::test::
+              TwoLocalTraitsSpecification_v1>);
+  STATIC_REQUIRE(std::is_same_v<openassetio_traitgen_test_all::specifications::test::
+                                    MultipleVersionsOfTraitSpecification_v1,
+                                openassetio_traitgen_test_all::v1::specifications::test::
+                                    MultipleVersionsOfTraitSpecification_v1>);
+  STATIC_REQUIRE(std::is_same_v<openassetio_traitgen_test_all::specifications::test::
+                                    MultipleVersionsOfTraitSpecification_v2,
+                                openassetio_traitgen_test_all::v1::specifications::test::
+                                    MultipleVersionsOfTraitSpecification_v2>);
 }
 
 TEST_CASE("openassetio_traitgen_test_all - specifications have expected trait sets") {
-  CHECK(openassetio_traitgen_test_all::specifications::test::LocalAndExternalTraitSpecification::
+  CHECK(openassetio_traitgen_test_all::specifications::test::
+            LocalAndExternalTraitSpecification_v1::kTraitSet ==
+        openassetio_abi::trait::TraitSet{
+            openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait_v1::kId,
+            openassetio_traitgen_test_traits_only::traits::aNamespace::NoPropertiesTrait_v1::kId});
+  CHECK(openassetio_traitgen_test_all::specifications::test::TwoLocalTraitsSpecification_v1::
             kTraitSet ==
         openassetio_abi::trait::TraitSet{
-            openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait::kId,
-            openassetio_traitgen_test_traits_only::traits::aNamespace::NoPropertiesTrait::kId});
-  CHECK(openassetio_traitgen_test_all::specifications::test::TwoLocalTraitsSpecification::
+            openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait_v1::kId,
+            openassetio_traitgen_test_all::traits::anotherNamespace::NoPropertiesTrait_v1::kId});
+  CHECK(openassetio_traitgen_test_all::specifications::test::OneExternalTraitSpecification_v1::
             kTraitSet ==
         openassetio_abi::trait::TraitSet{
-            openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait::kId,
-            openassetio_traitgen_test_all::traits::anotherNamespace::NoPropertiesTrait::kId});
-  CHECK(openassetio_traitgen_test_all::specifications::test::OneExternalTraitSpecification::
-            kTraitSet ==
+            openassetio_traitgen_test_traits_only::traits::test::AnotherTrait_v1::kId});
+  CHECK(openassetio_traitgen_test_all::specifications::test::
+            MultipleVersionsOfTraitSpecification_v1::kTraitSet ==
         openassetio_abi::trait::TraitSet{
-            openassetio_traitgen_test_traits_only::traits::test::AnotherTrait::kId});
+            openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait_v1::kId,
+            openassetio_traitgen_test_all::traits::aNamespace::MultipleVersionsTrait_v1::kId,
+        });
+  CHECK(openassetio_traitgen_test_all::specifications::test::
+            MultipleVersionsOfTraitSpecification_v2::kTraitSet ==
+        openassetio_abi::trait::TraitSet{
+            openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait_v1::kId,
+            openassetio_traitgen_test_all::traits::aNamespace::MultipleVersionsTrait_v2::kId,
+        });
 }
 
 TEST_CASE("openassetio_traitgen_test_all - traits have expected IDs") {
-  CHECK(openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait::kId ==
+  CHECK(openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait_v1::kId ==
         "openassetio-traitgen-test-all:aNamespace.NoProperties");
-  CHECK(openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesMultipleUsageTrait::kId ==
-        "openassetio-traitgen-test-all:aNamespace.NoPropertiesMultipleUsage");
-  CHECK(openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait::kId ==
+  CHECK(
+      openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesMultipleUsageTrait_v1::kId ==
+      "openassetio-traitgen-test-all:aNamespace.NoPropertiesMultipleUsage");
+  CHECK(openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait_v1::kId ==
         "openassetio-traitgen-test-all:aNamespace.AllProperties");
-  CHECK(openassetio_traitgen_test_all::traits::anotherNamespace::NoPropertiesTrait::kId ==
+  CHECK(openassetio_traitgen_test_all::traits::anotherNamespace::NoPropertiesTrait_v1::kId ==
         "openassetio-traitgen-test-all:anotherNamespace.NoProperties");
+  CHECK(openassetio_traitgen_test_all::traits::aNamespace::MultipleVersionsTrait_v1::kId ==
+        "openassetio-traitgen-test-all:aNamespace.MultipleVersions");
+  CHECK(openassetio_traitgen_test_all::traits::aNamespace::MultipleVersionsTrait_v2::kId ==
+        "openassetio-traitgen-test-all:aNamespace.MultipleVersions.v2");
+}
+
+SCENARIO("Unversioned trait") {
+  using openassetio_traitgen_test_all::traits::aNamespace::MultipleVersionsTrait;
+  using openassetio_traitgen_test_all::traits::aNamespace::MultipleVersionsTrait_v1;
+  using openassetio_traitgen_test_all::traits::aNamespace::MultipleVersionsTrait_v2;
+
+  THEN("unversioned trait is a subclass of v1") {
+    STATIC_REQUIRE(std::is_base_of_v<MultipleVersionsTrait_v1, MultipleVersionsTrait>);
+  }
+
+  WHEN("ID of unversioned trait is retrieved") {
+    const auto traitId = MultipleVersionsTrait::kId;
+
+    THEN("unversioned trait ID is the same as v1") {
+      CHECK(traitId == MultipleVersionsTrait_v1::kId);
+      CHECK(traitId != MultipleVersionsTrait_v2::kId);
+    }
+  }
+
+  WHEN("unversioned trait is constructed") {
+    const auto traitsData = openassetio::trait::TraitsData::make();
+    // Construct rather than using static_assert to be confident that
+    // the constructor is available.
+
+    const MultipleVersionsTrait trait{traitsData};
+
+    THEN("unversioned trait has same members as v1") {
+      // Just checking that the member function exists.
+      CHECK(!trait.getOldProperty().has_value());
+    }
+  }
+}
+
+TEST_CASE("Deprecated trait causes deprecation compiler warning") {
+  // Ensure that the deprecated trait does indeed cause a deprecation
+  // warning if used. Note that to see this we must remove the
+  // diagnostic suppression. See
+  // openassetio-traitgentest-deprecations CTest target.
+  using openassetio_traitgen_test_all::traits::aNamespace::DeprecatedTrait_v1;
+
+  const DeprecatedTrait_v1 trait{openassetio::trait::TraitsData::make()};
 }
 
 namespace openassetio_traitgen_test_traits_only {
@@ -134,19 +222,18 @@ TEST_CASE("openassetio_traitgen_test_specifications_only - no traits are defined
 
 SCENARIO("Common specification utility functions") {
   GIVEN("a specification constructed using its create function") {
-    auto specification =
-        openassetio_traitgen_test_all::specifications::test::TwoLocalTraitsSpecification::create();
+    auto specification = openassetio_traitgen_test_all::specifications::test::
+        TwoLocalTraitsSpecification_v1::create();
 
     WHEN("its TraitsData is retrieved") {
-      openassetio::trait::TraitsDataPtr traitsData;
-      traitsData = specification.traitsData();
+      const openassetio::trait::TraitsDataPtr& traitsData = specification.traitsData();
 
       THEN("the TraitsData is imbued with the expected traits") {
-        CHECK(
-            traitsData->traitSet() ==
-            openassetio::trait::TraitSet{
-                openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait::kId,
-                openassetio_traitgen_test_all::traits::anotherNamespace::NoPropertiesTrait::kId});
+        CHECK(traitsData->traitSet() ==
+              openassetio::trait::TraitSet{
+                  openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait_v1::kId,
+                  openassetio_traitgen_test_all::traits::anotherNamespace::NoPropertiesTrait_v1::
+                      kId});
       }
 
       AND_WHEN("the retrieved TraitsData is modified") {
@@ -162,12 +249,12 @@ SCENARIO("Common specification utility functions") {
 
 SCENARIO("Common trait utility functions") {
   GIVEN("a TraitsData and a trait view on it") {
-    using openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait;
+    using openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait_v1;
     auto traitsData = openassetio::trait::TraitsData::make();
-    const AllPropertiesTrait trait{traitsData};
+    const AllPropertiesTrait_v1 trait{traitsData};
 
     WHEN("trait view class method is used to query whether TraitsData is imbued") {
-      const bool isImbued = AllPropertiesTrait::isImbuedTo(traitsData);
+      const bool isImbued = AllPropertiesTrait_v1::isImbuedTo(traitsData);
 
       THEN("it is not yet imbued") { CHECK(isImbued == false); }
     }
@@ -178,10 +265,10 @@ SCENARIO("Common trait utility functions") {
     }
 
     AND_GIVEN("TraitsData is imbued with the trait") {
-      traitsData->addTrait(AllPropertiesTrait::kId);
+      traitsData->addTrait(AllPropertiesTrait_v1::kId);
 
       WHEN("trait view class method is used to query whether TraitsData is imbued") {
-        const bool isImbued = AllPropertiesTrait::isImbuedTo(traitsData);
+        const bool isImbued = AllPropertiesTrait_v1::isImbuedTo(traitsData);
 
         THEN("it is imbued") { CHECK(isImbued == true); }
       }
@@ -193,15 +280,15 @@ SCENARIO("Common trait utility functions") {
     }
 
     WHEN("trait view class method is used to imbue the TraitsData") {
-      AllPropertiesTrait::imbueTo(traitsData);
+      AllPropertiesTrait_v1::imbueTo(traitsData);
 
-      THEN("TraitsData is imbued") { CHECK(traitsData->hasTrait(AllPropertiesTrait::kId)); }
+      THEN("TraitsData is imbued") { CHECK(traitsData->hasTrait(AllPropertiesTrait_v1::kId)); }
     }
 
     WHEN("trait view instance method is used to imbue the TraitsData") {
       trait.imbue();
 
-      THEN("TraitsData is imbued") { CHECK(traitsData->hasTrait(AllPropertiesTrait::kId)); }
+      THEN("TraitsData is imbued") { CHECK(traitsData->hasTrait(AllPropertiesTrait_v1::kId)); }
     }
   }
 }
@@ -220,7 +307,8 @@ struct PropertyFixture;
 
 template <>
 struct PropertyFixture<openassetio_abi::Bool> {
-  using AllPropertiesTrait = openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait;
+  using AllPropertiesTrait =
+      openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait_v1;
 
   AllPropertiesTrait trait;
 
@@ -243,7 +331,8 @@ struct PropertyFixture<openassetio_abi::Bool> {
 
 template <>
 struct PropertyFixture<openassetio_abi::Int> {
-  using AllPropertiesTrait = openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait;
+  using AllPropertiesTrait =
+      openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait_v1;
 
   AllPropertiesTrait trait;
 
@@ -266,7 +355,8 @@ struct PropertyFixture<openassetio_abi::Int> {
 
 template <>
 struct PropertyFixture<openassetio_abi::Float> {
-  using AllPropertiesTrait = openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait;
+  using AllPropertiesTrait =
+      openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait_v1;
 
   AllPropertiesTrait trait;
 
@@ -289,7 +379,8 @@ struct PropertyFixture<openassetio_abi::Float> {
 
 template <>
 struct PropertyFixture<openassetio_abi::Str> {
-  using AllPropertiesTrait = openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait;
+  using AllPropertiesTrait =
+      openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait_v1;
 
   AllPropertiesTrait trait;
 
@@ -313,19 +404,19 @@ struct PropertyFixture<openassetio_abi::Str> {
 
 TEMPLATE_TEST_CASE("Property getters", "", openassetio_abi::Bool, openassetio_abi::Int,
                    openassetio_abi::Float, openassetio_abi::Str) {
-  using openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait;
+  using openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait_v1;
 
   using PropertyType = TestType;  // Catch2-injected template param.
   using Fixture = PropertyFixture<PropertyType>;
 
   GIVEN("an AllPropertiesTrait view of a fully populated TraitsData") {
     const openassetio_abi::trait::TraitsDataPtr traitsData =
-        openassetio_abi::trait::TraitsData::make({AllPropertiesTrait::kId});
+        openassetio_abi::trait::TraitsData::make({AllPropertiesTrait_v1::kId});
 
-    traitsData->setTraitProperty(AllPropertiesTrait::kId, Fixture::kPropertyKey,
+    traitsData->setTraitProperty(AllPropertiesTrait_v1::kId, Fixture::kPropertyKey,
                                  Fixture::kExpectedValue);
 
-    const Fixture fixture{AllPropertiesTrait{traitsData}};
+    const Fixture fixture{AllPropertiesTrait_v1{traitsData}};
 
     WHEN("property is queried without a default") {
       const std::optional<PropertyType> value = fixture.getProperty();
@@ -349,9 +440,9 @@ TEMPLATE_TEST_CASE("Property getters", "", openassetio_abi::Bool, openassetio_ab
 
   GIVEN("an AllPropertiesTrait view of an imbued TraitsData with no properties set") {
     const openassetio_abi::trait::TraitsDataPtr traitsData =
-        openassetio_abi::trait::TraitsData::make({AllPropertiesTrait::kId});
+        openassetio_abi::trait::TraitsData::make({AllPropertiesTrait_v1::kId});
 
-    const Fixture fixture{AllPropertiesTrait{traitsData}};
+    const Fixture fixture{AllPropertiesTrait_v1{traitsData}};
 
     WHEN("property is queried without a default") {
       THEN("optional return is empty") { CHECK(!fixture.getProperty().has_value()); }
@@ -365,12 +456,10 @@ TEMPLATE_TEST_CASE("Property getters", "", openassetio_abi::Bool, openassetio_ab
   }
 
   GIVEN("an AllPropertiesTrait view of a blank TraitsData") {
-    using openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait;
-
     const openassetio_abi::trait::TraitsDataPtr traitsData =
         openassetio_abi::trait::TraitsData::make();
 
-    const Fixture fixture{AllPropertiesTrait{traitsData}};
+    const Fixture fixture{AllPropertiesTrait_v1{traitsData}};
 
     WHEN("property is queried without a default") {
       THEN("optional return is empty") { CHECK(!fixture.getProperty().has_value()); }
@@ -384,15 +473,13 @@ TEMPLATE_TEST_CASE("Property getters", "", openassetio_abi::Bool, openassetio_ab
   }
 
   GIVEN("an AllPropertiesTrait view of a TraitsData populated with unexpected types") {
-    using openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait;
-
     const openassetio_abi::trait::TraitsDataPtr traitsData =
-        openassetio_abi::trait::TraitsData::make({AllPropertiesTrait::kId});
+        openassetio_abi::trait::TraitsData::make({AllPropertiesTrait_v1::kId});
 
-    traitsData->setTraitProperty(AllPropertiesTrait::kId, Fixture::kPropertyKey,
+    traitsData->setTraitProperty(AllPropertiesTrait_v1::kId, Fixture::kPropertyKey,
                                  Fixture::kMismatchedTypeValue);
 
-    const Fixture fixture{AllPropertiesTrait{traitsData}};
+    const Fixture fixture{AllPropertiesTrait_v1{traitsData}};
 
     WHEN("property is queried without a default") {
       THEN("exception is thrown") {
@@ -415,7 +502,7 @@ TEMPLATE_TEST_CASE("Property getters", "", openassetio_abi::Bool, openassetio_ab
 
 TEMPLATE_TEST_CASE("Property setters", "", openassetio_abi::Bool, openassetio_abi::Int,
                    openassetio_abi::Float, openassetio_abi::Str) {
-  using openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait;
+  using openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait_v1;
 
   using PropertyType = TestType;  // Catch2-injected template param.
   using Fixture = PropertyFixture<PropertyType>;
@@ -423,33 +510,35 @@ TEMPLATE_TEST_CASE("Property setters", "", openassetio_abi::Bool, openassetio_ab
   GIVEN("an AllPropertiesTrait view of a blank TraitsData") {
     const openassetio_abi::trait::TraitsDataPtr traitsData =
         openassetio_abi::trait::TraitsData::make();
-    Fixture fixture{AllPropertiesTrait{traitsData}};
+    Fixture fixture{AllPropertiesTrait_v1{traitsData}};
 
     WHEN("property is set") {
       fixture.setProperty(Fixture::kExpectedValue);
 
       THEN("TraitsData contains expected value") {
         openassetio_abi::trait::property::Value value;
-        [[maybe_unused]] const bool hasProp =
-            traitsData->getTraitProperty(&value, AllPropertiesTrait::kId, Fixture::kPropertyKey);
+        [[maybe_unused]] const bool hasProp = traitsData->getTraitProperty(
+            &value, AllPropertiesTrait_v1::kId, Fixture::kPropertyKey);
 
         const PropertyType actualValue = std::get<PropertyType>(value);
 
         CHECK(actualValue == Fixture::kExpectedValue);
       }
 
-      THEN("TraitsData has been imbued") { CHECK(traitsData->hasTrait(AllPropertiesTrait::kId)); }
+      THEN("TraitsData has been imbued") {
+        CHECK(traitsData->hasTrait(AllPropertiesTrait_v1::kId));
+      }
     }
   }
 }
 
 SCENARIO("Moveable property setters") {
-  using openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait;
+  using openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait_v1;
 
   GIVEN("an AllPropertiesTrait view of a blank TraitsData") {
     const openassetio_abi::trait::TraitsDataPtr traitsData =
         openassetio_abi::trait::TraitsData::make();
-    AllPropertiesTrait trait{traitsData};
+    AllPropertiesTrait_v1 trait{traitsData};
 
     WHEN("string property is set with a moveable string") {
       std::string value = "some string";
@@ -466,7 +555,7 @@ SCENARIO("Moveable property setters") {
 SCENARIO("Specifications providing trait views") {
   GIVEN("a LocalAndExternalTraitSpecification") {
     const auto specification = openassetio_traitgen_test_all::specifications::test::
-        LocalAndExternalTraitSpecification::create();
+        LocalAndExternalTraitSpecification_v1::create();
 
     WHEN(
         "an openassetio-traitgen-test-traits-only:aNamespace.NoProperties trait view is "
@@ -477,10 +566,9 @@ SCENARIO("Specifications providing trait views") {
       THEN("trait view has expected type") {
         STATIC_REQUIRE(
             std::is_same_v<decltype(trait), const openassetio_traitgen_test_traits_only::traits::
-                                                aNamespace::NoPropertiesTrait>);
+                                                aNamespace::NoPropertiesTrait_v1>);
       }
     }
-
     WHEN("an openassetio-traitgen-test-all:aNamespace.NoProperties trait view is requested") {
       const auto trait = specification.openassetioTraitgenTestAllANamespaceNoPropertiesTrait();
 
@@ -488,29 +576,28 @@ SCENARIO("Specifications providing trait views") {
         STATIC_REQUIRE(
             std::is_same_v<
                 decltype(trait),
-                const openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait>);
+                const openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait_v1>);
       }
     }
   }
-
   GIVEN("a OneExternalTraitSpecification") {
     const auto specification = openassetio_traitgen_test_all::specifications::test::
-        OneExternalTraitSpecification::create();
+        OneExternalTraitSpecification_v1::create();
 
     WHEN("an AnotherTrait trait view is requested") {
       const auto trait = specification.anotherTrait();
 
       THEN("trait view has expected type") {
-        STATIC_REQUIRE(std::is_same_v<
-                       decltype(trait),
-                       const openassetio_traitgen_test_traits_only::traits::test::AnotherTrait>);
+        STATIC_REQUIRE(
+            std::is_same_v<
+                decltype(trait),
+                const openassetio_traitgen_test_traits_only::traits::test::AnotherTrait_v1>);
       }
     }
   }
-
   GIVEN("a TwoLocalTraitsSpecification") {
-    const auto specification =
-        openassetio_traitgen_test_all::specifications::test::TwoLocalTraitsSpecification::create();
+    const auto specification = openassetio_traitgen_test_all::specifications::test::
+        TwoLocalTraitsSpecification_v1::create();
 
     WHEN("an aNamespace.NoPropertiesTrait trait view is requested") {
       const auto trait = specification.aNamespaceNoPropertiesTrait();
@@ -519,25 +606,22 @@ SCENARIO("Specifications providing trait views") {
         STATIC_REQUIRE(
             std::is_same_v<
                 decltype(trait),
-                const openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait>);
+                const openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait_v1>);
       }
     }
-
     WHEN("an anotherNamespace.NoPropertiesTrait trait view is requested") {
       const auto trait = specification.anotherNamespaceNoPropertiesTrait();
 
       THEN("trait view has expected type") {
         STATIC_REQUIRE(
-            std::is_same_v<
-                decltype(trait),
-                const openassetio_traitgen_test_all::traits::anotherNamespace::NoPropertiesTrait>);
+            std::is_same_v<decltype(trait), const openassetio_traitgen_test_all::traits::
+                                                anotherNamespace::NoPropertiesTrait_v1>);
       }
     }
   }
-
   GIVEN("a SomeSpecification") {
     const auto specification = openassetio_traitgen_test_specifications_only::specifications::
-        test::SomeSpecification::create();
+        test::SomeSpecification_v1::create();
 
     WHEN("an AllPropertiesTrait trait view is requested") {
       const auto trait = specification.allPropertiesTrait();
@@ -546,17 +630,17 @@ SCENARIO("Specifications providing trait views") {
         STATIC_REQUIRE(
             std::is_same_v<
                 decltype(trait),
-                const openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait>);
+                const openassetio_traitgen_test_all::traits::aNamespace::AllPropertiesTrait_v1>);
       }
     }
-
     WHEN("an AnotherTrait trait view is requested") {
       const auto trait = specification.anotherTrait();
 
       THEN("trait view has expected type") {
-        STATIC_REQUIRE(std::is_same_v<
-                       decltype(trait),
-                       const openassetio_traitgen_test_traits_only::traits::test::AnotherTrait>);
+        STATIC_REQUIRE(
+            std::is_same_v<
+                decltype(trait),
+                const openassetio_traitgen_test_traits_only::traits::test::AnotherTrait_v1>);
       }
     }
   }
@@ -567,14 +651,13 @@ SCENARIO("Specification-provided trait views updating wrapped TraitsData") {
     const auto traitsData = openassetio_abi::trait::TraitsData::make();
 
     AND_GIVEN("a specification wrapping the TraitsData") {
-      const openassetio_traitgen_test_all::specifications::test::LocalAndExternalTraitSpecification
-          specification{traitsData};
+      const openassetio_traitgen_test_all::specifications::test::
+          LocalAndExternalTraitSpecification_v1 specification{traitsData};
 
       THEN("TraitsData has not yet been imbued") {
         CHECK(!traitsData->hasTrait(
-            openassetio_traitgen_test_traits_only::traits::aNamespace::NoPropertiesTrait::kId));
+            openassetio_traitgen_test_traits_only::traits::aNamespace::NoPropertiesTrait_v1::kId));
       }
-
       AND_GIVEN("a trait view requested from the specification") {
         const auto trait =
             specification.openassetioTraitgenTestTraitsOnlyANamespaceNoPropertiesTrait();
@@ -584,10 +667,77 @@ SCENARIO("Specification-provided trait views updating wrapped TraitsData") {
 
           THEN("the specification's TraitsData is also updated") {
             CHECK(traitsData->hasTrait(openassetio_traitgen_test_traits_only::traits::aNamespace::
-                                           NoPropertiesTrait::kId));
+                                           NoPropertiesTrait_v1::kId));
           }
         }
       }
     }
   }
 }
+
+SCENARIO("Specifications using different versions of traits") {
+  using openassetio_traitgen_test_all::specifications::test::
+      MultipleVersionsOfTraitSpecification_v1;
+  using openassetio_traitgen_test_all::specifications::test::
+      MultipleVersionsOfTraitSpecification_v2;
+  GIVEN("two versions of a specification that expose different versions of the same traits") {
+    using openassetio_traitgen_test_all::traits::aNamespace::MultipleVersionsTrait_v1;
+    using openassetio_traitgen_test_all::traits::aNamespace::MultipleVersionsTrait_v2;
+    using openassetio_traitgen_test_all::traits::aNamespace::NoPropertiesTrait_v1;
+
+    THEN("the two specifications expose the same methods but return different versioned traits") {
+      STATIC_REQUIRE(
+          std::is_same_v<std::decay_t<decltype(MultipleVersionsOfTraitSpecification_v1::create()
+                                                   .multipleVersionsTrait())>,
+                         MultipleVersionsTrait_v1>);
+      STATIC_REQUIRE(
+          std::is_same_v<std::decay_t<decltype(MultipleVersionsOfTraitSpecification_v2::create()
+                                                   .multipleVersionsTrait())>,
+                         MultipleVersionsTrait_v2>);
+    }
+
+    AND_GIVEN("an unversioned specification type") {
+      using openassetio_traitgen_test_all::specifications::test::
+          MultipleVersionsOfTraitSpecification;
+
+      THEN("the trait set of the unversioned specification matches that of v1") {
+        CHECK(MultipleVersionsOfTraitSpecification::kTraitSet ==
+              MultipleVersionsOfTraitSpecification_v1::kTraitSet);
+        CHECK(MultipleVersionsOfTraitSpecification::kTraitSet !=
+              MultipleVersionsOfTraitSpecification_v2::kTraitSet);
+      }
+
+      WHEN("unversioned specification is constructed") {
+        const auto traitsData = openassetio::trait::TraitsData::make();
+        // Construct rather than using static_assert to be confident that
+        // the constructor is available.
+        const MultipleVersionsOfTraitSpecification specification{traitsData};
+
+        THEN("unversioned specification has same members as v1") {
+          // Just checking that the member function exists.
+          CHECK(!specification.multipleVersionsTrait().getOldProperty().has_value());
+        }
+      }
+
+      WHEN("unversioned specification is created") {
+        const auto specification = MultipleVersionsOfTraitSpecification::create();
+
+        THEN("unversioned specification is of the correct class") {
+          STATIC_REQUIRE(std::is_same_v<std::decay_t<decltype(specification)>,
+                                        MultipleVersionsOfTraitSpecification>);
+        }
+      }
+    }
+  }
+}
+
+TEST_CASE("Deprecated specification causes deprecation compiler warning") {
+  using openassetio_traitgen_test_all::specifications::test::DeprecatedSpecification_v1;
+  // Ensure that the deprecated specification does indeed cause a
+  // deprecation warning if used. Note that to see this we must
+  // remove the diagnostic suppression. See
+  // openassetio-traitgentest-deprecations CTest target.
+  const auto spec = DeprecatedSpecification_v1::create();
+}
+
+// NOLINTEND(bugprone-chained-comparison)
