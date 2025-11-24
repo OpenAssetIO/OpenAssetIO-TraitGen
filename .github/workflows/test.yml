@@ -20,7 +20,7 @@ jobs:
         os: ['windows-2022', 'ubuntu-22.04', 'macos-13']
         python: ["3.10", "3.11"]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: actions/setup-python@v6
         with:
@@ -41,7 +41,7 @@ jobs:
     container:
       image: ghcr.io/openassetio/openassetio-build
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Build
         uses: ./.github/build_openassetio
 
@@ -52,7 +52,7 @@ jobs:
     container:
       image: aswf/ci-base:2024
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Get OpenAssetIO
         uses: actions/download-artifact@v5
