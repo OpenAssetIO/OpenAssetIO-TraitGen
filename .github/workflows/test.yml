@@ -37,7 +37,7 @@ jobs:
 
   build-openassetio:
     name: Build OpenAssetIO
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     container:
       image: ghcr.io/openassetio/openassetio-build
     steps:
