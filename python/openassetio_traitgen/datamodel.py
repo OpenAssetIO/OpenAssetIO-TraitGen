@@ -38,7 +38,6 @@ Note: The `DICT` property type must be held by an
 from enum import Enum
 from typing import List, NamedTuple, Tuple
 
-
 #
 # Traits
 #

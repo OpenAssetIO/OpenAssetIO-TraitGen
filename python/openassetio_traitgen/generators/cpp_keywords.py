@@ -18,6 +18,7 @@ List of C++ reserved keywords.
 
 Taken from https://en.cppreference.com/w/cpp/keyword
 """
+
 keywords = {
     "alignas",
     "alignof",

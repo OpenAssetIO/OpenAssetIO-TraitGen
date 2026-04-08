@@ -23,7 +23,6 @@ import subprocess
 
 import pytest
 
-
 # pylint: disable=redefined-outer-name, invalid-name
 # pylint: disable=missing-class-docstring, missing-function-docstring
 # pylint: disable=too-many-arguments, unused-argument, too-few-public-methods

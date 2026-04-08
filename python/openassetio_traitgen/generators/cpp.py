@@ -17,6 +17,7 @@
 A traitgen generator that outputs a C++ package based on the
 openassetio_traitgen PackageDefinition model.
 """
+
 import collections
 import itertools
 
@@ -40,7 +41,6 @@ from ..datamodel import (
     SpecificationDeclaration,
     TraitDeclaration,
 )
-
 
 __all__ = ["generate"]
 

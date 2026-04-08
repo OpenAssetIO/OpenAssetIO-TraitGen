@@ -54,16 +54,14 @@ def _create_argparser():
     cmdline = argparse.ArgumentParser(
         prog="openassetio-traitgen",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        description=inspect.cleandoc(
-            """
+        description=inspect.cleandoc("""
             The openassetio-traitgen utility generates code that provides
             strongly-typed views on an openassetio traits data instance. The
             tool is capable of generating code in a number of languages from the
             supplied file, containing the simplified declaration of one or more
             traits or specifications using the OpenAssetIO traits and
             specification declaration schema.
-            """
-        ),
+            """),
     )
 
     cmdline.add_argument(
