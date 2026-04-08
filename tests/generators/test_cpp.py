@@ -16,6 +16,7 @@
 """
 Tests for the C++ code generator.
 """
+
 import functools
 
 # pylint: disable=invalid-name,redefined-outer-name
@@ -34,7 +35,6 @@ from tree_sitter_languages import get_parser, get_language
 from openassetio_traitgen import generate
 from openassetio_traitgen.generators import cpp as cpp_generator, cpp_keywords
 
-
 #
 # Tests: Packages and Structure
 #
@@ -46,15 +46,12 @@ from openassetio_traitgen.generators import cpp as cpp_generator, cpp_keywords
 
 class Test_cpp_package_all:
     def test_package_docstring(self, docstring_for):
-        assert (
-            docstring_for("openassetio_traitgen_test_all")
-            == """
+        assert docstring_for("openassetio_traitgen_test_all") == """
 /**
  * Test classes to validate the integrity of the openassetio-traitgen
  * tool.
  */
  """.strip()
-        )
 
 
 class Test_cpp_package_all_traits:
@@ -330,13 +327,10 @@ class Test_cpp_package_all_traits_aNamespace_MultipleVersionsTrait:
             version="1",
         )
 
-        expected_docstring = (
-            v1_docstring[:-1]
-            + """
+        expected_docstring = v1_docstring[:-1] + """
  * @deprecated Unversioned trait view classes are deprecated, please use
  * MultipleVersionsTrait_v1 explicitly.
  */"""
-        )
 
         actual_docstring = docstring_for(
             "openassetio_traitgen_test_all",
@@ -598,13 +592,10 @@ class Test_cpp_package_all_specifications_test_MultipleVersionsOfTrait:
             version="1",
         )
 
-        expected_docstring = (
-            v1_docstring[:-1]
-            + """
+        expected_docstring = v1_docstring[:-1] + """
  * @deprecated Unversioned specification view classes are deprecated,
  * please use MultipleVersionsOfTraitSpecification_v1 explicitly.
  */"""
-        )
 
         actual_docstring = docstring_for(
             "openassetio_traitgen_test_all",
@@ -834,20 +825,17 @@ def docstring_for(rootnode_for, cpp_language):
             return query.captures(root_node)[0][0].text.decode()
 
         class_name = f"{name}_v{version}" if version else name
-        query = cpp_language.query(
-            f"""(
+        query = cpp_language.query(f"""(
             (comment) @docstring . (class_specifier name: (type_identifier) @struct_name) @struct
             (#eq? @struct_name "{class_name}")
-        )"""
-        )
+        )""")
 
         if func is None:
             # Class docstring.
             return query.captures(root_node)[0][0].text.decode()
 
         struct_node = query.captures(root_node)[1][0]
-        query = cpp_language.query(
-            f"""(
+        query = cpp_language.query(f"""(
             (comment) @docstring
             .
             (function_definition
@@ -856,8 +844,7 @@ def docstring_for(rootnode_for, cpp_language):
                     declarator: (field_identifier) @func_name (eq? @func_name "{func}")
                 ) @func_decl
             )
-            )"""
-        )
+            )""")
 
         if has_default is None:
             # Setter function docstring.
@@ -877,12 +864,10 @@ def docstring_for(rootnode_for, cpp_language):
             _,
         ) = (node for node, key in query.captures(struct_node))
 
-        query = cpp_language.query(
-            """(parameter_list (
+        query = cpp_language.query("""(parameter_list (
                    parameter_declaration declarator: (
                        reference_declarator (identifier) @var_name
-                       (eq? @var_name "defaultValue") )))"""
-        )
+                       (eq? @var_name "defaultValue") )))""")
 
         first_has_default = bool(query.captures(first_decl))
         second_has_default = bool(query.captures(second_decl))

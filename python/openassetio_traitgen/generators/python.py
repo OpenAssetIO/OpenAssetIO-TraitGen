@@ -30,7 +30,6 @@ import jinja2
 from . import helpers
 from ..datamodel import PackageDeclaration, PropertyType
 
-
 __all__ = ["generate"]
 
 
