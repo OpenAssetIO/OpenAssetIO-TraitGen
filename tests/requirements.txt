@@ -1,6 +1,6 @@
 pytest==9.0.3
 pyyaml==6.0.3
-pylint==2.15.5  # Guard against warn/error changes
+pylint==4.0.9  # Guard against warn/error changes
 jsonschema==4.7.2
 tree-sitter==0.21.3  # For parsing C++ AST to assert on comment text.
 tree-sitter-languages==1.10.2
