@@ -26,7 +26,7 @@ import openassetio_traitgen
 
 # pylint: disable=redefined-outer-name, invalid-name
 # pylint: disable=missing-class-docstring, missing-function-docstring
-# pylint: disable=too-many-arguments
+# pylint: disable=too-many-arguments,too-many-positional-arguments
 
 
 class Test_generate:

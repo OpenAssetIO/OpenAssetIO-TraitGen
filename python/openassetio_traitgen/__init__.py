@@ -80,7 +80,7 @@ from . import generators
 #
 
 
-# pylint: disable=too-many-arguments
+# pylint: disable=too-many-arguments,too-many-positional-arguments
 def generate(
     description_path: str,
     output_directory: str,

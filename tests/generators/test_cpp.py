@@ -20,7 +20,7 @@ Tests for the C++ code generator.
 import functools
 
 # pylint: disable=invalid-name,redefined-outer-name
-# pylint: disable=too-few-public-methods,too-many-arguments
+# pylint: disable=too-few-public-methods,too-many-arguments,too-many-positional-arguments
 # pylint: disable=missing-class-docstring,missing-function-docstring
 # pylint: disable=too-many-return-statements,too-many-lines
 
