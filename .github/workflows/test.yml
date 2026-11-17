@@ -50,7 +50,7 @@ jobs:
             release-platform: Linux-X64
             site-packages: lib/python3.11/site-packages
             #  Linting/sanitizers is only exercised on Linux for now.
-            preset: ci
+            preset: lint
           - os: macos-latest
             release-platform: macOS-ARM64
             site-packages: lib/python3.11/site-packages

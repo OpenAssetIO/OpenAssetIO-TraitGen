@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright 2013-2022 The Foundry Visionmongers Ltd
+# Copyright 2013-2026 The Foundry Visionmongers Ltd
 
 include(CompilerWarnings)
 
@@ -86,6 +86,15 @@ function(openassetio_traitgentest_set_default_target_properties target_name)
                 -fno-sanitize-recover=all
                 -fsanitize=${sanitize_arg}
                 -fno-omit-frame-pointer)
+            if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+                # Instrumentation can cause GCC to emit false positive
+                # "may be used uninitialized" warnings from within the
+                # standard library (e.g. <regex> via Catch2). Keep them
+                # as warnings, so that they don't fail a build with
+                # warnings-as-errors.
+                target_compile_options(${target_name}
+                    PRIVATE -Wno-error=maybe-uninitialized)
+            endif ()
             target_link_options(${target_name}
                 PRIVATE
                 -fno-sanitize-recover=all
