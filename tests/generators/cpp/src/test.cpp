@@ -737,7 +737,10 @@ TEST_CASE("Deprecated specification causes deprecation compiler warning") {
   // deprecation warning if used. Note that to see this we must
   // remove the diagnostic suppression. See
   // openassetio-traitgentest-deprecations CTest target.
-  const auto spec = DeprecatedSpecification_v1::create();
+  // Note that the type must be named explicitly, since Clang does not
+  // warn about a deprecated class that is only referenced via a
+  // using-declaration, as the qualifier in a static member call.
+  const DeprecatedSpecification_v1 spec = DeprecatedSpecification_v1::create();
 }
 
 // NOLINTEND(bugprone-chained-comparison)

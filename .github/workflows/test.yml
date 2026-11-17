@@ -1,10 +1,15 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright 2022 The Foundry Visionmongers Ltd
+# Copyright 2022-2026 The Foundry Visionmongers Ltd
 
 # Runs pytest on the matrix of supported platforms any Python versions.
 name: Test
 on:
   pull_request:
+
+env:
+  # Version of OpenAssetIO to test against. Used both for the Python
+  # package and for the C++ release builds.
+  OPENASSETIO_VERSION: 1.0.2
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -26,39 +31,56 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       # Pin openassetio to match C++ version, since
-      # tests/requirements.txt specifies a range. Also see
-      # build_openassetio action.
+      # tests/requirements.txt specifies a range.
       - run: |
-          python -m pip install openassetio==1.0.2
+          python -m pip install openassetio==${{ env.OPENASSETIO_VERSION }}
           python -m pip install -r tests/requirements.txt
           python -m pip install .
       - name: Test
         run: python -m pytest -v -m "not ctest"
 
-  build-openassetio:
-    name: Build OpenAssetIO
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/openassetio/openassetio-build
-    steps:
-      - uses: actions/checkout@v7
-      - name: Build
-        uses: ./.github/build_openassetio
-
   ctest:
-    name: C++ tests
-    runs-on: ubuntu-22.04
-    needs: build-openassetio
-    container:
-      image: aswf/ci-base:2024
+    name: C++ tests ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            release-platform: Linux-X64
+            site-packages: lib/python3.11/site-packages
+            #  Linting/sanitizers is only exercised on Linux for now.
+            preset: ci
+          - os: macos-latest
+            release-platform: macOS-ARM64
+            site-packages: lib/python3.11/site-packages
+            preset: test
+          - os: windows-2022
+            release-platform: Windows-X64
+            site-packages: Lib/site-packages
+            preset: test
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v7
+
+      # The OpenAssetIO release builds are for CPython 3.11.
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
 
       - name: Get OpenAssetIO
-        uses: actions/download-artifact@v8
-        with:
-          name: OpenAssetIO Build
-          path: ${{ github.workspace }}/openassetio
+        # Download the pre-built RelWithDebInfo release archive for this
+        # platform, rather than building from source.
+        run: |
+          gh release download "v$OPENASSETIO_VERSION" \
+            --repo OpenAssetIO/OpenAssetIO \
+            --pattern "OpenAssetIO-*-${{ matrix.release-platform }}-RelWithDebInfo-*.zip" \
+            --dir openassetio-archive
+          python -m zipfile -e openassetio-archive/*.zip openassetio-extracted
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Install ctest dependencies
         run: >
@@ -68,14 +90,14 @@ jobs:
           .
 
       - name: Test
-        run: python -m pytest -v -m ctest
+        run: |
+          # Archive contains a single top-level directory, containing
+          # the install tree.
+          openassetio_dir="$(echo "$PWD"/openassetio-extracted/*)"
+          export PYTHONPATH="$openassetio_dir/${{ matrix.site-packages }}"
+          export CMAKE_PREFIX_PATH="$openassetio_dir"
+          # For Windows.
+          export OPENASSETIO_DLL_PATH="$openassetio_dir/bin"
+          python -m pytest -v -m ctest
         env:
-          # Set the PYTHONPATH to the output of build-openassetio
-          # Even though we are running C++ tests, pytest still discovers
-          # all the python files, so they need to be valid imports.
-          PYTHONPATH: ${{ github.workspace }}/openassetio/lib/python3.11/site-packages
-          CMAKE_PREFIX_PATH: ${{ github.workspace }}/openassetio
-          # TODO(DF): Sanitizers disabled due to lack of support in ASWF
-          # Docker image. Re-enable once per-platform builds enabled
-          # (i.e. once OpenAssetIO Conan package is available).
-          OPENASSETIO_TRAITGENTEST_CMAKE_PRESET: ci
+          OPENASSETIO_TRAITGENTEST_CMAKE_PRESET: ${{ matrix.preset }}

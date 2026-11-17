@@ -63,7 +63,11 @@ foreach (include_type package subpackage namespace class)
         )
     endif ()
     # Allow [[deprecated]] - these will be tested in their own target.
-    target_compile_options(${_target_name} PRIVATE -Wno-deprecated-declarations)
+    # Not required for MSVC, which does not show the deprecation warning
+    # at its default warning level.
+    if (IS_GCC_OR_CLANG)
+        target_compile_options(${_target_name} PRIVATE -Wno-deprecated-declarations)
+    endif ()
 endforeach ()
 
 #-----------------------------------------------------------------------
@@ -75,6 +79,11 @@ _create_build_target(${_target_name} package)
 # deprecation warnings are correctly issued, and will fail the build
 # otherwise.
 set_target_properties(${_target_name} PROPERTIES EXCLUDE_FROM_ALL TRUE)
+if (MSVC)
+    # Deprecation warning C4996 is level 3, so is hidden by the default
+    # level 1. Promote it so that we can check for it.
+    target_compile_options(${_target_name} PRIVATE /w14996)
+endif ()
 
 # Construct the error messages we expect to see, in order. Escape every
 # character to make it a raw string match.
@@ -97,10 +106,13 @@ list(APPEND _pass_regexps "${_pass_regex}")
 # Join into a single regex that matches all error messages in order.
 list(JOIN _pass_regexps ".*" _pass_regexps)
 
-# Building the target _is_ the test.
+# Building the target _is_ the test. Explicitly select the build config,
+# since multi-config generators (e.g. Visual Studio) would otherwise
+# build Debug, for which our dependencies are not available.
 add_test(
     NAME ${_target_name}
-    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target ${_target_name}
+    COMMAND
+    ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --config $<CONFIG> --target ${_target_name}
 )
 # Add expected failure regex for deprecation warnings.
 set_tests_properties(${_target_name} PROPERTIES PASS_REGULAR_EXPRESSION "${_pass_regexps}")

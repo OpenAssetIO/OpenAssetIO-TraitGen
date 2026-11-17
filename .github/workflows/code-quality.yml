@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright 2022 The Foundry Visionmongers Ltd
+# Copyright 2022-2026 The Foundry Visionmongers Ltd
 #
 name: Code quality
 on: pull_request
@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies
         # Pin openassetio to match C++ version, since
         # tests/requirements.txt specifies a range. Also see
-        # build_openassetio action.
+        # the ctest job's OPENASSETIO_VERSION in test.yml.
         run: |
           python -m pip install openassetio==1.0.2
           python -m pip install -r requirements.txt
