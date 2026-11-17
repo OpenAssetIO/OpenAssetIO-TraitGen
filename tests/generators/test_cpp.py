@@ -1,5 +1,5 @@
 #
-#   Copyright 2023 The Foundry Visionmongers Ltd
+#   Copyright 2023-2026 The Foundry Visionmongers Ltd
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -711,12 +711,17 @@ def test_cpp_project(generated_path, tmp_path_factory, cpp_project_dir):
         [
             "conan",
             "install",
-            "--install-folder",
+            "--output-folder",
             f"{build_dir}/.conan",
-            "-g",
+            "--generator",
             "CMakeDeps",
-            "-s",
+            "--profile:host",
+            f"{cpp_project_dir}/vfx24.profile",
+            "--profile:build",
+            f"{cpp_project_dir}/vfx24.profile",
+            "--settings",
             "build_type=RelWithDebInfo",
+            "--build=missing",
             cpp_project_dir,
         ]
     )
