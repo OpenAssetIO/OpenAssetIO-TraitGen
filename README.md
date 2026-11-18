@@ -72,6 +72,10 @@ into a Python environment.
 python -m pip install -r tests/ctest-requirements.txt
 ```
 
+The C++ tests use [Conan](https://conan.io) 2 to fetch third-party
+dependencies, using the profile in
+`tests/generators/cpp/vfx24.profile` (adapted from OpenAssetIO's).
+
 It is possible to execute _only_ the C++ tests.
 
 ```bash
